@@ -12,7 +12,7 @@ Configure your dream development environment in seconds with a terminal-inspired
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-[Live Demo](https://sudo-start.vercel.app) · [Report Bug](https://github.com/chojuninengu/sudo-start/issues) · [Request Feature](https://github.com/chojuninengu/sudo-start/issues)
+[Live Demo](https://sudo-start.vercel.app) · [Report Bug](https://github.com/The-SudoStart/sudo-start/issues) · [Request Feature](https://github.com/The-SudoStart/sudo-start/issues)
 
 </div>
 
@@ -120,7 +120,7 @@ Curated list of 2025's best development tools across 17+ categories:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/chojuninengu/sudo-start.git
+   git clone https://github.com/The-SudoStart/sudo-start.git
    cd sudo-start
    ```
 
@@ -262,7 +262,7 @@ Fetches real-time versions from official sources:
 - [ ] Docker image for self-hosting
 - [ ] Plugin system for custom tools
 
-See [open issues](https://github.com/chojuninengu/sudo-start/issues) for proposed features and known issues.
+See [open issues](https://github.com/The-SudoStart/sudo-start/issues) for proposed features and known issues.
 
 ---
 

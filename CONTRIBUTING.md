@@ -63,7 +63,7 @@ This project and everyone participating in it is governed by our commitment to:
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/chojuninengu/sudo-start.git
+   git remote add upstream https://github.com/The-SudoStart/sudo-start.git
    ```
 
 4. **Install dependencies**
@@ -135,7 +135,7 @@ Before creating a bug report, please:
    - Expected vs actual behavior
    - Screenshots if applicable
 
-**Submit a bug report by opening a [new issue](https://github.com/chojuninengu/sudo-start/issues/new)** with the "Bug Report" template.
+**Submit a bug report by opening a [new issue](https://github.com/The-SudoStart/sudo-start/issues/new)** with the "Bug Report" template.
 
 ### Suggesting Enhancements
 
@@ -146,7 +146,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 3. **Explain why** this enhancement would be useful
 4. **List possible alternatives** you've considered
 
-**Submit an enhancement by opening a [new issue](https://github.com/chojuninengu/sudo-start/issues/new)** with the "Feature Request" template.
+**Submit an enhancement by opening a [new issue](https://github.com/The-SudoStart/sudo-start/issues/new)** with the "Feature Request" template.
 
 ### Adding New Tools
 
@@ -375,7 +375,7 @@ pnpm tsc --noEmit
 
 If you have questions or need help:
 
-1. Check existing [issues](https://github.com/chojuninengu/sudo-start/issues)
+1. Check existing [issues](https://github.com/The-SudoStart/sudo-start/issues)
 2. Open a new issue with the "Question" label
 3. Join our Discord community
 
