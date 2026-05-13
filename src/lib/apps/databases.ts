@@ -8,7 +8,7 @@ export const databaseApps: Package[] = [
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
-    linuxCommandTemplate: 'sudo apt-get install -y postgresql-${VERSION_MAJOR} postgresql-contrib',
+    linuxCommandTemplate: 'curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/pgdg.gpg && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list && sudo apt-get update && sudo apt-get install -y postgresql-${VERSION_MAJOR} postgresql-contrib',
     macosCommandTemplate: 'brew install postgresql@${VERSION_MAJOR}',
     versions: [
       {
@@ -74,7 +74,7 @@ export const databaseApps: Package[] = [
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
-    linuxCommandTemplate: 'wget http://download.redis.io/releases/redis-${VERSION_NO_V}.tar.gz && tar xzf redis-${VERSION_NO_V}.tar.gz && cd redis-${VERSION_NO_V} && make && sudo make install',
+    linuxCommandTemplate: 'wget https://download.redis.io/releases/redis-${VERSION_NO_V}.tar.gz && tar xzf redis-${VERSION_NO_V}.tar.gz && cd redis-${VERSION_NO_V} && make && sudo make install',
     macosCommandTemplate: 'brew install redis@${VERSION_MAJOR}',
     versions: [
       {
@@ -92,7 +92,7 @@ export const databaseApps: Package[] = [
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
-    linuxCommandTemplate: 'wget -qO - https://www.mongodb.org/static/pgp/server-${VERSION_MAJOR}.0.asc | sudo apt-key add - && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/${VERSION_MAJOR}.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-${VERSION_MAJOR}.0.list && sudo apt-get update && sudo apt-get install -y mongodb-org=${VERSION_NO_V}',
+    linuxCommandTemplate: 'curl -fsSL https://www.mongodb.org/static/pgp/server-${VERSION_MAJOR}.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-${VERSION_MAJOR}.0.gpg && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-${VERSION_MAJOR}.0.gpg ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/${VERSION_MAJOR}.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-${VERSION_MAJOR}.0.list && sudo apt-get update && sudo apt-get install -y mongodb-org=${VERSION_NO_V}',
     macosCommandTemplate: 'brew tap mongodb/brew && brew install mongodb-community@${VERSION_MAJOR}',
     versions: [
       {

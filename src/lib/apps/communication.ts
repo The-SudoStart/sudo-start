@@ -29,7 +29,7 @@ export const communicationApps: Package[] = [
         id: 'stable',
         label: 'Stable',
         macCommand: 'brew install --cask microsoft-teams',
-        linuxCommand: 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/ms-teams stable main" | sudo tee /etc/apt/sources.list.d/teams.list && sudo apt-get update && sudo apt-get install -y teams-insiders',
+        linuxCommand: 'echo "⚠ Microsoft has retired the official Teams for Linux desktop app. Please use the Teams PWA in your browser (Edge/Chrome recommended)."',
       },
     ],
   },

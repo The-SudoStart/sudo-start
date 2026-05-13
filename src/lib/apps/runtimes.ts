@@ -118,8 +118,8 @@ export const runtimeApps: Package[] = [
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
-    linuxCommandTemplate: 'sudo apt-get install -y openjdk-${VERSION_MAJOR}-jdk',
-    macosCommandTemplate: 'brew install openjdk@${VERSION_MAJOR}',
+    linuxCommandTemplate: 'sudo apt-get install -y gcc-${VERSION_MAJOR} g++-${VERSION_MAJOR}',
+    macosCommandTemplate: 'brew install gcc@${VERSION_MAJOR}',
     versions: [
       {
         id: 'stable',
