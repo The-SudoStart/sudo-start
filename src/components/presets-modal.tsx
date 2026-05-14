@@ -4,7 +4,7 @@ import { useStore } from '@/lib/store';
 import { presets } from '@/lib/presets';
 import { appCatalog } from '@/lib/apps';
 import { X, Clock, Layers, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { estimateInstallTime } from '@/lib/script-generator';
 import { Package } from '@/types';
 
@@ -15,6 +15,14 @@ interface PresetsModalProps {
 export function PresetsModal({ onClose }: PresetsModalProps) {
   const { loadPreset, bucket, os } = useStore();
   const [applied, setApplied] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
 
   const handleApply = (presetId: string, packageIds: string[]) => {
     loadPreset(packageIds);

@@ -3,6 +3,7 @@
 import { useStore } from '@/lib/store';
 import { X, Trash2, Package } from 'lucide-react';
 import { VersionNote } from './version-note';
+import { useEffect } from 'react';
 
 interface BucketModalProps {
   onClose: () => void;
@@ -16,11 +17,19 @@ export function BucketModal({ onClose }: BucketModalProps) {
     setCurrentStep('output');
   };
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40"
+        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
         onClick={onClose}
       />
 
