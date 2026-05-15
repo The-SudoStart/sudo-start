@@ -1,11 +1,40 @@
 import { OS, Shell, Package } from '@/types';
 import { requiresFlatpak } from './apps';
+import { sanitizeVersion, isValidVersion } from './security';
+
+/**
+ * SECURITY: Validates and sanitizes version strings to prevent command injection.
+ * Version strings flow directly into shell commands via template interpolation,
+ * so we must ensure they contain only safe characters.
+ */
+function sanitizeVersionString(versionId: string): string {
+  // First check if version is valid
+  if (!isValidVersion(versionId)) {
+    console.warn(`[Security] Invalid version string detected: ${versionId}, using default`);
+    // Return safe default - empty string will be handled by caller
+    return '';
+  }
+  // Apply sanitization as defense in depth
+  return sanitizeVersion(versionId);
+}
 
 /**
  * Resolves the exact install command for a package+version combo.
  */
 function resolveCommand(pkg: Package, os: 'macos' | 'linux'): string {
-  const versionId = pkg.selectedVersion || pkg.defaultVersion;
+  const rawVersionId = pkg.selectedVersion || pkg.defaultVersion;
+  
+  // SECURITY: Sanitize version string before any shell interpolation
+  const versionId = sanitizeVersionString(rawVersionId);
+  
+  // If version is invalid/empty after sanitization, fall back to default
+  if (!versionId) {
+    const defaultEntry = pkg.versions.find((v) => v.id === pkg.defaultVersion) ?? pkg.versions[0];
+    return os === 'macos'
+      ? (defaultEntry?.macCommand ?? '')
+      : (defaultEntry?.linuxCommand ?? '');
+  }
+  
   const template = os === 'macos' ? pkg.macosCommandTemplate : pkg.linuxCommandTemplate;
 
   const exactEntry = pkg.versions.find((v) => v.id === versionId);

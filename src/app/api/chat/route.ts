@@ -1,18 +1,59 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
+import { checkRateLimit, isValidGroqApiKey } from '@/lib/security';
 
 let groq: Groq | null = null;
 
+// Rate limit: 10 requests per minute per IP
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+
 function getGroqClient() {
   if (!groq) {
-    if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY is not defined');
-    groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      throw new Error('GROQ_API_KEY is not defined');
+    }
+    // SECURITY: Validate API key format to catch misconfigurations early
+    if (!isValidGroqApiKey(apiKey)) {
+      console.error('[Security] Invalid GROQ_API_KEY format detected');
+      throw new Error('Invalid GROQ_API_KEY format');
+    }
+    groq = new Groq({ apiKey });
   }
   return groq;
 }
 
+function getClientIP(request: NextRequest): string {
+  // Get IP from various headers, fallback to 'unknown'
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
+}
+
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Rate limiting check
+    const clientIP = getClientIP(request);
+    const rateLimit = checkRateLimit(`chat:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+    
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: 'Rate limit exceeded. Please try again later.',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000)
+        }),
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(Math.ceil(rateLimit.resetTime / 1000)),
+          }
+        }
+      );
+    }
+
     const { messages, bucketContext } = await request.json();
 
     if (!messages || !Array.isArray(messages)) {
@@ -105,12 +146,27 @@ Keep responses short and terminal-like. Be opinionated and helpful. Always be aw
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
+        'X-RateLimit-Limit': String(RATE_LIMIT_MAX),
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+        'X-RateLimit-Reset': String(Math.ceil(rateLimit.resetTime / 1000)),
       },
     });
   } catch (error) {
-    console.error('Chat API error:', error);
+    // SECURITY: Never leak the API key in error messages
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const safeErrorMessage = errorMessage.includes('gsk_')
+      ? 'Internal server error'
+      : errorMessage;
+    
+    // Log with masked key if present
+    if (errorMessage.includes('gsk_')) {
+      console.error('Chat API error: [REDACTED - API key detected in error]');
+    } else {
+      console.error('Chat API error:', error);
+    }
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: safeErrorMessage }),
       { status: 500 }
     );
   }

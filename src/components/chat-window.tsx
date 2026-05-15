@@ -2,6 +2,7 @@
 
 import { useStore } from '@/lib/store';
 import { appCatalog } from '@/lib/apps';
+import { isValidPackageId, isValidVersion } from '@/lib/security';
 import { ChatMessage } from '@/types';
 import { Send, X, Minimize2, Maximize2, Bot } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -48,11 +49,28 @@ export function ChatWindow() {
         const text = parsed.response ?? fullContent;
         const action = parsed.action;
 
-        if (action?.packageIds) {
+        if (action?.packageIds && Array.isArray(action.packageIds)) {
           action.packageIds.forEach((idWithVersion: string) => {
+            // SECURITY: Validate the package ID against allowlist
+            if (typeof idWithVersion !== 'string') return;
+            
             const [id, versionId] = idWithVersion.split(':');
+            
+            // SECURITY: Strict allowlist validation - only accept valid package IDs from catalog
+            if (!isValidPackageId(id)) {
+              console.warn(`[Security] Rejected invalid package ID from AI: ${id}`);
+              return;
+            }
+            
+            // SECURITY: Validate version ID if provided
+            if (versionId && !isValidVersion(versionId)) {
+              console.warn(`[Security] Rejected invalid version ID from AI: ${versionId}`);
+              return;
+            }
+            
             const pkg = appCatalog.find((p) => p.id === id);
             if (!pkg) return;
+            
             if (action.type === 'add') {
               const existing = bucket.find((b) => b.id === pkg.id);
               if (!existing) {
@@ -230,9 +248,9 @@ export function ChatWindow() {
                 </div>
                 <div className="bg-muted p-3 rounded-lg">
                   <div className="flex gap-1 items-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-150" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-300" />
                   </div>
                 </div>
               </div>
