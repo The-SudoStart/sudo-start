@@ -3,7 +3,7 @@
 import { useStore } from '@/lib/store';
 import { X, Trash2, Package } from 'lucide-react';
 import { VersionNote } from './version-note';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface BucketModalProps {
   onClose: () => void;
@@ -11,6 +11,7 @@ interface BucketModalProps {
 
 export function BucketModal({ onClose }: BucketModalProps) {
   const { bucket, removeFromBucket, clearBucket, setCurrentStep, updatePackageNote } = useStore();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateScript = () => {
     onClose();
@@ -21,20 +22,28 @@ export function BucketModal({ onClose }: BucketModalProps) {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
     window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
-        onClick={onClose}
-      />
-
       {/* Modal */}
-      <div className="absolute right-0 top-full mt-2 w-88 max-h-[520px]
+      <div 
+        ref={modalRef}
+        className="absolute right-0 top-full mt-2 w-88 max-h-[520px]
           terminal-card rounded-lg shadow-2xl z-50 border border-border flex flex-col"
         style={{ width: '22rem' }}>
         {/* Header */}

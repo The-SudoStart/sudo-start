@@ -4,7 +4,7 @@ import { useStore } from '@/lib/store';
 import { presets } from '@/lib/presets';
 import { appCatalog } from '@/lib/apps';
 import { X, Clock, Layers, Check } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { estimateInstallTime } from '@/lib/script-generator';
 import { Package } from '@/types';
 
@@ -15,13 +15,26 @@ interface PresetsModalProps {
 export function PresetsModal({ onClose }: PresetsModalProps) {
   const { loadPreset, bucket, os } = useStore();
   const [applied, setApplied] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
     window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   const handleApply = (presetId: string, packageIds: string[]) => {
@@ -34,9 +47,11 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-3xl terminal-card rounded-xl overflow-hidden shadow-2xl"
+        <div 
+          ref={modalRef}
+          className="w-full max-w-3xl terminal-card rounded-xl overflow-hidden shadow-2xl"
           style={{ boxShadow: '0 0 60px rgba(0,255,128,0.15)' }}>
           {/* Header */}
           <div className="flex items-center justify-between p-5 border-b border-border bg-card">
