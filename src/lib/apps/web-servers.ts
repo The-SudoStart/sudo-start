@@ -24,6 +24,8 @@ export const webServerApps: Package[] = [
     category: 'web-server',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://dlcdn.apache.org/httpd/httpd-${VERSION_NO_V}.tar.gz && tar -xzf httpd-${VERSION_NO_V}.tar.gz && cd httpd-${VERSION_NO_V} && ./configure --prefix=/usr/local/apache2 && make && sudo make install && cd .. && rm -rf httpd-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install httpd',
     versions: [
       {
         id: 'stable',

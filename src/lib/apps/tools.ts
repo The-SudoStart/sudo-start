@@ -8,6 +8,8 @@ export const toolApps: Package[] = [
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo add-apt-repository ppa:git-core/ppa -y && sudo apt-get update && sudo apt-get install -y git',
+    macosCommandTemplate: 'brew install git',
     versions: [
       {
         id: 'stable',
@@ -24,6 +26,8 @@ export const toolApps: Package[] = [
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/curl/curl/releases/download/${VERSION}/curl-${VERSION_NO_V}.tar.gz && tar -xzf curl-${VERSION_NO_V}.tar.gz && cd curl-${VERSION_NO_V} && ./configure && make && sudo make install && cd .. && rm -rf curl-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install curl',
     versions: [
       {
         id: 'stable',
@@ -40,6 +44,8 @@ export const toolApps: Package[] = [
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y zsh && chsh -s $(which zsh)',
+    macosCommandTemplate: 'brew install zsh && chsh -s $(which zsh)',
     versions: [
       {
         id: 'stable',
@@ -56,6 +62,8 @@ export const toolApps: Package[] = [
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y zsh && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/${VERSION}/tools/install.sh)" "" --unattended',
+    macosCommandTemplate: 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/${VERSION}/tools/install.sh)" "" --unattended',
     versions: [
       {
         id: 'stable',
