@@ -102,6 +102,8 @@ export const ideApps: Package[] = [
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/vim/vim/archive/refs/tags/${VERSION}.tar.gz -O /tmp/vim.tar.gz && tar -xzf /tmp/vim.tar.gz -C /tmp && cd /tmp/vim-${VERSION_NO_V} && ./configure --with-features=huge --enable-multibyte --enable-rubyinterp --enable-python3interp --with-python3-config-dir=$(python3-config --configdir) --enable-perlinterp --enable-luainterp --enable-gui=gtk3 --enable-cscope --prefix=/usr/local && make && sudo make install && cd .. && rm -rf vim-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install vim',
     versions: [
       {
         id: 'stable',

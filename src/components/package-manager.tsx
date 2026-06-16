@@ -157,39 +157,65 @@ function PackageCard({
   const [selectedVersion, setSelectedVersion] = useState(pkg.defaultVersion);
   const [dynamicVersions, setDynamicVersions] = useState<string[]>([]);
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
+  const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const dynamicVersionTools = [
-    'nodejs', 'python3', 'rust', 'go', 'docker', 'postgresql', 'redis', 'mongodb',
-    'flutter', 'vscode', 'zed', 'terraform', 'ansible', 'github-cli', 'podman',
-    'kubectl', 'minikube', 'jenkins', 'prometheus', 'docker-compose', 'react',
-    'vue', 'angular', 'nextjs', 'django', 'flask', 'express', 'nginx', 'godot',
-    'blender', 'electron', 'tauri', 'react-native',
+    // Runtimes
+    'nodejs', 'python3', 'rust', 'go', 'docker', 'nvm', 'ruby', 'php', 'kotlin', 'java',
+    // Databases
+    'postgresql', 'redis', 'mongodb', 'mysql', 'mariadb',
+    // Mobile
+    'flutter',
+    // IDEs
+    'vscode', 'zed', 'vim',
+    // Tools
+    'terraform', 'ansible', 'github-cli', 'git', 'curl', 'zsh', 'oh-my-zsh', 'jq', 'htop', 'tmux',
+    // Containers
+    'podman', 'kubectl', 'minikube',
+    // DevOps
+    'jenkins', 'prometheus', 'docker-compose',
+    // Frameworks
+    'react', 'vue', 'angular', 'nextjs', 'django', 'flask', 'express',
+    // Web Servers
+    'nginx', 'apache',
+    // Game Dev
+    'godot', 'blender',
+    // Desktop Dev
+    'electron', 'tauri',
+    // Mobile
+    'react-native',
+    // Browsers
+    'zen-browser', 'brave', 'firefox',
+    // Terminals
+    'alacritty', 'kitty', 'hyper',
+    // Data Science
+    'jupyter', 'tensorflow', 'pandas', 'numpy', 'matplotlib',
+    // Cloud CLIs
+    'aws-cli', 'azure-cli',
   ];
   const supportsDynamic = dynamicVersionTools.includes(pkg.id);
 
-  useEffect(() => {
-    if (!supportsDynamic) return;
-    const fetchVersions = async () => {
-      setIsLoadingVersions(true);
-      try {
-        const toolId = pkg.id === 'python3' ? 'python' : pkg.id;
-        const res = await fetch(`/api/versions?tool=${toolId}`);
-        const data = await res.json();
-        if (data.versions?.length > 0) {
-          setDynamicVersions(data.versions);
-          setSelectedVersion(data.versions[0]);
-        } else {
-          setSelectedVersion('stable');
-        }
-      } catch {
-        // silently fall back
-      } finally {
-        setIsLoadingVersions(false);
+  // Lazy load versions only when dropdown is opened
+  const handleVersionDropdownOpen = async () => {
+    if (!supportsDynamic || hasFetchedVersions || dynamicVersions.length > 0) return;
+    
+    setIsLoadingVersions(true);
+    try {
+      const toolId = pkg.id === 'python3' ? 'python' : pkg.id;
+      const res = await fetch(`/api/versions?tool=${toolId}`);
+      const data = await res.json();
+      if (data.versions?.length > 0) {
+        setDynamicVersions(data.versions);
+        // Don't auto-change selected version, let user choose
       }
-    };
-    fetchVersions();
-  }, [pkg.id, supportsDynamic]);
+    } catch {
+      // silently fall back to static versions
+    } finally {
+      setIsLoadingVersions(false);
+      setHasFetchedVersions(true);
+    }
+  };
 
   const isAvailable = os ? pkg.platforms[os] : true;
 
@@ -277,6 +303,8 @@ function PackageCard({
                 title={`Select version for ${pkg.name}`}
                 aria-label={`Select version for ${pkg.name}`}
                 value={selectedVersion}
+                onClick={handleVersionDropdownOpen}
+                onFocus={handleVersionDropdownOpen}
                 onChange={(e) => {
                   const v = e.target.value;
                   setSelectedVersion(v);

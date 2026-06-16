@@ -8,6 +8,8 @@ export const dataScienceApps: Package[] = [
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'pip3 install jupyterlab==${VERSION_NO_V}',
+    macosCommandTemplate: 'pip3 install jupyterlab==${VERSION_NO_V}',
     versions: [
       {
         id: 'stable',
@@ -24,6 +26,8 @@ export const dataScienceApps: Package[] = [
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'pip3 install tensorflow==${VERSION_NO_V}',
+    macosCommandTemplate: 'pip3 install tensorflow==${VERSION_NO_V}',
     versions: [
       {
         id: 'stable',
@@ -40,6 +44,8 @@ export const dataScienceApps: Package[] = [
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'pip3 install pandas==${VERSION_NO_V}',
+    macosCommandTemplate: 'pip3 install pandas==${VERSION_NO_V}',
     versions: [
       {
         id: 'stable',
@@ -56,6 +62,8 @@ export const dataScienceApps: Package[] = [
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'pip3 install numpy==${VERSION_NO_V}',
+    macosCommandTemplate: 'pip3 install numpy==${VERSION_NO_V}',
     versions: [
       {
         id: 'stable',
@@ -72,6 +80,8 @@ export const dataScienceApps: Package[] = [
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'pip3 install matplotlib==${VERSION_NO_V}',
+    macosCommandTemplate: 'pip3 install matplotlib==${VERSION_NO_V}',
     versions: [
       {
         id: 'stable',

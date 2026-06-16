@@ -156,6 +156,53 @@ const VERSION_SOURCES: Record<string, {
 
     // Mobile
     'react-native': githubReleases('facebook/react-native'),
+
+    // Browsers (open source)
+    'zen-browser': githubReleases('zen-browser/desktop'),
+    'brave': githubReleases('brave/brave-browser'),
+    'firefox': githubReleases('mozilla/gecko-dev', (tag) => tag.includes('FIREFOX') && tag.includes('_RELEASE')),
+
+    // Terminals (open source)
+    'alacritty': githubReleases('alacritty/alacritty'),
+    'kitty': githubReleases('kovidgoyal/kitty'),
+    'hyper': githubReleases('vercel/hyper'),
+
+    // Tools & Utilities (open source)
+    'git': githubReleases('git/git', (tag) => tag.startsWith('v') && !tag.includes('rc') && !tag.includes('beta')),
+    'zsh': githubReleases('zsh-users/zsh'),
+    'oh-my-zsh': githubReleases('ohmyzsh/ohmyzsh'),
+    'curl': githubReleases('curl/curl'),
+    'jq': githubReleases('jqlang/jq'),
+    'htop': githubReleases('htop-dev/htop'),
+    'tmux': githubReleases('tmux/tmux'),
+
+    // Databases (open source)
+    'mysql': githubReleases('mysql/mysql-server'),
+    'mariadb': githubReleases('MariaDB/server', (tag) => tag.startsWith('v')),
+
+    // Runtimes (open source)
+    'nvm': githubReleases('nvm-sh/nvm'),
+    'ruby': githubReleases('ruby/ruby', (tag) => tag.startsWith('v') && !tag.includes('preview') && !tag.includes('rc')),
+    'php': githubReleases('php/php-src', (tag) => tag.startsWith('php-')),
+    'kotlin': githubReleases('JetBrains/kotlin'),
+    'java': githubReleases('openjdk/jdk', (tag) => tag.startsWith('jdk-')),
+
+    // Cloud CLIs (open source)
+    'aws-cli': githubReleases('aws/aws-cli', (tag) => tag.startsWith('v') && !tag.includes('dev')),
+    'azure-cli': githubReleases('Azure/azure-cli'),
+
+    // Web Servers (open source)
+    'apache': githubReleases('apache/httpd'),
+
+    // Data Science (open source)
+    'jupyter': githubReleases('jupyterlab/jupyterlab'),
+    'tensorflow': githubReleases('tensorflow/tensorflow', (tag) => tag.startsWith('v')),
+    'pandas': githubReleases('pandas-dev/pandas'),
+    'numpy': githubReleases('numpy/numpy'),
+    'matplotlib': githubReleases('matplotlib/matplotlib'),
+
+    // IDEs (open source)
+    'vim': githubReleases('vim/vim'),
 };
 
 export async function GET(request: NextRequest) {

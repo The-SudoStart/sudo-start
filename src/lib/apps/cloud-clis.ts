@@ -8,6 +8,8 @@ export const cloudCliApps: Package[] = [
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${VERSION_NO_V}.zip" -o "awscliv2.zip" && sudo apt-get install -y unzip && unzip awscliv2.zip && sudo ./aws/install && rm -rf awscliv2.zip aws/',
+    macosCommandTemplate: 'brew install awscli',
     versions: [
       {
         id: 'stable',
@@ -40,6 +42,8 @@ export const cloudCliApps: Package[] = [
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash -s -- --version ${VERSION_NO_V}',
+    macosCommandTemplate: 'brew install azure-cli',
     versions: [
       {
         id: 'stable',

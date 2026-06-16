@@ -26,6 +26,8 @@ export const databaseApps: Package[] = [
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://dev.mysql.com/get/mysql-apt-config_0.8.29-1_all.deb -O /tmp/mysql-apt-config.deb && sudo dpkg -i /tmp/mysql-apt-config.deb && sudo apt-get update && sudo apt-get install -y mysql-server-${VERSION_MAJOR}',
+    macosCommandTemplate: 'brew install mysql@${VERSION_MAJOR}',
     versions: [
       {
         id: 'stable',
@@ -42,6 +44,8 @@ export const databaseApps: Package[] = [
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y mariadb-server-${VERSION_MAJOR}',
+    macosCommandTemplate: 'brew install mariadb@${VERSION_MAJOR}',
     versions: [
       {
         id: 'stable',

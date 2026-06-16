@@ -56,6 +56,8 @@ export const browserApps: Package[] = [
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl -fsSLo /tmp/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && sudo install -D -o root -g root -m 644 /tmp/brave-browser-archive-keyring.gpg /usr/share/keyrings/brave-browser-archive-keyring.gpg && echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list && sudo apt update && sudo apt install brave-browser -y',
+    macosCommandTemplate: 'brew install --cask brave-browser',
     versions: [
       {
         id: 'stable',
@@ -110,6 +112,8 @@ export const browserApps: Package[] = [
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y firefox',
+    macosCommandTemplate: 'brew install --cask firefox',
     versions: [
       {
         id: 'stable',

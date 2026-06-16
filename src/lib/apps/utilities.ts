@@ -8,6 +8,8 @@ export const utilityApps: Package[] = [
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/jqlang/jq/releases/download/${VERSION}/jq-linux-amd64 -O /tmp/jq && sudo install -D -m755 /tmp/jq /usr/local/bin/jq',
+    macosCommandTemplate: 'brew install jq',
     versions: [
       {
         id: 'stable',
@@ -40,6 +42,8 @@ export const utilityApps: Package[] = [
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/htop-dev/htop/releases/download/${VERSION}/htop-${VERSION_NO_V}.tar.gz && tar -xzf htop-${VERSION_NO_V}.tar.gz && cd htop-${VERSION_NO_V} && ./configure && make && sudo make install && cd .. && rm -rf htop-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install htop',
     versions: [
       {
         id: 'stable',
@@ -56,6 +60,8 @@ export const utilityApps: Package[] = [
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/tmux/tmux/releases/download/${VERSION}/tmux-${VERSION_NO_V}.tar.gz && tar -xzf tmux-${VERSION_NO_V}.tar.gz && cd tmux-${VERSION_NO_V} && ./configure && make && sudo make install && cd .. && rm -rf tmux-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install tmux',
     versions: [
       {
         id: 'stable',

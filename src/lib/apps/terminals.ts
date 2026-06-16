@@ -40,6 +40,8 @@ export const terminalApps: Package[] = [
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/alacritty/alacritty/releases/download/${VERSION}/Alacritty-${VERSION_NO_V}.tar.gz && tar -xzf Alacritty-${VERSION_NO_V}.tar.gz && sudo install -D -m755 Alacritty-${VERSION_NO_V}/alacritty /usr/local/bin/alacritty && rm -rf Alacritty-${VERSION_NO_V}*',
+    macosCommandTemplate: 'brew install --cask alacritty',
     versions: [
       {
         id: 'stable',
@@ -56,6 +58,8 @@ export const terminalApps: Package[] = [
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n && ln -sf ~/.local/kitty.app/bin/kitty ~/.local/bin/',
+    macosCommandTemplate: 'brew install --cask kitty',
     versions: [
       {
         id: 'stable',
@@ -72,6 +76,8 @@ export const terminalApps: Package[] = [
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'wget https://github.com/vercel/hyper/releases/download/${VERSION}/hyper_${VERSION_NO_V}_amd64.deb -O hyper.deb && sudo apt install ./hyper.deb -y && rm hyper.deb',
+    macosCommandTemplate: 'brew install --cask hyper',
     versions: [
       {
         id: 'stable',

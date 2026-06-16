@@ -8,6 +8,8 @@ export const runtimeApps: Package[] = [
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y ruby${VERSION_MAJOR}.${VERSION_MINOR}',
+    macosCommandTemplate: 'brew install ruby@${VERSION_MAJOR}.${VERSION_MINOR}',
     versions: [
       {
         id: 'stable',
@@ -24,6 +26,8 @@ export const runtimeApps: Package[] = [
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'sudo apt-get install -y php${VERSION_MAJOR}.${VERSION_MINOR}-cli php${VERSION_MAJOR}.${VERSION_MINOR}-mbstring php${VERSION_MAJOR}.${VERSION_MINOR}-xml php${VERSION_MAJOR}.${VERSION_MINOR}-curl php${VERSION_MAJOR}.${VERSION_MINOR}-zip',
+    macosCommandTemplate: 'brew install php@${VERSION_MAJOR}.${VERSION_MINOR}',
     versions: [
       {
         id: 'stable',
@@ -40,6 +44,8 @@ export const runtimeApps: Package[] = [
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl -s "https://get.sdkman.io" | bash && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install kotlin ${VERSION_NO_V}',
+    macosCommandTemplate: 'brew install kotlin',
     versions: [
       {
         id: 'stable',
@@ -56,6 +62,8 @@ export const runtimeApps: Package[] = [
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
+    linuxCommandTemplate: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${VERSION}/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh" && nvm install --lts',
+    macosCommandTemplate: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${VERSION}/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh" && nvm install --lts',
     versions: [
       {
         id: 'stable',
