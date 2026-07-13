@@ -8,6 +8,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Navbar } from './navbar';
 import { DependencyPanel } from './dependency-panel';
 import { VersionNote } from './version-note';
+import { CommandPreview } from './command-preview';
 import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
 
 const categoryIcons: Record<string, string> = {
@@ -275,6 +276,16 @@ function PackageCard({
               {categoryIcons[pkg.category] || '📁'} {pkg.category.replace('-', ' ')}
             </span>
           </div>
+
+          {/* Command Preview button — always shown when OS is selected */}
+          {os && isAvailable && (
+            <CommandPreview
+              command={getPreviewCommand()}
+              packageName={pkg.name}
+              os={os}
+              version={selectedVersion}
+            />
+          )}
 
           {/* Version note button — only shown when package is in bucket */}
           {isInBucket && (
