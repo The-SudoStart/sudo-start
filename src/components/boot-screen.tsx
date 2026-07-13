@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/lib/store';
-import { OS, Shell } from '@/types';
+import { OS } from '@/types';
 import { Terminal } from 'lucide-react';
 import { useState } from 'react';
 

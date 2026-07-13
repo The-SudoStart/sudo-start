@@ -3,15 +3,6 @@ import { requiresFlatpak } from './apps';
 import { sanitizeVersion, isValidVersion } from './security';
 
 /**
- * Generates a progress bar string for bash output
- */
-function generateProgressBar(current: number, total: number, width: number = 30): string {
-  const filled = Math.round((current / total) * width);
-  const empty = width - filled;
-  return '█'.repeat(filled) + '░'.repeat(empty);
-}
-
-/**
  * SECURITY: Validates and sanitizes version strings to prevent command injection.
  * Version strings flow directly into shell commands via template interpolation,
  * so we must ensure they contain only safe characters.

@@ -40,8 +40,8 @@ export function PackageManager() {
       : availableApps.filter((p) => p.category === selectedCategory);
   }, [selectedCategory, availableApps]);
 
-  const isInBucket = (pkg: Package) => bucket.some((p) => p.id === pkg.id);
-  const getBucketPkg = (pkg: Package) => bucket.find((p) => p.id === pkg.id);
+  const isInBucket = useCallback((pkg: Package) => bucket.some((p) => p.id === pkg.id), [bucket]);
+  const getBucketPkg = useCallback((pkg: Package) => bucket.find((p) => p.id === pkg.id), [bucket]);
 
   const handleAddToBucket = useCallback((pkg: Package, versionId: string) => {
     if (isInBucket(pkg)) {

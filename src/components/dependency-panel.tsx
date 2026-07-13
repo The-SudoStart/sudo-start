@@ -15,7 +15,7 @@ interface DependencyPanelProps {
 export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
   const { addToBucket } = useStore();
   const [isExpanded, setIsExpanded] = useState(false);
-  const bucketIds = new Set(bucket.map((p) => p.id));
+  const bucketIds = useMemo(() => new Set(bucket.map((p) => p.id)), [bucket]);
 
   const warnings = useMemo(() => {
     return dependencyWarnings.filter(
@@ -44,8 +44,6 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
   }, [bucket, bucketIds, os]);
 
   if (warnings.length === 0 && suggestions.length === 0) return null;
-
-  const totalItems = warnings.length + suggestions.length;
 
   return (
     <div className="rounded-lg border border-border bg-card/50 overflow-hidden">

@@ -10,7 +10,7 @@ import {
 } from '@/lib/script-generator';
 import {
   Download, Copy, Check, ChevronLeft, Link2, Terminal,
-  RefreshCw, Clock, HardDrive, Package, FileText, StickyNote,
+  RefreshCw, Clock, HardDrive, FileText, StickyNote,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -413,7 +413,7 @@ export function ScriptOutput() {
                   ))}
                   <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20 group">
                     <code className="flex-1 text-xs font-mono text-primary break-all">
-                      curl -fsSL "{curlUrl}" | bash -s -- --verbose
+                       curl -fsSL &quot;{curlUrl}&quot; | bash -s -- --verbose
                     </code>
                     <span className="text-[10px] text-muted-foreground shrink-0">with logs</span>
                     <button type="button" onClick={async () => {

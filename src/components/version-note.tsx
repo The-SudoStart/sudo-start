@@ -29,7 +29,7 @@ export function VersionNote({ pkgId, pkgName, version, note, onSave, variant = '
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(draft.length, draft.length);
     }
-  }, [isEditing]);
+  }, [isEditing, draft.length]);
 
   const handleSave = useCallback(() => {
     onSave(pkgId, draft.trim());

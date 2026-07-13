@@ -6,7 +6,7 @@ import { Package } from '@/types';
 import { Search, X, Plus, Check } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
-import { NoSearchResultsState } from './empty-state';
+
 
 const categoryIcons: Record<string, string> = {
   ide: '📝',
@@ -76,7 +76,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
     return availableApps.filter((p) => popular.includes(p.id)).slice(0, 6);
   }, [query, availableApps]);
 
-  const isInBucket = (pkg: Package) => bucket.some((p) => p.id === pkg.id);
+  const isInBucket = useCallback((pkg: Package) => bucket.some((p) => p.id === pkg.id), [bucket]);
 
   const handleToggle = useCallback((pkg: Package) => {
     if (isInBucket(pkg)) {
