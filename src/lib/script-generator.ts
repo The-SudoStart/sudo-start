@@ -3,6 +3,15 @@ import { requiresFlatpak } from './apps';
 import { sanitizeVersion, isValidVersion } from './security';
 
 /**
+ * Generates a progress bar string for bash output
+ */
+function generateProgressBar(current: number, total: number, width: number = 30): string {
+  const filled = Math.round((current / total) * width);
+  const empty = width - filled;
+  return '█'.repeat(filled) + '░'.repeat(empty);
+}
+
+/**
  * SECURITY: Validates and sanitizes version strings to prevent command injection.
  * Version strings flow directly into shell commands via template interpolation,
  * so we must ensure they contain only safe characters.
@@ -104,12 +113,60 @@ export function generateScript(
   lines.push('GREEN="\\033[0;32m"');
   lines.push('YELLOW="\\033[1;33m"');
   lines.push('CYAN="\\033[0;36m"');
+  lines.push('BLUE="\\033[0;34m"');
   lines.push('RESET="\\033[0m"');
+  lines.push('BOLD="\\033[1m"');
   lines.push('');
   lines.push('log()  { echo -e "${CYAN}[SudoStart]${RESET} $*"; }');
   lines.push('ok()   { echo -e "${GREEN}  ✓${RESET} $*"; }');
   lines.push('warn() { echo -e "${YELLOW}  ⚠${RESET} $*"; }');
   lines.push('err()  { echo -e "${RED}  ✗${RESET} $*" >&2; }');
+  lines.push('');
+
+  // Progress bar functions
+  lines.push('# ── Progress bar functions ───────────────────────────');
+  lines.push('PROGRESS_WIDTH=30');
+  lines.push('draw_progress_bar() {');
+  lines.push('  local current=$1');
+  lines.push('  local total=$2');
+  lines.push('  local name="$3"');
+  lines.push('  local filled=$((current * PROGRESS_WIDTH / total))');
+  lines.push('  local empty=$((PROGRESS_WIDTH - filled))');
+  lines.push('  local bar=""');
+  lines.push('  for ((i=0; i<filled; i++)); do bar+="█"; done');
+  lines.push('  for ((i=0; i<empty; i++)); do bar+="░"; done');
+  lines.push('  printf "\\r${CYAN}[%s]${RESET} %s ${BOLD}%s${RESET} (%d/%d)" "$bar" "Installing:" "$name" "$current" "$total"');
+  lines.push('}');
+  lines.push('');
+  lines.push('clear_line() {');
+  lines.push('  printf "\\r%-80s\\r" ""');
+  lines.push('}');
+  lines.push('');
+
+  // Check for verbose mode
+  lines.push('# ── Check for verbose mode ────────────────────────────');
+  lines.push('VERBOSE=false');
+  lines.push('if [[ "${1:-}" == "--verbose" || "${1:-}" == "-v" ]]; then');
+  lines.push('  VERBOSE=true');
+  lines.push('  log "Verbose mode enabled"');
+  lines.push('fi');
+  lines.push('');
+
+  // Spinner function for visual feedback
+  lines.push('# ── Spinner for visual feedback ────────────────────────');
+  lines.push('spinner() {');
+  lines.push('  local pid=$1');
+  lines.push('  local delay=0.1');
+  lines.push('  local spinstr="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"');
+  lines.push('  while ps -p $pid > /dev/null 2>&1; do');
+  lines.push('    local temp=${spinstr#?}');
+  lines.push('    printf " ${CYAN}%c${RESET}" "$spinstr"');
+  lines.push('    local spinstr=$temp${spinstr%"$temp"}');
+  lines.push('    sleep $delay');
+  lines.push('    printf "\\b\\b "');
+  lines.push('  done');
+  lines.push('  printf "\\b\\b"');
+  lines.push('}');
   lines.push('');
 
   lines.push('echo ""');
@@ -125,18 +182,30 @@ export function generateScript(
     lines.push('# ── Bootstrap: Homebrew ───────────────────────────────');
     lines.push('if ! command -v brew &>/dev/null; then');
     lines.push('  log "Installing Homebrew..."');
-    lines.push('  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"');
+    lines.push('  if [ "$VERBOSE" = true ]; then');
+    lines.push('    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"');
+    lines.push('  else');
+    lines.push('    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 2>&1 | tail -5');
+    lines.push('  fi');
     lines.push('  ok "Homebrew installed"');
     lines.push('else');
     lines.push('  log "Homebrew found — updating..."');
-    lines.push('  brew update --quiet');
+    lines.push('  if [ "$VERBOSE" = true ]; then');
+    lines.push('    brew update');
+    lines.push('  else');
+    lines.push('    brew update --quiet 2>&1 | tail -3');
+    lines.push('  fi');
     lines.push('  ok "Homebrew up to date"');
     lines.push('fi');
     lines.push('');
   } else {
     lines.push('# ── Bootstrap: apt ────────────────────────────────────');
     lines.push('log "Updating package lists..."');
-    lines.push('sudo apt-get update -qq');
+    lines.push('if [ "$VERBOSE" = true ]; then');
+    lines.push('  sudo apt-get update');
+    lines.push('else');
+    lines.push('  sudo apt-get update -qq 2>&1 | tail -5');
+    lines.push('fi');
     lines.push('ok "Package lists updated"');
     lines.push('');
 
@@ -144,7 +213,11 @@ export function generateScript(
       lines.push('# ── Bootstrap: Flatpak ────────────────────────────────');
       lines.push('if ! command -v flatpak &>/dev/null; then');
       lines.push('  log "Installing Flatpak..."');
-      lines.push('  sudo apt-get install -y flatpak');
+      lines.push('  if [ "$VERBOSE" = true ]; then');
+      lines.push('    sudo apt-get install -y flatpak');
+      lines.push('  else');
+      lines.push('    sudo apt-get install -y flatpak -qq 2>&1 | tail -3');
+      lines.push('  fi');
       lines.push('  sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo');
       lines.push('  warn "A system restart may be required for Flatpak apps to appear"');
       lines.push('else');
@@ -155,7 +228,12 @@ export function generateScript(
   }
 
   if (packages.length > 0) {
-    lines.push('log "Starting package installation..."');
+    lines.push('# ── Package Installation ─────────────────────────────');
+    lines.push(`TOTAL_PACKAGES=${packages.length}`);
+    lines.push('CURRENT_PACKAGE=0');
+    lines.push('');
+    lines.push('echo ""');
+    lines.push(`echo -e "\${BOLD}Installing ${packages.length} package(s)...\${RESET}"`);
     lines.push('echo ""');
     lines.push('');
 
@@ -164,14 +242,15 @@ export function generateScript(
       const isGeneric = ['stable', 'latest'].includes(versionId);
       const versionLabel = isGeneric ? '' : ` @ ${versionId}`;
 
-      lines.push(`# ── [${idx + 1}/${packages.length}] ${pkg.name}${versionLabel} ${'─'.repeat(Math.max(0, 44 - pkg.name.length - versionLabel.length))}`);
+      lines.push(`# [${idx + 1}/${packages.length}] ${pkg.name}${versionLabel}`);
+      lines.push(`CURRENT_PACKAGE=$((CURRENT_PACKAGE + 1))`);
+      lines.push(`draw_progress_bar $CURRENT_PACKAGE ${packages.length} "${pkg.name}"`);
+      lines.push('');
 
       // Emit pin note as inline comment if present
       if (pkg.versionNote?.trim()) {
         lines.push(`# 📌 Pin note: ${pkg.versionNote.trim()}`);
       }
-
-      lines.push(`log "Installing ${pkg.name}${versionLabel}..."`);
 
       const installCmd = resolveCommand(pkg, os);
 
@@ -181,21 +260,42 @@ export function generateScript(
         const checkCmd = getCheckCommand(pkg.id);
         if (checkCmd) {
           lines.push(`if command -v ${checkCmd} &>/dev/null; then`);
-          lines.push(`  ok "${pkg.name} already installed — skipping"`);
+          lines.push(`  : # Already installed`);
           lines.push('else');
+          // Run install with suppressed output unless verbose
+          lines.push('  if [ "$VERBOSE" = true ]; then');
+          installCmd.split('\n').forEach((line) => {
+            lines.push(`    ${line}`);
+          });
+          lines.push('  else');
+          lines.push('    # Suppress output and show only errors');
+          installCmd.split('\n').forEach((line) => {
+            if (line.trim()) {
+              lines.push(`    ${line} > /dev/null 2>&1 || true`);
+            }
+          });
+          lines.push('  fi');
+          lines.push('fi');
+        } else {
+          lines.push('if [ "$VERBOSE" = true ]; then');
           installCmd.split('\n').forEach((line) => {
             lines.push(`  ${line}`);
           });
-          lines.push(`  ok "${pkg.name}${versionLabel} installed"`);
+          lines.push('else');
+          installCmd.split('\n').forEach((line) => {
+            if (line.trim()) {
+              lines.push(`  ${line} > /dev/null 2>&1 || true`);
+            }
+          });
           lines.push('fi');
-        } else {
-          lines.push(installCmd);
-          lines.push(`ok "${pkg.name}${versionLabel} done"`);
         }
       }
 
       lines.push('');
     });
+
+    lines.push('clear_line');
+    lines.push('');
   }
 
   lines.push('echo ""');
@@ -206,6 +306,10 @@ export function generateScript(
   lines.push(`echo "  OS       : ${os.toUpperCase()}"`);
   lines.push(`echo "  Shell    : ${shell}"`);
   lines.push(`echo "  Packages : ${packages.length} installed"`);
+  lines.push('echo ""');
+  lines.push('if [ "$VERBOSE" = false ]; then');
+  lines.push('  echo -e "${CYAN}Tip:${RESET} Run with ${BOLD}--verbose${RESET} flag to see detailed output"');
+  lines.push('fi');
   lines.push('echo ""');
 
   return lines.join('\n');

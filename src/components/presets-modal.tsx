@@ -7,6 +7,7 @@ import { X, Clock, Layers, Check } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { estimateInstallTime } from '@/lib/script-generator';
 import { Package } from '@/types';
+import { useToast } from '@/hooks/use-toast';
 
 interface PresetsModalProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface PresetsModalProps {
 
 export function PresetsModal({ onClose }: PresetsModalProps) {
   const { loadPreset, bucket, os } = useStore();
+  const { toast } = useToast();
   const [applied, setApplied] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -37,9 +39,10 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
     };
   }, [onClose]);
 
-  const handleApply = (presetId: string, packageIds: string[]) => {
+  const handleApply = (presetId: string, packageIds: string[], presetName: string) => {
     loadPreset(packageIds);
     setApplied(presetId);
+    toast.success(`⚡ ${presetName} preset applied`);
     setTimeout(() => {
       onClose();
     }, 800);
@@ -87,7 +90,7 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
                   <button
                     type="button"
                     key={preset.id}
-                    onClick={() => handleApply(preset.id, preset.packageIds)}
+                    onClick={() => handleApply(preset.id, preset.packageIds, preset.name)}
                     disabled={isApplied}
                     className={`text-left p-4 rounded-lg border-2 transition-all group ${
                       isApplied

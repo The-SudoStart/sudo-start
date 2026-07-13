@@ -195,17 +195,17 @@
   }
 
   [data-theme="dark"] .terminal-text {
-    text-shadow: 0 0 5px var(--terminal-green);
+    text-shadow: 0 0 3px color-mix(in oklch, var(--terminal-green) 50%, transparent);
   }
 
   .terminal-glow {
-    box-shadow: 0 0 10px color-mix(in oklch, var(--primary) 40%, transparent),
-                0 0 20px color-mix(in oklch, var(--primary) 20%, transparent);
+    box-shadow: 0 0 8px color-mix(in oklch, var(--primary) 25%, transparent),
+                0 0 16px color-mix(in oklch, var(--primary) 12%, transparent);
   }
 
   [data-theme="light"] .terminal-glow {
     box-shadow: 0 0 0 1px var(--primary),
-                0 2px 8px color-mix(in oklch, var(--primary) 25%, transparent);
+                0 2px 6px color-mix(in oklch, var(--primary) 15%, transparent);
   }
 
   .cursor-blink {
@@ -239,14 +239,14 @@
   .terminal-card {
     background: var(--terminal-bg);
     border: 1px solid var(--border);
-    box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 12%, transparent),
-                inset 0 0 20px color-mix(in oklch, var(--primary) 4%, transparent);
+    box-shadow: 0 0 12px color-mix(in oklch, var(--primary) 8%, transparent),
+                inset 0 0 12px color-mix(in oklch, var(--primary) 3%, transparent);
   }
 
   [data-theme="light"] .terminal-card {
     background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 4px color-mix(in oklch, var(--primary) 10%, transparent);
+    box-shadow: 0 1px 3px color-mix(in oklch, var(--primary) 8%, transparent);
   }
 
   /* Theme transition for all interactive elements */
@@ -291,6 +291,104 @@
 
 .markdown-content p:last-child {
   margin-bottom: 0;
+}
+
+/* ── Focus Visible Styles ─────────────────────────────── */
+@layer base {
+  /* Default focus-visible styles for all interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    ring: 2px;
+    ring-color: var(--ring);
+  }
+
+  /* Remove default focus styles and use focus-visible instead */
+  *:focus {
+    outline: none;
+  }
+
+  /* Ensure focus is visible on keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* High contrast focus indicators */
+.focus-indicator {
+  position: relative;
+}
+
+.focus-indicator::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: border-color 0.2s ease;
+}
+
+.focus-indicator:focus-visible::after {
+  border-color: var(--ring);
+}
+
+/* Keyboard-only focus styles */
+.keyboard-focus:focus {
+  outline: none;
+}
+
+.keyboard-focus:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring) 20%, transparent);
+}
+
+/* Focus trap indicator for modals */
+.focus-trap-active {
+  position: relative;
+}
+
+.focus-trap-active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--ring);
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.focus-trap-active:focus-within::before {
+  opacity: 1;
 }
 
 /* ── Version Note Styles ─────────────────────────────── */
@@ -343,4 +441,46 @@
 
 .delay-300 {
   animation-delay: 300ms;
+}
+
+/* ── Empty State Animations ─────────────────────────────── */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes cursor-blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-cursor-blink {
+  animation: cursor-blink 1.5s ease-in-out infinite;
 }

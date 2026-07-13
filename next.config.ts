@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {
+    root: "/home/boris/personal_test_projecrs/sudo-start",
+  },
 };
 
 export default nextConfig;

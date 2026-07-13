@@ -8,9 +8,12 @@ import { Send, X, Minimize2, Maximize2, Bot } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useToast } from '@/hooks/use-toast';
+import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 
 export function ChatWindow() {
   const { isChatOpen, toggleChat, addToBucket, removeFromBucket, bucket, updatePackageVersion } = useStore();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -20,10 +23,28 @@ export function ChatWindow() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const hasShownMinimizeToast = useRef(false);
+
+  // Focus trap when chat is open and not minimized
+  useFocusTrap(chatWindowRef, isChatOpen && !isMinimized);
+
+  const handleMinimize = () => {
+    setIsMinimized(true);
+    if (!hasShownMinimizeToast.current) {
+      toast.info('💬 Chat minimized');
+      hasShownMinimizeToast.current = true;
+    }
+  };
+
+  const handleMaximize = () => {
+    setIsMinimized(false);
+    hasShownMinimizeToast.current = false;
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -172,13 +193,34 @@ export function ChatWindow() {
     return raw;
   };
 
+  // Chat keyboard shortcuts
+  const chatShortcuts = [
+    {
+      key: 'Escape',
+      description: 'Close chat',
+      action: () => {
+        // Only close if textarea is not focused or input is empty
+        if (document.activeElement !== textareaRef.current || !input.trim()) {
+          toggleChat();
+        }
+      },
+      preventDefault: false,
+    },
+  ];
+
+  useKeyboardShortcuts(chatShortcuts, isChatOpen && !isMinimized);
+
   if (!isChatOpen) return null;
 
   return (
     <div
+      ref={chatWindowRef}
       className={`fixed bottom-6 right-6 w-96 terminal-card rounded-lg overflow-hidden shadow-2xl z-50 transition-all flex flex-col ${
         isMinimized ? 'h-14' : 'h-150'
       }`}
+      role="dialog"
+      aria-label="AI Chat"
+      aria-modal={!isMinimized}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
@@ -192,10 +234,21 @@ export function ChatWindow() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setIsMinimized(!isMinimized)} className="p-1 hover:bg-accent rounded transition-colors">
+          <button
+            onClick={isMinimized ? handleMaximize : handleMinimize}
+            className="p-1 hover:bg-accent rounded transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}
+            title={isMinimized ? "Maximize chat" : "Minimize chat"}
+          >
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
           </button>
-          <button type="button" onClick={toggleChat} title="Close chat" aria-label="Close chat" className="p-1 hover:bg-accent rounded transition-colors">
+          <button
+            type="button"
+            onClick={toggleChat}
+            title="Close chat (Esc)"
+            aria-label="Close chat"
+            className="p-1 hover:bg-accent rounded transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -277,11 +330,14 @@ export function ChatWindow() {
                   placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none overflow-y-auto font-mono text-sm"
                 disabled={isLoading}
               />
-              <button type="submit" title="Send message" aria-label="Send message"
+              <button
+                type="submit"
+                title="Send message"
+                aria-label="Send message"
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90
-                  disabled:opacity-50 disabled:cursor-not-allowed transition-all h-[38px] flex items-center justify-center"
+                  disabled:opacity-50 disabled:cursor-not-allowed transition-all h-[38px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 <Send className="w-4 h-4" />
               </button>
