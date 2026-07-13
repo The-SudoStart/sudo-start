@@ -349,7 +349,7 @@ export function NoScriptGeneratedState({
             </div>
             <span className="text-sm">
               {hasPackages
-                ? `${hasPackages} tool${hasPackages === 1 ? '' : 's'} in bucket`
+                ? 'Tools added to bucket'
                 : 'Add at least one tool to bucket'}
             </span>
           </div>
