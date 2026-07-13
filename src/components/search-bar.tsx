@@ -4,7 +4,9 @@ import { useStore } from '@/lib/store';
 import { appCatalog, getAppsForOS } from '@/lib/apps';
 import { Package } from '@/types';
 import { Search, X, Plus, Check } from 'lucide-react';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+
 
 const categoryIcons: Record<string, string> = {
   ide: '📝',
@@ -36,8 +38,10 @@ interface SearchBarProps {
 export function SearchBar({ onClose }: SearchBarProps) {
   const { os, bucket, addToBucket, removeFromBucket } = useStore();
   const [query, setQuery] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const availableApps = useMemo(() => {
     if (!os) return appCatalog;
@@ -48,23 +52,8 @@ export function SearchBar({ onClose }: SearchBarProps) {
     inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [onClose]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+  // Focus trap for modal
+  useFocusTrap(containerRef, true);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -87,18 +76,81 @@ export function SearchBar({ onClose }: SearchBarProps) {
     return availableApps.filter((p) => popular.includes(p.id)).slice(0, 6);
   }, [query, availableApps]);
 
-  const isInBucket = (pkg: Package) => bucket.some((p) => p.id === pkg.id);
+  const isInBucket = useCallback((pkg: Package) => bucket.some((p) => p.id === pkg.id), [bucket]);
 
-  const handleToggle = (pkg: Package) => {
+  const handleToggle = useCallback((pkg: Package) => {
     if (isInBucket(pkg)) {
       removeFromBucket(pkg.id);
     } else {
       addToBucket({ ...pkg, selectedVersion: pkg.defaultVersion });
     }
-  };
+  }, [isInBucket, removeFromBucket, addToBucket]);
 
   const displayItems = query.trim() ? results : suggestions;
   const showingSuggestions = !query.trim();
+
+  // Navigate results with arrow keys
+  const navigateResults = useCallback((direction: 'up' | 'down') => {
+    if (displayItems.length === 0) return;
+    
+    setFocusedIndex((prev) => {
+      let next: number;
+      if (direction === 'down') {
+        next = prev < displayItems.length - 1 ? prev + 1 : 0;
+      } else {
+        next = prev > 0 ? prev - 1 : displayItems.length - 1;
+      }
+      // Focus the item
+      setTimeout(() => {
+        itemRefs.current[next]?.focus();
+      }, 0);
+      return next;
+    });
+  }, [displayItems.length]);
+
+  // Select focused item
+  const selectFocusedItem = useCallback(() => {
+    if (focusedIndex >= 0 && focusedIndex < displayItems.length) {
+      handleToggle(displayItems[focusedIndex]);
+    }
+  }, [focusedIndex, displayItems, handleToggle]);
+
+  // Keyboard shortcuts for search
+  const searchShortcuts = [
+    {
+      key: 'ArrowDown',
+      description: 'Navigate down in results',
+      action: () => navigateResults('down'),
+    },
+    {
+      key: 'ArrowUp',
+      description: 'Navigate up in results',
+      action: () => navigateResults('up'),
+    },
+    {
+      key: 'Enter',
+      description: 'Select focused item',
+      action: selectFocusedItem,
+    },
+    {
+      key: 'Escape',
+      description: 'Close search',
+      action: onClose,
+      preventDefault: false,
+    },
+  ];
+
+  useKeyboardShortcuts(searchShortcuts, true);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 px-4"
@@ -123,8 +175,8 @@ export function SearchBar({ onClose }: SearchBarProps) {
             <kbd className="hidden sm:inline-flex py-1 text-xs rounded border border-border text-muted-foreground font-mono">ESC</kbd>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-accent rounded transition-colors"
-              title="Close search"
+              className="p-1 hover:bg-accent rounded transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              title="Close search (Esc)"
               aria-label="Close search"
             >
               <X className="w-4 h-4" />
@@ -139,14 +191,20 @@ export function SearchBar({ onClose }: SearchBarProps) {
               <div className="px-5 py-2 text-xs text-muted-foreground font-mono border-b border-border/50">
                 {showingSuggestions ? '⚡ Popular packages' : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
               </div>
-              <ul>
-                {displayItems.map((pkg) => {
+              <ul role="listbox" aria-label="Search results">
+                {displayItems.map((pkg, index) => {
                   const inBucket = isInBucket(pkg);
+                  const isFocused = focusedIndex === index;
                   return (
-                    <li key={pkg.id}>
+                    <li key={pkg.id} role="option" aria-selected={inBucket}>
                       <button
+                        ref={(el) => { itemRefs.current[index] = el; }}
                         onClick={() => handleToggle(pkg)}
-                        className="w-full flex items-center gap-4 px-5 py-3 hover:bg-accent/50 transition-colors text-left group"
+                        onFocus={() => setFocusedIndex(index)}
+                        className={`w-full flex items-center gap-4 px-5 py-3 transition-colors text-left group focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
+                          isFocused ? 'bg-accent/50 ring-2 ring-ring' : 'hover:bg-accent/50'
+                        }`}
+                        aria-label={`${pkg.name} - ${inBucket ? 'In bucket, press Enter to remove' : 'Press Enter to add to bucket'}`}
                       >
                         <span className="text-xl w-8 text-center shrink-0">
                           {categoryIcons[pkg.category] || '📁'}

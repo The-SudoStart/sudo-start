@@ -10,16 +10,20 @@ import {
 } from '@/lib/script-generator';
 import {
   Download, Copy, Check, ChevronLeft, Link2, Terminal,
-  RefreshCw, Clock, HardDrive, Package, FileText, StickyNote,
+  RefreshCw, Clock, HardDrive, FileText, StickyNote,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useToast } from '@/hooks/use-toast';
+import { ScriptExplanation } from './script-explanation';
+import { copyToClipboard } from '@/lib/utils';
 
 type Tab = 'script' | 'brewfile' | 'curl';
 
 export function ScriptOutput() {
   const { os, shell, bucket, setCurrentStep, clearBucket } = useStore();
+  const { toast } = useToast();
   const [script, setScript] = useState('');
   const [brewfile, setBrewfile] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('script');
@@ -42,9 +46,14 @@ export function ScriptOutput() {
   const pinnedPackages = bucket.filter((p) => p.versionNote?.trim());
 
   const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(true);
+      toast.success('📋 Script copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      toast.error('❌ Failed to copy to clipboard');
+    }
   };
 
   const handleGenerateCurlUrl = async () => {
@@ -56,12 +65,22 @@ export function ScriptOutput() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ script, os, packages: bucket.map((p) => p.name) }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast.error('⏳ Rate limit reached, please wait');
+          throw new Error('Rate limit');
+        }
+        throw new Error();
+      }
       const { id } = await res.json();
       setCurlUrl(`${window.location.origin}/api/script-share?id=${id}`);
       setActiveTab('curl');
-    } catch {
-      setCurlError('Failed to generate URL. Please try again.');
+      toast.success('🔗 Shareable URL created (expires in 24h)');
+    } catch (error) {
+      if ((error as Error).message !== 'Rate limit') {
+        setCurlError('Failed to generate URL. Please try again.');
+        toast.error('🌐 Connection error, please try again');
+      }
     } finally {
       setCurlLoading(false);
     }
@@ -69,9 +88,14 @@ export function ScriptOutput() {
 
   const handleCopyCurl = async () => {
     if (!curlUrl) return;
-    await navigator.clipboard.writeText(`bash <(curl -fsSL "${curlUrl}")`);
-    setCurlCopied(true);
-    setTimeout(() => setCurlCopied(false), 2000);
+    const success = await copyToClipboard(`bash <(curl -fsSL "${curlUrl}")`);
+    if (success) {
+      setCurlCopied(true);
+      toast.success('📋 Curl command copied to clipboard');
+      setTimeout(() => setCurlCopied(false), 2000);
+    } else {
+      toast.error('❌ Failed to copy to clipboard');
+    }
   };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode; macOnly?: boolean }[] = [
@@ -178,6 +202,16 @@ export function ScriptOutput() {
               )}
             </div>
           )}
+
+          {/* Script Explanation */}
+          <div className="mt-4">
+            <ScriptExplanation
+              script={script}
+              packages={bucket}
+              os={os}
+              shell={shell}
+            />
+          </div>
         </div>
 
         {/* Tabs */}
@@ -293,8 +327,9 @@ export function ScriptOutput() {
 
             {!curlUrl ? (
               <div className="space-y-4">
-                <div className="p-4 rounded-lg bg-muted/50 border border-border font-mono text-sm text-muted-foreground">
-                  $ bash &lt;(curl -fsSL <span className="italic">&quot;https://…/api/script-share?id=xxxxxxxx&quot;</span>)
+                <div className="p-4 rounded-lg bg-muted/50 border border-border font-mono text-sm text-muted-foreground space-y-2">
+                  <div>$ bash &lt;(curl -fsSL <span className="italic">&quot;https://…/api/script-share?id=xxxxxxxx&quot;</span>)</div>
+                  <div className="text-xs text-muted-foreground"># Add --verbose for detailed logs</div>
                 </div>
                 <div className="p-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 text-xs text-yellow-300/80 space-y-1">
                   <p className="font-bold text-yellow-400">⚠️ Security reminder</p>
@@ -338,7 +373,14 @@ export function ScriptOutput() {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all terminal-glow text-sm font-mono">
                     {curlCopied ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy One-liner</>}
                   </button>
-                  <button onClick={() => navigator.clipboard.writeText(curlUrl)}
+                  <button onClick={async () => {
+                    const success = await copyToClipboard(curlUrl || '');
+                    if (success) {
+                      toast.success('📋 URL copied');
+                    } else {
+                      toast.error('❌ Failed to copy');
+                    }
+                  }}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-all text-sm font-mono">
                     <Link2 className="w-4 h-4" /> Copy URL only
                   </button>
@@ -349,19 +391,45 @@ export function ScriptOutput() {
                   {[
                     { label: 'wget', cmd: `bash <(wget -qO- "${curlUrl}")` },
                     { label: 'pipe to bash', cmd: `curl -fsSL "${curlUrl}" | bash` },
-                    { label: 'download only', cmd: `curl -fsSL "${curlUrl}" -o setup.sh` },
+                    { label: 'download only', cmd: `curl -fsSL "${curlUrl}" -o setup.sh && chmod +x setup.sh` },
                   ].map(({ label, cmd }) => (
                     <div key={label} className="flex items-center gap-2 p-3 rounded-lg bg-muted border border-border group">
                       <code className="flex-1 text-xs font-mono text-muted-foreground group-hover:text-foreground transition-colors break-all">
                         {cmd}
                       </code>
-                      <button type="button" onClick={() => navigator.clipboard.writeText(cmd)} title="Copy command"
+                      <button type="button" onClick={async () => {
+                        const success = await copyToClipboard(cmd);
+                        if (success) {
+                          toast.success('📋 Command copied');
+                        } else {
+                          toast.error('❌ Failed to copy');
+                        }
+                      }} title="Copy command"
                         className="shrink-0 p-1.5 rounded hover:bg-accent transition-colors">
                         <Copy className="w-3 h-3" />
                         <span className="sr-only">Copy {label} command</span>
                       </button>
                     </div>
                   ))}
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20 group">
+                    <code className="flex-1 text-xs font-mono text-primary break-all">
+                       curl -fsSL &quot;{curlUrl}&quot; | bash -s -- --verbose
+                    </code>
+                    <span className="text-[10px] text-muted-foreground shrink-0">with logs</span>
+                    <button type="button" onClick={async () => {
+                      const cmd = `curl -fsSL "${curlUrl}" | bash -s -- --verbose`;
+                      const success = await copyToClipboard(cmd);
+                      if (success) {
+                        toast.success('📋 Command copied');
+                      } else {
+                        toast.error('❌ Failed to copy');
+                      }
+                    }} title="Copy verbose command"
+                      className="shrink-0 p-1.5 rounded hover:bg-accent transition-colors">
+                      <Copy className="w-3 h-3" />
+                      <span className="sr-only">Copy verbose command</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -369,14 +437,19 @@ export function ScriptOutput() {
         )}
 
         {/* Footer */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <button onClick={() => { clearBucket(); setCurrentStep('boot'); }}
             className="px-6 py-3 rounded-lg border-2 border-destructive text-destructive hover:bg-destructive/10 transition-all">
             Start Over
           </button>
-          <p className="text-sm text-muted-foreground">
-            💡 <code className="px-2 py-0.5 rounded bg-muted terminal-text">chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh</code>
-          </p>
+          <div className="text-sm text-muted-foreground space-y-1 text-right">
+            <p>
+              💡 <code className="px-2 py-0.5 rounded bg-muted terminal-text">chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh</code>
+            </p>
+            <p className="text-xs">
+              📋 Add <code className="px-1 py-0.5 rounded bg-muted terminal-text">--verbose</code> to see detailed installation logs
+            </p>
+          </div>
         </div>
       </div>
     </div>

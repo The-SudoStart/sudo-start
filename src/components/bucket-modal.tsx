@@ -3,37 +3,150 @@
 import { useStore } from '@/lib/store';
 import { X, Trash2, Package } from 'lucide-react';
 import { VersionNote } from './version-note';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { EmptyBucketState } from './empty-state';
+import { appCatalog } from '@/lib/apps';
+import { PresetsModal } from './presets-modal';
 
 interface BucketModalProps {
   onClose: () => void;
 }
 
 export function BucketModal({ onClose }: BucketModalProps) {
-  const { bucket, removeFromBucket, clearBucket, setCurrentStep, updatePackageNote } = useStore();
+  const { bucket, removeFromBucket, clearBucket, setCurrentStep, updatePackageNote, addDefaultAppsToBucket, addToBucket } = useStore();
+  const { toast } = useToast();
   const modalRef = useRef<HTMLDivElement>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [showPresets, setShowPresets] = useState(false);
 
-  const handleGenerateScript = () => {
+  // Popular packages for quick-add
+  const popularPackages = useMemo(() => {
+    const popularIds = ['git', 'nodejs', 'docker', 'vscode', 'zsh'];
+    return popularIds
+      .map(id => appCatalog.find(p => p.id === id))
+      .filter((p): p is NonNullable<typeof p> => p !== undefined)
+      .slice(0, 3);
+  }, []);
+
+  const handleAddDefaults = useCallback(() => {
+    addDefaultAppsToBucket();
+    toast.success('⚡ Added recommended tools');
+  }, [addDefaultAppsToBucket, toast]);
+
+  const handleBrowseCatalog = useCallback(() => {
     onClose();
-    setCurrentStep('output');
+    setCurrentStep('catalog');
+  }, [onClose, setCurrentStep]);
+
+  const handleOpenPresets = useCallback(() => {
+    setShowPresets(true);
+  }, []);
+
+  // Focus trap for modal
+  useFocusTrap(modalRef, true);
+
+  const handleRemoveFromBucket = (pkgId: string, pkgName: string) => {
+    removeFromBucket(pkgId);
+    toast.success(`🗑️ Removed ${pkgName}`);
   };
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+  const handleClearBucket = () => {
+    clearBucket();
+    toast.info('🧹 Bucket cleared');
+  };
+
+  const handleGenerateScript = () => {
+    if (bucket.length === 0) {
+      toast.info('Add packages to bucket first');
+      return;
+    }
+    onClose();
+    setCurrentStep('output');
+    toast.success('🚀 Script generated');
+  };
+
+  // Navigate bucket items with arrow keys
+  const navigateItems = useCallback((direction: 'up' | 'down') => {
+    if (bucket.length === 0) return;
     
+    setFocusedIndex((prev) => {
+      let next: number;
+      if (direction === 'down') {
+        next = prev < bucket.length - 1 ? prev + 1 : 0;
+      } else {
+        next = prev > 0 ? prev - 1 : bucket.length - 1;
+      }
+      // Focus the item
+      setTimeout(() => {
+        itemRefs.current[next]?.focus();
+      }, 0);
+      return next;
+    });
+  }, [bucket.length]);
+
+  // Remove focused item
+  const removeFocusedItem = useCallback(() => {
+    if (focusedIndex >= 0 && focusedIndex < bucket.length) {
+      const pkg = bucket[focusedIndex];
+      removeFromBucket(pkg.id);
+      toast.success(`🗑️ Removed ${pkg.name}`);
+      // Adjust focus index
+      if (focusedIndex >= bucket.length - 1) {
+        setFocusedIndex(Math.max(0, bucket.length - 2));
+      }
+    }
+  }, [focusedIndex, bucket, removeFromBucket, toast]);
+
+  // Keyboard shortcuts for bucket
+  const bucketShortcuts = [
+    {
+      key: 'ArrowDown',
+      description: 'Navigate down in bucket',
+      action: () => navigateItems('down'),
+    },
+    {
+      key: 'ArrowUp',
+      description: 'Navigate up in bucket',
+      action: () => navigateItems('up'),
+    },
+    {
+      key: 'Delete',
+      description: 'Remove focused item',
+      action: removeFocusedItem,
+    },
+    {
+      key: 'Backspace',
+      description: 'Remove focused item',
+      action: removeFocusedItem,
+    },
+    {
+      key: 'Enter',
+      description: 'Generate script',
+      action: handleGenerateScript,
+    },
+    {
+      key: 'Escape',
+      description: 'Close bucket modal',
+      action: onClose,
+      preventDefault: false,
+    },
+  ];
+
+  useKeyboardShortcuts(bucketShortcuts, true);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         onClose();
       }
     };
 
-    window.addEventListener('keydown', handleKey);
     document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
-      window.removeEventListener('keydown', handleKey);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
@@ -55,9 +168,12 @@ export function BucketModal({ onClose }: BucketModalProps) {
               {bucket.length}
             </span>
           </div>
-          <button type="button" title="Close"
+          <button
+            type="button"
+            title="Close (Esc)"
             onClick={onClose}
-            className="p-1 hover:bg-accent rounded transition-colors"
+            className="p-1 hover:bg-accent rounded transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            aria-label="Close bucket modal"
           >
             <X className="w-4 h-4" />
           </button>
@@ -66,20 +182,52 @@ export function BucketModal({ onClose }: BucketModalProps) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {bucket.length === 0 ? (
-            <div className="p-6 text-center text-muted-foreground">
-              <Package className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>Your bucket is empty</p>
-              <p className="text-sm mt-1">Add some tools to get started!</p>
-            </div>
+            <EmptyBucketState
+              onAddDefaults={handleAddDefaults}
+              onBrowseCatalog={handleBrowseCatalog}
+              onOpenPresets={handleOpenPresets}
+              popularPackages={popularPackages.map(pkg => ({
+                id: pkg.id,
+                name: pkg.name,
+                onAdd: () => {
+                  addToBucket({ ...pkg, selectedVersion: pkg.defaultVersion });
+                  toast.success(`✅ Added ${pkg.name}`);
+                },
+              }))}
+            />
           ) : (
-            <ul className="divide-y divide-border">
-              {bucket.map((pkg) => {
+            <ul className="divide-y divide-border" role="list" aria-label="Bucket items">
+              {bucket.map((pkg, index) => {
                 const v = pkg.selectedVersion || pkg.defaultVersion;
                 const isGeneric = ['stable', 'latest'].includes(v);
                 const versionLabel = isGeneric ? 'Stable' : v.startsWith('v') ? v : 'v' + v;
+                const isFocused = focusedIndex === index;
 
                 return (
-                  <li key={pkg.id} className="p-3 hover:bg-accent/30 transition-colors">
+                  <li
+                    key={pkg.id}
+                    ref={(el) => { itemRefs.current[index] = el; }}
+                    tabIndex={isFocused ? 0 : -1}
+                    className={`p-3 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
+                      isFocused ? 'bg-accent/50 ring-2 ring-ring' : 'hover:bg-accent/30'
+                    }`}
+                    onFocus={() => setFocusedIndex(index)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Delete' || e.key === 'Backspace') {
+                        e.preventDefault();
+                        handleRemoveFromBucket(pkg.id, pkg.name);
+                        // Adjust focus
+                        if (index >= bucket.length - 1) {
+                          setFocusedIndex(Math.max(0, bucket.length - 2));
+                        }
+                      } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleGenerateScript();
+                      }
+                    }}
+                    role="listitem"
+                    aria-label={`${pkg.name} version ${versionLabel}`}
+                  >
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{pkg.name}</p>
@@ -96,9 +244,10 @@ export function BucketModal({ onClose }: BucketModalProps) {
                         />
                       </div>
                       <button
-                        onClick={() => removeFromBucket(pkg.id)}
-                        className="p-1.5 text-destructive hover:bg-destructive/10 rounded transition-colors shrink-0 mt-0.5"
-                        title="Remove from bucket"
+                        onClick={() => handleRemoveFromBucket(pkg.id, pkg.name)}
+                        className="p-1.5 text-destructive hover:bg-destructive/10 rounded transition-colors shrink-0 mt-0.5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        title="Remove from bucket (Delete)"
+                        aria-label={`Remove ${pkg.name} from bucket`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -117,14 +266,15 @@ export function BucketModal({ onClose }: BucketModalProps) {
               <button
                 onClick={handleGenerateScript}
                 className="w-full py-2 px-4 rounded-lg bg-primary text-primary-foreground
-                    font-medium hover:bg-primary/90 transition-all terminal-glow"
+                    font-medium hover:bg-primary/90 transition-all terminal-glow focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                aria-keyshortcuts="Enter"
               >
                 Generate Script →
               </button>
               <button
-                onClick={clearBucket}
+                onClick={handleClearBucket}
                 className="w-full py-2 px-4 rounded-lg border border-destructive text-destructive
-                    hover:bg-destructive/10 transition-all text-sm"
+                    hover:bg-destructive/10 transition-all text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 Clear All
               </button>
@@ -132,6 +282,11 @@ export function BucketModal({ onClose }: BucketModalProps) {
           )}
         </div>
       </div>
+
+      {/* Presets Modal */}
+      {showPresets && (
+        <PresetsModal onClose={() => setShowPresets(false)} />
+      )}
     </>
   );
 }
