@@ -12,7 +12,7 @@ import {
   Download, Copy, Check, ChevronLeft, Link2, Terminal,
   RefreshCw, Clock, HardDrive, FileText, StickyNote,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useToast } from '@/hooks/use-toast';
@@ -24,8 +24,6 @@ type Tab = 'script' | 'brewfile' | 'curl';
 export function ScriptOutput() {
   const { os, shell, bucket, setCurrentStep, clearBucket } = useStore();
   const { toast } = useToast();
-  const [script, setScript] = useState('');
-  const [brewfile, setBrewfile] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('script');
   const [copied, setCopied] = useState(false);
   const [curlCopied, setCurlCopied] = useState(false);
@@ -34,10 +32,9 @@ export function ScriptOutput() {
   const [curlError, setCurlError] = useState<string | null>(null);
   const [showAllNotes, setShowAllNotes] = useState(false);
 
-  useEffect(() => {
-    setScript(generateScript(os, shell, bucket));
-    if (os === 'macos') setBrewfile(generateBrewfile(bucket));
-  }, [os, shell, bucket]);
+  // Memoize script generation to avoid recalculation on every render
+  const script = useMemo(() => generateScript(os, shell, bucket), [os, shell, bucket]);
+  const brewfile = useMemo(() => os === 'macos' ? generateBrewfile(bucket) : '', [os, bucket]);
 
   const estTime = estimateInstallTime(bucket);
   const estDisk = estimateDiskSpace(bucket);

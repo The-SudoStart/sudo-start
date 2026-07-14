@@ -161,15 +161,15 @@ export function SearchBar({ onClose }: SearchBarProps) {
         style={{ boxShadow: '0 0 40px rgba(0, 255, 128, 0.2), 0 0 80px rgba(0, 255, 128, 0.05)' }}
       >
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
-          <Search className="w-5 h-5 terminal-text shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border">
+          <Search className="w-4 h-4 terminal-text shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search packages, tools, runtimes..."
-            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-lg focus:outline-none font-mono"
+            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-base focus:outline-none font-mono"
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden sm:inline-flex py-1 text-xs rounded border border-border text-muted-foreground font-mono">ESC</kbd>
@@ -185,10 +185,10 @@ export function SearchBar({ onClose }: SearchBarProps) {
         </div>
 
         {/* Results / Suggestions */}
-        <div className="max-h-[420px] overflow-y-auto">
+        <div className="max-h-[320px] overflow-y-auto">
           {displayItems.length > 0 && (
             <div>
-              <div className="px-5 py-2 text-xs text-muted-foreground font-mono border-b border-border/50">
+              <div className="px-4 py-1.5 text-xs text-muted-foreground font-mono border-b border-border/50">
                 {showingSuggestions ? '⚡ Popular packages' : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
               </div>
               <ul role="listbox" aria-label="Search results">
@@ -201,12 +201,12 @@ export function SearchBar({ onClose }: SearchBarProps) {
                         ref={(el) => { itemRefs.current[index] = el; }}
                         onClick={() => handleToggle(pkg)}
                         onFocus={() => setFocusedIndex(index)}
-                        className={`w-full flex items-center gap-4 px-5 py-3 transition-colors text-left group focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
+                        className={`w-full flex items-center gap-3 px-4 py-2 transition-colors text-left group focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
                           isFocused ? 'bg-accent/50 ring-2 ring-ring' : 'hover:bg-accent/50'
                         }`}
                         aria-label={`${pkg.name} - ${inBucket ? 'In bucket, press Enter to remove' : 'Press Enter to add to bucket'}`}
                       >
-                        <span className="text-xl w-8 text-center shrink-0">
+                        <span className="text-lg w-7 text-center shrink-0">
                           {categoryIcons[pkg.category] || '📁'}
                         </span>
                         <div className="flex-1 min-w-0">
@@ -234,22 +234,22 @@ export function SearchBar({ onClose }: SearchBarProps) {
           )}
 
           {query.trim() && results.length === 0 && (
-            <div className="px-5 py-10 text-center text-muted-foreground">
-              <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <div className="px-4 py-8 text-center text-muted-foreground">
+              <Search className="w-8 h-8 mx-auto mb-2 opacity-30" />
               <p className="font-mono">No packages found for <span className="terminal-text">&quot;{query}&quot;</span></p>
               <p className="text-sm mt-1">Try searching by category or tool name</p>
             </div>
           )}
 
           {!query.trim() && suggestions.length === 0 && (
-            <div className="px-5 py-10 text-center text-muted-foreground">
+            <div className="px-4 py-8 text-center text-muted-foreground">
               <p className="font-mono text-sm">Start typing to search packages...</p>
             </div>
           )}
         </div>
 
         {/* Footer hint */}
-        <div className="px-5 py-2.5 border-t border-border bg-card/50 flex items-center gap-4 text-xs text-muted-foreground font-mono">
+        <div className="px-4 py-2 border-t border-border bg-card/50 flex items-center gap-4 text-xs text-muted-foreground font-mono">
           <span><kbd className="px-1.5 py-0.5 rounded border border-border">↵</kbd> to add/remove</span>
           <span><kbd className="px-1.5 py-0.5 rounded border border-border">ESC</kbd> to close</span>
           <span className="ml-auto">{bucket.length} in bucket</span>

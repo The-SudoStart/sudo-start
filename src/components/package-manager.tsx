@@ -252,23 +252,26 @@ function PackageCard({
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(isInBucket);
 
   const dynamicVersionTools = [
     // Runtimes
     'nodejs', 'python3', 'rust', 'go', 'docker', 'nvm', 'ruby', 'php', 'kotlin', 'java',
+    'bun', 'deno', 'elixir', 'erlang', 'scala', 'clojure', 'haskell', 'lua', 'perl', 'r',
     // Databases
-    'postgresql', 'redis', 'mongodb', 'mysql', 'mariadb',
+    'postgresql', 'redis', 'mongodb', 'mysql', 'mariadb', 'sqlite3',
+    'cockroachdb', 'cassandra', 'neo4j', 'clickhouse', 'timescaledb',
     // Mobile
     'flutter',
     // IDEs
-    'vscode', 'zed', 'vim',
+    'vscode', 'zed', 'vim', 'neovim', 'emacs',
     // Tools
     'terraform', 'ansible', 'github-cli', 'git', 'curl', 'zsh', 'oh-my-zsh', 'jq', 'htop', 'tmux',
+    'lazygit', 'delta', 'httpie', 'pandoc',
     // Containers
-    'podman', 'kubectl', 'minikube',
+    'podman', 'kubectl', 'minikube', 'lima', 'multipass', 'vagrant', 'packer', 'buildah', 'skopeo',
     // DevOps
-    'jenkins', 'prometheus', 'docker-compose',
+    'jenkins', 'prometheus', 'docker-compose', 'pulumi', 'helm', 'kustomize', 'argocd-cli',
     // Frameworks
     'react', 'vue', 'angular', 'nextjs', 'django', 'flask', 'express',
     // Web Servers
@@ -286,7 +289,17 @@ function PackageCard({
     // Data Science
     'jupyter', 'tensorflow', 'pandas', 'numpy', 'matplotlib',
     // Cloud CLIs
-    'aws-cli', 'azure-cli',
+    'aws-cli', 'azure-cli', 'gcloud', 'vercel-cli', 'netlify-cli', 'supabase-cli', 'stripe-cli', 'aws-cdk',
+    // Security
+    'bitwarden-cli', '1password-cli', 'gpg', 'openssl', 'wireguard',
+    // Media
+    'gimp', 'inkscape', 'krita', 'audacity', 'obs-studio', 'ffmpeg', 'imagemagick',
+    // VCS
+    'git-lfs', 'github-desktop', 'sublime-merge', 'fork', 'tower',
+    // Utilities
+    'ripgrep', 'fd', 'fzf', 'bat', 'exa', 'dust', 'bottom', 'glances', 'ngrok', 'insomnia',
+    // Productivity
+    'notion', 'obsidian', 'logseq', 'todoist', 'taskwarrior', 'timewarrior', 'calcurse', 'newsboat',
   ];
   const supportsDynamic = dynamicVersionTools.includes(pkg.id);
 
@@ -359,10 +372,7 @@ function PackageCard({
     }
   }, [isFocused]);
 
-  // Show details when in bucket
-  useEffect(() => {
-    setShowDetails(isInBucket);
-  }, [isInBucket]);
+
 
   return (
     <div

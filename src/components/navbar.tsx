@@ -235,12 +235,12 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="hidden md:flex flex-1 max-w-md items-center gap-3 px-4 py-2 rounded-lg bg-muted border border-border hover:border-primary/50 transition-all text-muted-foreground text-sm font-mono focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="hidden md:flex flex-1 max-w-xl items-center gap-2 px-3 py-1.5 rounded-lg bg-muted border border-border hover:border-primary/50 transition-all text-muted-foreground text-sm font-mono focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               aria-keyshortcuts="Meta+K"
             >
-              <Search className="w-4 h-4 shrink-0" />
+              <Search className="w-3.5 h-3.5 shrink-0" />
               <span>Search packages...</span>
-              <kbd className="ml-auto px-1.5 py-0.5 text-xs rounded border border-border">{modSymbol}K</kbd>
+              <kbd className="ml-auto px-1 py-0.5 text-xs rounded border border-border">{modSymbol}K</kbd>
             </button>
 
             {/* Spacer */}
