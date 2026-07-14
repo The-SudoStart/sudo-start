@@ -2,7 +2,7 @@
 
 import { useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme-context';
-import { MessageSquare, ShoppingCart, Terminal, Search, Layers, Upload, Download as DownloadIcon, Sun, Moon, MoreHorizontal } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Terminal, Search, Layers, Upload, Download as DownloadIcon, Sun, Moon, MoreHorizontal, Monitor, Apple, ChevronDown } from 'lucide-react';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { BucketModal } from './bucket-modal';
 import { SearchBar } from './search-bar';
@@ -12,17 +12,30 @@ import { useKeyboardShortcuts, getModifierSymbol } from '@/hooks/use-keyboard-sh
 import { copyToClipboard } from '@/lib/utils';
 
 export function Navbar() {
-  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, generatedScript } = useStore();
+  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, generatedScript, setOS } = useStore();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [isBucketOpen, setIsBucketOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPresetsOpen, setIsPresetsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOSSwitcherOpen, setIsOSSwitcherOpen] = useState(false);
   const [importError, setImportError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const osSwitcherRef = useRef<HTMLDivElement>(null);
   const modSymbol = getModifierSymbol();
+
+  // Handle OS switch
+  const handleOSSwitch = (newOS: 'macos' | 'linux') => {
+    if (newOS === os) {
+      setIsOSSwitcherOpen(false);
+      return;
+    }
+    setOS(newOS);
+    toast.success(`🖥️ Switched to ${newOS === 'macos' ? 'MacOS' : 'Linux'}`);
+    setIsOSSwitcherOpen(false);
+  };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -131,6 +144,9 @@ export function Navbar() {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setIsMenuOpen(false);
       }
+      if (osSwitcherRef.current && !osSwitcherRef.current.contains(e.target as Node)) {
+        setIsOSSwitcherOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -165,6 +181,55 @@ export function Navbar() {
                 </p>
               </div>
             </div>
+
+            {/* OS Switcher */}
+            {os && (
+              <div className="relative" ref={osSwitcherRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsOSSwitcherOpen(!isOSSwitcherOpen)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border
+                    hover:border-primary/50 transition-all text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  title="Switch operating system"
+                  aria-label="Switch operating system"
+                >
+                  {os === 'macos' ? (
+                    <Apple className="w-4 h-4" />
+                  ) : (
+                    <Monitor className="w-4 h-4" />
+                  )}
+                  <span className="hidden md:inline capitalize">{os}</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform ${isOSSwitcherOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isOSSwitcherOpen && (
+                  <div className="absolute left-0 top-full mt-2 w-40 py-2 rounded-lg border border-border bg-card shadow-xl z-50">
+                    <button
+                      type="button"
+                      onClick={() => handleOSSwitch('macos')}
+                      className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent transition-colors text-left ${
+                        os === 'macos' ? 'bg-primary/10 text-primary' : ''
+                      }`}
+                    >
+                      <Apple className="w-4 h-4" />
+                      <span>MacOS</span>
+                      {os === 'macos' && <span className="ml-auto text-xs">✓</span>}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOSSwitch('linux')}
+                      className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent transition-colors text-left ${
+                        os === 'linux' ? 'bg-primary/10 text-primary' : ''
+                      }`}
+                    >
+                      <Monitor className="w-4 h-4" />
+                      <span>Linux</span>
+                      {os === 'linux' && <span className="ml-auto text-xs">✓</span>}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Search Bar (desktop) */}
             <button

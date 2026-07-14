@@ -105,7 +105,7 @@ export function PackageManager() {
     <div className="min-h-screen scan-lines relative">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6 py-6 space-y-5">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-5">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -144,7 +144,7 @@ export function PackageManager() {
         <DependencyPanel bucket={bucket} os={os} />
 
         {/* Category filters - compact pills */}
-        <div className="sticky top-[60px] z-30 py-2 bg-background/90 backdrop-blur-sm -mx-6 px-6
+        <div className="sticky top-[60px] z-30 py-2 bg-background/90 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8
           flex gap-1.5 flex-wrap border-b border-border/50">
           {categories.map((cat, index) => {
             const shortcutNumber = index < 9 ? index + 1 : null;
@@ -174,7 +174,7 @@ export function PackageManager() {
         {/* Package Grid */}
         <div
           ref={packageGridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4"
           role="grid"
           aria-label="Package catalog"
         >

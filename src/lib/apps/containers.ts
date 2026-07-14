@@ -69,4 +69,100 @@ export const containerApps: Package[] = [
     linuxCommandTemplate: 'curl -LO https://github.com/kubernetes/minikube/releases/download/${VERSION}/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube',
     macosCommandTemplate: 'brew install minikube',
   },
+  {
+    id: 'lima',
+    name: 'Lima',
+    description: '🍋 Linux virtual machines (macOS-native)',
+    category: 'container',
+    platforms: { macos: true, linux: false },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install lima',
+        linuxCommand: 'echo "Lima is macOS-only"',
+      },
+    ],
+  },
+  {
+    id: 'multipass',
+    name: 'Multipass',
+    description: '☁️ Ubuntu VMs on demand',
+    category: 'container',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask multipass',
+        linuxCommand: 'sudo snap install multipass',
+      },
+    ],
+  },
+  {
+    id: 'vagrant',
+    name: 'Vagrant',
+    description: '📦 VM automation and management tool',
+    category: 'container',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask vagrant',
+        linuxCommand: 'curl -O https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_linux_amd64.zip && unzip vagrant_2.4.0_linux_amd64.zip && sudo mv vagrant /usr/local/bin/',
+      },
+    ],
+  },
+  {
+    id: 'packer',
+    name: 'Packer',
+    description: '📦 Machine image builder by HashiCorp',
+    category: 'container',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install packer',
+        linuxCommand: 'curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - && sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" && sudo apt-get update && sudo apt-get install packer',
+      },
+    ],
+  },
+  {
+    id: 'buildah',
+    name: 'Buildah',
+    description: '🔨 OCI-compliant container image builder',
+    category: 'container',
+    platforms: { macos: false, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'echo "Buildah is Linux-only"',
+        linuxCommand: 'sudo apt-get install -y buildah',
+      },
+    ],
+  },
+  {
+    id: 'skopeo',
+    name: 'Skopeo',
+    description: '🔍 Work with container images without daemon',
+    category: 'container',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install skopeo',
+        linuxCommand: 'sudo apt-get install -y skopeo',
+      },
+    ],
+  },
 ];
