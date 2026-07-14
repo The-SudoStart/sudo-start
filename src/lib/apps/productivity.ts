@@ -81,4 +81,132 @@ export const productivityApps: Package[] = [
       },
     ],
   },
+  {
+    id: 'notion',
+    name: 'Notion',
+    description: '📝 All-in-one workspace for notes, docs, and wikis',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask notion',
+        linuxCommand: 'echo "Notion is available via web browser or third-party clients like notion-linux"',
+      },
+    ],
+  },
+  {
+    id: 'obsidian',
+    name: 'Obsidian',
+    description: '🧠 Knowledge base and note-taking app with graph view',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask obsidian',
+        linuxCommand: 'wget https://github.com/obsidianmd/obsidian-releases/releases/download/v1.5.3/Obsidian-1.5.3.AppImage -O obsidian.AppImage && chmod +x obsidian.AppImage && sudo mv obsidian.AppImage /usr/local/bin/obsidian',
+      },
+    ],
+  },
+  {
+    id: 'logseq',
+    name: 'Logseq',
+    description: '🌿 Privacy-first, open-source knowledge base',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask logseq',
+        linuxCommand: 'wget https://github.com/logseq/logseq/releases/download/0.10.5/Logseq-linux-x64-0.10.5.AppImage -O logseq.AppImage && chmod +x logseq.AppImage && sudo mv logseq.AppImage /usr/local/bin/logseq',
+      },
+    ],
+  },
+  {
+    id: 'todoist',
+    name: 'Todoist',
+    description: '✅ Task management and to-do list app',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install --cask todoist',
+        linuxCommand: 'sudo snap install todoist',
+      },
+    ],
+  },
+  {
+    id: 'taskwarrior',
+    name: 'Taskwarrior',
+    description: '⚔️ Command-line task manager with powerful features',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install task',
+        linuxCommand: 'sudo apt-get install -y taskwarrior',
+      },
+    ],
+  },
+  {
+    id: 'timewarrior',
+    name: 'Timewarrior',
+    description: '⏱️ Command-line time tracking utility',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install timewarrior',
+        linuxCommand: 'sudo apt-get install -y timewarrior',
+      },
+    ],
+  },
+  {
+    id: 'calcurse',
+    name: 'Calcurse',
+    description: '📅 Text-based calendar and scheduling app',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install calcurse',
+        linuxCommand: 'sudo apt-get install -y calcurse',
+      },
+    ],
+  },
+  {
+    id: 'newsboat',
+    name: 'Newsboat',
+    description: '📰 RSS/Atom feed reader for the terminal',
+    category: 'productivity',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install newsboat',
+        linuxCommand: 'sudo apt-get install -y newsboat',
+      },
+    ],
+  },
 ];

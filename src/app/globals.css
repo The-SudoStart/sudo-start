@@ -484,3 +484,39 @@
 .animate-cursor-blink {
   animation: cursor-blink 1.5s ease-in-out infinite;
 }
+
+/* Responsive container utilities */
+@layer utilities {
+  .container-full {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Ensure content doesn't overflow on small screens */
+  .break-word {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 640px) {
+  /* Smaller padding on mobile */
+  .terminal-card {
+    padding: 0.75rem;
+  }
+  
+  /* Ensure text doesn't overflow */
+  code, pre {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1920px) {
+  /* Even larger grids for very wide screens */
+  .grid-5xl {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

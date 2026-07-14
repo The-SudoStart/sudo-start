@@ -113,4 +113,36 @@ export const ideApps: Package[] = [
       },
     ],
   },
+  {
+    id: 'neovim',
+    name: 'Neovim',
+    description: '🚀 Hyperextensible Vim-based text editor with Lua scripting',
+    category: 'ide',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install neovim',
+        linuxCommand: 'sudo apt-get install -y neovim',
+      },
+    ],
+  },
+  {
+    id: 'emacs',
+    name: 'Emacs',
+    description: '🐂 Extensible, customizable text editor and IDE',
+    category: 'ide',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install emacs',
+        linuxCommand: 'sudo apt-get install -y emacs',
+      },
+    ],
+  },
 ];

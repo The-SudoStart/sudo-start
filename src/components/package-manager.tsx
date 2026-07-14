@@ -105,7 +105,7 @@ export function PackageManager() {
     <div className="min-h-screen scan-lines relative">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6 py-6 space-y-5">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-5">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -144,7 +144,7 @@ export function PackageManager() {
         <DependencyPanel bucket={bucket} os={os} />
 
         {/* Category filters - compact pills */}
-        <div className="sticky top-[60px] z-30 py-2 bg-background/90 backdrop-blur-sm -mx-6 px-6
+        <div className="sticky top-[60px] z-30 py-2 bg-background/90 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8
           flex gap-1.5 flex-wrap border-b border-border/50">
           {categories.map((cat, index) => {
             const shortcutNumber = index < 9 ? index + 1 : null;
@@ -174,7 +174,7 @@ export function PackageManager() {
         {/* Package Grid */}
         <div
           ref={packageGridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4"
           role="grid"
           aria-label="Package catalog"
         >
@@ -252,23 +252,26 @@ function PackageCard({
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(isInBucket);
 
   const dynamicVersionTools = [
     // Runtimes
     'nodejs', 'python3', 'rust', 'go', 'docker', 'nvm', 'ruby', 'php', 'kotlin', 'java',
+    'bun', 'deno', 'elixir', 'erlang', 'scala', 'clojure', 'haskell', 'lua', 'perl', 'r',
     // Databases
-    'postgresql', 'redis', 'mongodb', 'mysql', 'mariadb',
+    'postgresql', 'redis', 'mongodb', 'mysql', 'mariadb', 'sqlite3',
+    'cockroachdb', 'cassandra', 'neo4j', 'clickhouse', 'timescaledb',
     // Mobile
     'flutter',
     // IDEs
-    'vscode', 'zed', 'vim',
+    'vscode', 'zed', 'vim', 'neovim', 'emacs',
     // Tools
     'terraform', 'ansible', 'github-cli', 'git', 'curl', 'zsh', 'oh-my-zsh', 'jq', 'htop', 'tmux',
+    'lazygit', 'delta', 'httpie', 'pandoc',
     // Containers
-    'podman', 'kubectl', 'minikube',
+    'podman', 'kubectl', 'minikube', 'lima', 'multipass', 'vagrant', 'packer', 'buildah', 'skopeo',
     // DevOps
-    'jenkins', 'prometheus', 'docker-compose',
+    'jenkins', 'prometheus', 'docker-compose', 'pulumi', 'helm', 'kustomize', 'argocd-cli',
     // Frameworks
     'react', 'vue', 'angular', 'nextjs', 'django', 'flask', 'express',
     // Web Servers
@@ -286,7 +289,17 @@ function PackageCard({
     // Data Science
     'jupyter', 'tensorflow', 'pandas', 'numpy', 'matplotlib',
     // Cloud CLIs
-    'aws-cli', 'azure-cli',
+    'aws-cli', 'azure-cli', 'gcloud', 'vercel-cli', 'netlify-cli', 'supabase-cli', 'stripe-cli', 'aws-cdk',
+    // Security
+    'bitwarden-cli', '1password-cli', 'gpg', 'openssl', 'wireguard',
+    // Media
+    'gimp', 'inkscape', 'krita', 'audacity', 'obs-studio', 'ffmpeg', 'imagemagick',
+    // VCS
+    'git-lfs', 'github-desktop', 'sublime-merge', 'fork', 'tower',
+    // Utilities
+    'ripgrep', 'fd', 'fzf', 'bat', 'exa', 'dust', 'bottom', 'glances', 'ngrok', 'insomnia',
+    // Productivity
+    'notion', 'obsidian', 'logseq', 'todoist', 'taskwarrior', 'timewarrior', 'calcurse', 'newsboat',
   ];
   const supportsDynamic = dynamicVersionTools.includes(pkg.id);
 
@@ -359,10 +372,7 @@ function PackageCard({
     }
   }, [isFocused]);
 
-  // Show details when in bucket
-  useEffect(() => {
-    setShowDetails(isInBucket);
-  }, [isInBucket]);
+
 
   return (
     <div

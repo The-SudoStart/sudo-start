@@ -119,4 +119,132 @@ export const utilityApps: Package[] = [
       },
     ],
   },
+  {
+    id: 'ripgrep',
+    name: 'Ripgrep',
+    description: '⚡ Fast grep alternative that respects .gitignore',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install ripgrep',
+        linuxCommand: 'sudo apt-get install -y ripgrep',
+      },
+    ],
+  },
+  {
+    id: 'fd',
+    name: 'fd',
+    description: '🔍 Fast and user-friendly alternative to find',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install fd',
+        linuxCommand: 'sudo apt-get install -y fd-find',
+      },
+    ],
+  },
+  {
+    id: 'fzf',
+    name: 'fzf',
+    description: '🎯 Command-line fuzzy finder with preview support',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install fzf',
+        linuxCommand: 'sudo apt-get install -y fzf',
+      },
+    ],
+  },
+  {
+    id: 'bat',
+    name: 'Bat',
+    description: '🦇 Cat clone with syntax highlighting and Git integration',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install bat',
+        linuxCommand: 'sudo apt-get install -y bat',
+      },
+    ],
+  },
+  {
+    id: 'exa',
+    name: 'Exa',
+    description: '📁 Modern replacement for ls with icons and colors',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install exa',
+        linuxCommand: 'sudo apt-get install -y exa',
+      },
+    ],
+  },
+  {
+    id: 'dust',
+    name: 'Dust',
+    description: '💨 More intuitive version of du for disk usage',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install dust',
+        linuxCommand: 'cargo install du-dust',
+      },
+    ],
+  },
+  {
+    id: 'bottom',
+    name: 'Bottom',
+    description: '📈 System monitor with customizable widgets',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install bottom',
+        linuxCommand: 'sudo apt-get install -y bottom',
+      },
+    ],
+  },
+  {
+    id: 'glances',
+    name: 'Glances',
+    description: '👁️ Cross-platform system monitoring tool',
+    category: 'utility',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install glances',
+        linuxCommand: 'sudo apt-get install -y glances',
+      },
+    ],
+  },
 ];

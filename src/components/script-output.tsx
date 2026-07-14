@@ -12,7 +12,7 @@ import {
   Download, Copy, Check, ChevronLeft, Link2, Terminal,
   RefreshCw, Clock, HardDrive, FileText, StickyNote,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useToast } from '@/hooks/use-toast';
@@ -24,8 +24,6 @@ type Tab = 'script' | 'brewfile' | 'curl';
 export function ScriptOutput() {
   const { os, shell, bucket, setCurrentStep, clearBucket } = useStore();
   const { toast } = useToast();
-  const [script, setScript] = useState('');
-  const [brewfile, setBrewfile] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('script');
   const [copied, setCopied] = useState(false);
   const [curlCopied, setCurlCopied] = useState(false);
@@ -34,10 +32,9 @@ export function ScriptOutput() {
   const [curlError, setCurlError] = useState<string | null>(null);
   const [showAllNotes, setShowAllNotes] = useState(false);
 
-  useEffect(() => {
-    setScript(generateScript(os, shell, bucket));
-    if (os === 'macos') setBrewfile(generateBrewfile(bucket));
-  }, [os, shell, bucket]);
+  // Memoize script generation to avoid recalculation on every render
+  const script = useMemo(() => generateScript(os, shell, bucket), [os, shell, bucket]);
+  const brewfile = useMemo(() => os === 'macos' ? generateBrewfile(bucket) : '', [os, bucket]);
 
   const estTime = estimateInstallTime(bucket);
   const estDisk = estimateDiskSpace(bucket);
@@ -105,8 +102,8 @@ export function ScriptOutput() {
   ];
 
   return (
-    <div className="min-h-screen p-6 scan-lines relative">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 scan-lines relative">
+      <div className="w-full space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -123,8 +120,8 @@ export function ScriptOutput() {
         </div>
 
         {/* Summary */}
-        <div className="terminal-card rounded-lg p-5">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div className="terminal-card rounded-lg p-4 sm:p-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-2xl font-bold terminal-text">{bucket.length}</p>
               <p className="text-xs text-muted-foreground mt-0.5">Packages</p>
@@ -241,9 +238,9 @@ export function ScriptOutput() {
         {/* Script Tab */}
         {activeTab === 'script' && (
           <div className="terminal-card rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 bg-card border-b border-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-card border-b border-border gap-3">
               <span className="font-bold terminal-text font-mono text-sm">sudo-start-setup.sh</span>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => handleCopy(script)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-all text-sm"
@@ -282,12 +279,12 @@ export function ScriptOutput() {
         {/* Brewfile Tab */}
         {activeTab === 'brewfile' && os === 'macos' && (
           <div className="terminal-card rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 bg-card border-b border-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-card border-b border-border gap-3">
               <div>
                 <span className="font-bold terminal-text font-mono text-sm">Brewfile</span>
-                <span className="ml-3 text-xs text-muted-foreground">Run with: <code className="terminal-text">brew bundle</code></span>
+                <span className="ml-0 sm:ml-3 text-xs text-muted-foreground block sm:inline mt-1 sm:mt-0">Run with: <code className="terminal-text">brew bundle</code></span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => handleCopy(brewfile)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-all text-sm"
@@ -439,12 +436,12 @@ export function ScriptOutput() {
         {/* Footer */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <button onClick={() => { clearBucket(); setCurrentStep('boot'); }}
-            className="px-6 py-3 rounded-lg border-2 border-destructive text-destructive hover:bg-destructive/10 transition-all">
+            className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg border-2 border-destructive text-destructive hover:bg-destructive/10 transition-all text-sm sm:text-base">
             Start Over
           </button>
-          <div className="text-sm text-muted-foreground space-y-1 text-right">
-            <p>
-              💡 <code className="px-2 py-0.5 rounded bg-muted terminal-text">chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh</code>
+          <div className="text-xs sm:text-sm text-muted-foreground space-y-1 text-left sm:text-right w-full sm:w-auto">
+            <p className="break-all">
+              💡 <code className="px-1.5 sm:px-2 py-0.5 rounded bg-muted terminal-text">chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh</code>
             </p>
             <p className="text-xs">
               📋 Add <code className="px-1 py-0.5 rounded bg-muted terminal-text">--verbose</code> to see detailed installation logs

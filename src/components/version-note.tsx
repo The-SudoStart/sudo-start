@@ -19,9 +19,12 @@ export function VersionNote({ pkgId, pkgName, version, note, onSave, variant = '
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sync draft when note prop changes (e.g. import)
+  // Sync draft when note prop changes (e.g. import) - defer to avoid sync setState
   useEffect(() => {
-    setDraft(note);
+    const timeoutId = setTimeout(() => {
+      setDraft((prev) => (prev !== note ? note : prev));
+    }, 0);
+    return () => clearTimeout(timeoutId);
   }, [note]);
 
   useEffect(() => {

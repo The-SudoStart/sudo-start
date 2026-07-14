@@ -19,6 +19,9 @@ import { cloudCliApps } from './cloud-clis';
 import { utilityApps } from './utilities';
 import { communicationApps } from './communication';
 import { productivityApps } from './productivity';
+import { securityApps } from './security';
+import { mediaApps } from './media';
+import { vcsApps } from './vcs';
 
 export const appCatalog: Package[] = [
   ...ideApps,
@@ -41,6 +44,9 @@ export const appCatalog: Package[] = [
   ...utilityApps,
   ...communicationApps,
   ...productivityApps,
+  ...securityApps,
+  ...mediaApps,
+  ...vcsApps,
 ];
 
 export function getAppsForOS(os: 'macos' | 'linux'): Package[] {
