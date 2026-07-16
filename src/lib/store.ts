@@ -108,7 +108,18 @@ export const useStore = create<AppState>()(
   },
 
       setGeneratedScript: (script) => set({ generatedScript: script }),
-      setCurrentStep: (step) => set({ currentStep: step }),
+      setCurrentStep: (step) => {
+        const prev = get().currentStep;
+        set({ currentStep: step });
+        if (typeof window !== 'undefined' && step !== prev) {
+          window.history.pushState({ step }, '', `#${step}`);
+        }
+      },
+      goBack: () => {
+        if (typeof window !== 'undefined') {
+          window.history.back();
+        }
+      },
       toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
       clearBucket: () => set({ bucket: [] }),
     }),

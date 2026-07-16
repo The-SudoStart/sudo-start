@@ -22,7 +22,7 @@ import { copyToClipboard } from '@/lib/utils';
 type Tab = 'script' | 'brewfile' | 'curl';
 
 export function ScriptOutput() {
-  const { os, shell, bucket, setCurrentStep, clearBucket } = useStore();
+  const { os, shell, bucket, setCurrentStep, goBack, clearBucket } = useStore();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('script');
   const [copied, setCopied] = useState(false);
@@ -102,8 +102,8 @@ export function ScriptOutput() {
   ];
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 scan-lines relative">
-      <div className="w-full space-y-4 sm:space-y-6">
+    <div className="relative min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto w-full max-w-5xl space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -111,7 +111,7 @@ export function ScriptOutput() {
             <p className="text-muted-foreground mt-1">Your custom environment is ready to deploy</p>
           </div>
           <button
-            onClick={() => setCurrentStep('catalog')}
+            onClick={goBack}
             className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-border hover:border-primary/50 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -267,7 +267,7 @@ export function ScriptOutput() {
               <SyntaxHighlighter
                 language="bash"
                 style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: 'var(--terminal-bg)', fontSize: '0.8rem' }}
+                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
                 showLineNumbers
               >
                 {script}
@@ -303,7 +303,7 @@ export function ScriptOutput() {
               <SyntaxHighlighter
                 language="ruby"
                 style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: 'var(--terminal-bg)', fontSize: '0.8rem' }}
+                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
                 showLineNumbers
               >
                 {brewfile}
