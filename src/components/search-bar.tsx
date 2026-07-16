@@ -3,33 +3,10 @@
 import { useStore } from '@/lib/store';
 import { appCatalog, getAppsForOS } from '@/lib/apps';
 import { Package } from '@/types';
-import { Search, X, Plus, Check } from 'lucide-react';
+import { Search, X, Plus, Check, SearchX } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
-
-
-const categoryIcons: Record<string, string> = {
-  ide: '📝',
-  browser: '🌐',
-  tool: '🔧',
-  runtime: '⚙️',
-  container: '📦',
-  database: '💾',
-  terminal: '💻',
-  framework: '🧱',
-  devops: '♾️',
-  'data-science': '🧪',
-  mobile: '📱',
-  'game-dev': '🎮',
-  'desktop-dev': '🖥️',
-  'web-server': '🌍',
-  'package-manager': '📌',
-  'build-tool': '🔨',
-  cloud: '☁️',
-  utility: '🛠️',
-  communication: '💬',
-  productivity: '🚀',
-};
+import { getCategoryMeta } from '@/lib/categories';
 
 interface SearchBarProps {
   onClose: () => void;
@@ -153,23 +130,22 @@ export function SearchBar({ onClose }: SearchBarProps) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 px-4"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-24"
+      style={{ background: 'color-mix(in oklch, var(--foreground) 35%, transparent)', backdropFilter: 'blur(6px)' }}>
       <div
         ref={containerRef}
-        className="w-full max-w-2xl terminal-card rounded-xl overflow-hidden shadow-2xl"
-        style={{ boxShadow: '0 0 40px rgba(0, 255, 128, 0.2), 0 0 80px rgba(0, 255, 128, 0.05)' }}
+        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-popover shadow-soft-lg"
       >
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border">
-          <Search className="w-4 h-4 terminal-text shrink-0" />
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+          <Search className="h-4 w-4 shrink-0 text-primary" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search packages, tools, runtimes..."
-            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-base focus:outline-none font-mono"
+            className="flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden sm:inline-flex py-1 text-xs rounded border border-border text-muted-foreground font-mono">ESC</kbd>
@@ -188,8 +164,8 @@ export function SearchBar({ onClose }: SearchBarProps) {
         <div className="max-h-[320px] overflow-y-auto">
           {displayItems.length > 0 && (
             <div>
-              <div className="px-4 py-1.5 text-xs text-muted-foreground font-mono border-b border-border/50">
-                {showingSuggestions ? '⚡ Popular packages' : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
+              <div className="border-b border-border/60 px-4 py-2 text-xs font-medium text-muted-foreground">
+                {showingSuggestions ? 'Popular packages' : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
               </div>
               <ul role="listbox" aria-label="Search results">
                 {displayItems.map((pkg, index) => {
@@ -206,17 +182,17 @@ export function SearchBar({ onClose }: SearchBarProps) {
                         }`}
                         aria-label={`${pkg.name} - ${inBucket ? 'In bucket, press Enter to remove' : 'Press Enter to add to bucket'}`}
                       >
-                        <span className="text-lg w-7 text-center shrink-0">
-                          {categoryIcons[pkg.category] || '📁'}
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg app-icon-tile text-sm font-bold">
+                          {pkg.name.charAt(0).toUpperCase()}
                         </span>
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold terminal-text">{pkg.name}</span>
-                            <span className="text-xs px-2 py-0.5 rounded border border-border text-muted-foreground capitalize hidden sm:inline">
-                              {pkg.category.replace('-', ' ')}
+                            <span className="font-semibold">{pkg.name}</span>
+                            <span className="hidden rounded-md border border-border px-2 py-0.5 text-xs text-muted-foreground sm:inline">
+                              {getCategoryMeta(pkg.category).label}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground truncate">{pkg.description}</p>
+                          <p className="truncate text-sm text-muted-foreground">{pkg.description}</p>
                         </div>
                         <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
                           inBucket
@@ -234,16 +210,18 @@ export function SearchBar({ onClose }: SearchBarProps) {
           )}
 
           {query.trim() && results.length === 0 && (
-            <div className="px-4 py-8 text-center text-muted-foreground">
-              <Search className="w-8 h-8 mx-auto mb-2 opacity-30" />
-              <p className="font-mono">No packages found for <span className="terminal-text">&quot;{query}&quot;</span></p>
-              <p className="text-sm mt-1">Try searching by category or tool name</p>
+            <div className="px-4 py-12 text-center text-muted-foreground">
+              <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl app-icon-tile">
+                <SearchX className="h-6 w-6" />
+              </span>
+              <p className="font-medium text-foreground">No packages found for &quot;{query}&quot;</p>
+              <p className="mt-1 text-sm">Try searching by category or tool name</p>
             </div>
           )}
 
           {!query.trim() && suggestions.length === 0 && (
-            <div className="px-4 py-8 text-center text-muted-foreground">
-              <p className="font-mono text-sm">Start typing to search packages...</p>
+            <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+              Start typing to search packages…
             </div>
           )}
         </div>

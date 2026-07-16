@@ -102,8 +102,8 @@ export function ScriptOutput() {
   ];
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 scan-lines relative">
-      <div className="w-full space-y-4 sm:space-y-6">
+    <div className="relative min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto w-full max-w-5xl space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -267,7 +267,7 @@ export function ScriptOutput() {
               <SyntaxHighlighter
                 language="bash"
                 style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: 'var(--terminal-bg)', fontSize: '0.8rem' }}
+                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
                 showLineNumbers
               >
                 {script}
@@ -303,7 +303,7 @@ export function ScriptOutput() {
               <SyntaxHighlighter
                 language="ruby"
                 style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: 'var(--terminal-bg)', fontSize: '0.8rem' }}
+                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
                 showLineNumbers
               >
                 {brewfile}

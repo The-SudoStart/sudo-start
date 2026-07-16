@@ -172,15 +172,22 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-6 py-3">
           <div className="flex items-center gap-3">
             {/* Logo */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Terminal className="w-7 h-7 terminal-text" />
-              <div className="hidden sm:block">
-                <h1 className="text-lg font-bold terminal-text leading-tight">SudoStart</h1>
-                <p className="text-xs text-muted-foreground leading-tight">
-                  {os?.toUpperCase() ?? 'Package'} Manager
+            <button
+              type="button"
+              onClick={() => setCurrentStep('catalog')}
+              className="flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              title="SudoStart home"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl app-icon-tile">
+                <Terminal className="h-5 w-5" />
+              </span>
+              <div className="hidden text-left sm:block">
+                <h1 className="text-base font-bold leading-tight tracking-tight">SudoStart</h1>
+                <p className="text-xs leading-tight text-muted-foreground">
+                  {os ? (os === 'macos' ? 'macOS' : 'Linux') : 'Developer'} tools
                 </p>
               </div>
-            </div>
+            </button>
 
             {/* OS Switcher */}
             {os && (
@@ -198,7 +205,7 @@ export function Navbar() {
                   ) : (
                     <Monitor className="w-4 h-4" />
                   )}
-                  <span className="hidden md:inline capitalize">{os}</span>
+                  <span className="hidden md:inline">{os === 'macos' ? 'macOS' : 'Linux'}</span>
                   <ChevronDown className={`w-3 h-3 transition-transform ${isOSSwitcherOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -235,12 +242,12 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="hidden md:flex flex-1 max-w-xl items-center gap-2 px-3 py-1.5 rounded-lg bg-muted border border-border hover:border-primary/50 transition-all text-muted-foreground text-sm font-mono focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="hidden md:flex flex-1 max-w-xl items-center gap-2.5 rounded-xl border border-border bg-muted/60 px-3.5 py-2 text-sm text-muted-foreground transition-all hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-keyshortcuts="Meta+K"
             >
-              <Search className="w-3.5 h-3.5 shrink-0" />
-              <span>Search packages...</span>
-              <kbd className="ml-auto px-1 py-0.5 text-xs rounded border border-border">{modSymbol}K</kbd>
+              <Search className="h-4 w-4 shrink-0" />
+              <span>Search packages, runtimes, tools…</span>
+              <kbd className="ml-auto rounded-md border border-border bg-background px-1.5 py-0.5 text-xs">{modSymbol}K</kbd>
             </button>
 
             {/* Spacer */}

@@ -16,8 +16,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SudoStart - Zero-to-Code OS Setup Generator",
-  description: "Build your perfect development environment with AI-powered script generation. Powered by Root AI.",
+  title: "SudoStart — The Developer Tool Marketplace",
+  description: "Discover the best developer tools and generate a one-command setup script for macOS and Linux. AI-assisted, cross-platform, open source.",
+};
+
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbfbfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#22262e" },
+  ],
 };
 
 export default function RootLayout({
@@ -26,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-background" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
