@@ -12,7 +12,7 @@ export class NpmAdapter implements RegistryAdapter {
 
       const data = await res.json();
 
-      return data.objects?.map((obj: any) => ({
+      return data.objects?.map((obj: { package: { name: string; description?: string; version: string; links?: { homepage?: string }; license?: string } }) => ({
         name: obj.package.name,
         description: obj.package.description || 'No description',
         version: obj.package.version,

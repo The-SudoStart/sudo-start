@@ -26,6 +26,7 @@ export default function Home() {
     if (typeof window !== 'undefined' && !window.history.state?.step) {
       window.history.replaceState({ step: currentStep }, '', `#${currentStep}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

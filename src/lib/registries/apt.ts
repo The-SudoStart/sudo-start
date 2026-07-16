@@ -11,7 +11,7 @@ export class AptAdapter implements RegistryAdapter {
 
       const data = await res.json();
 
-      return data.packages?.slice(0, limit).map((pkg: any) => ({
+      return data.packages?.slice(0, limit).map((pkg: { name: string; summary?: string; version?: string; website?: string; license?: string }) => ({
         name: pkg.name,
         description: pkg.summary || 'No description',
         version: pkg.version || 'latest',

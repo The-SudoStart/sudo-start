@@ -14,12 +14,12 @@ export class HomebrewAdapter implements RegistryAdapter {
       const q = query.toLowerCase();
 
       return formulae
-        .filter((f: any) =>
+        .filter((f: { name: string; desc?: string }) =>
           f.name.toLowerCase().includes(q) ||
           f.desc?.toLowerCase().includes(q)
         )
         .slice(0, limit)
-        .map((f: any) => ({
+        .map((f: { name: string; desc?: string; versions?: { stable?: string }; homepage?: string; license?: string }) => ({
           name: f.name,
           description: f.desc || 'No description',
           version: f.versions?.stable || 'latest',

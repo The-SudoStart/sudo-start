@@ -12,7 +12,7 @@ export class PyPIAdapter implements RegistryAdapter {
 
       const data = await res.json();
 
-      return data.results?.slice(0, limit).map((pkg: any) => ({
+      return data.results?.slice(0, limit).map((pkg: { name: string; summary?: string; version: string; project_url?: string; license?: string }) => ({
         name: pkg.name,
         description: pkg.summary || 'No description',
         version: pkg.version,

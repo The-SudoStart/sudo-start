@@ -3,7 +3,7 @@
 import { useStore } from '@/lib/store';
 import { appCatalog, getAppsForOS } from '@/lib/apps';
 import { Package } from '@/types';
-import { Search, X, Plus, Check, SearchX, Sparkles, Loader2, Globe } from 'lucide-react';
+import { Search, X, Plus, Check, SearchX, Sparkles, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { getCategoryMeta } from '@/lib/categories';
@@ -58,6 +58,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
 
   useEffect(() => {
     if (!query.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExternalResults([]);
       return;
     }
@@ -111,7 +112,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
     }
   }, [isInBucket, removeFromBucket, addToBucket]);
 
-  const displayItems = query.trim() ? [...localResults, ...externalResults] : suggestions;
+  const displayItems = useMemo(() => query.trim() ? [...localResults, ...externalResults] : suggestions, [query, localResults, externalResults, suggestions]);
   const showingSuggestions = !query.trim();
 
   const navigateResults = useCallback((direction: 'up' | 'down') => {
