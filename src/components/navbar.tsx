@@ -12,7 +12,7 @@ import { useKeyboardShortcuts, getModifierSymbol } from '@/hooks/use-keyboard-sh
 import { copyToClipboard } from '@/lib/utils';
 
 export function Navbar() {
-  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, goBack, generatedScript, setOS } = useStore();
+  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, generatedScript, setOS } = useStore();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [isBucketOpen, setIsBucketOpen] = useState(false);
