@@ -57,6 +57,7 @@ export interface AppState {
   importBucket: (json: string) => boolean;
   setGeneratedScript: (script: string) => void;
   setCurrentStep: (step: 'boot' | 'catalog' | 'chat' | 'output') => void;
+  goBack: () => void;
   toggleChat: () => void;
   clearBucket: () => void;
 }

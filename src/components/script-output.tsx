@@ -22,7 +22,7 @@ import { copyToClipboard } from '@/lib/utils';
 type Tab = 'script' | 'brewfile' | 'curl';
 
 export function ScriptOutput() {
-  const { os, shell, bucket, setCurrentStep, clearBucket } = useStore();
+  const { os, shell, bucket, setCurrentStep, goBack, clearBucket } = useStore();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('script');
   const [copied, setCopied] = useState(false);
@@ -111,7 +111,7 @@ export function ScriptOutput() {
             <p className="text-muted-foreground mt-1">Your custom environment is ready to deploy</p>
           </div>
           <button
-            onClick={() => setCurrentStep('catalog')}
+            onClick={goBack}
             className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-border hover:border-primary/50 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />

@@ -4,6 +4,7 @@ import { useStore } from '@/lib/store';
 import { appCatalog, getAppsForOS } from '@/lib/apps';
 import { Package } from '@/types';
 import { Plus, Check, ChevronDown, AlertCircle, Wand2, Copy, Clock, HardDrive, Terminal, Apple, Monitor } from 'lucide-react';
+import { AppIcon } from './app-icon';
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Navbar } from './navbar';
 import { DependencyPanel } from './dependency-panel';
@@ -147,7 +148,7 @@ export function PackageManager() {
 
         {/* Category filters */}
         <div className="sticky top-[68px] z-30 -mx-4 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="scrollbar-clean flex gap-2 overflow-x-auto pb-0.5">
+          <div className="flex flex-wrap gap-2">
             {categories.map((cat, index) => {
               const meta = getCategoryMeta(cat);
               const Icon = meta.icon;
@@ -160,7 +161,7 @@ export function PackageManager() {
                     setSelectedCategory(cat);
                     setFocusedPackageIndex(-1);
                   }}
-                  className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     isSelected
                       ? 'border-primary bg-primary text-primary-foreground shadow-soft'
                       : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
@@ -434,9 +435,7 @@ function PackageCard({
     >
       {/* Header: icon tile + name + category */}
       <div className="flex items-start gap-3.5">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl app-icon-tile text-lg font-bold">
-          {pkg.name.charAt(0).toUpperCase()}
-        </span>
+        <AppIcon id={pkg.id} name={pkg.name} size={48} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold">{pkg.name}</h3>
@@ -471,9 +470,9 @@ function PackageCard({
       )}
 
       {/* Footer: version + actions */}
-      <div className="mt-4 flex items-center gap-2">
-        {hasVersions && (
-          <div className="relative min-w-0 flex-1">
+      <div className="mt-4 flex flex-col gap-2">
+        {hasVersions ? (
+          <div className="relative">
             <select
               title={`Select version for ${pkg.name}`}
               aria-label={`Select version for ${pkg.name}`}
@@ -497,55 +496,57 @@ function PackageCard({
               <span className="absolute right-7 top-1/2 -translate-y-1/2 text-[10px] text-primary">…</span>
             )}
           </div>
+        ) : (
+          <div className="h-[36px]" aria-hidden="true" />
         )}
 
-        <button
-          onClick={() => onAddToBucket(pkg, selectedVersion)}
-          disabled={isInBucket || !isAvailable}
-          className={`flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-            !hasVersions ? 'flex-1' : ''
-          } ${
-            isInBucket
-              ? 'cursor-not-allowed bg-primary/15 text-primary'
-              : !isAvailable
-              ? 'cursor-not-allowed bg-muted text-muted-foreground'
-              : 'bg-primary text-primary-foreground hover:brightness-105'
-          }`}
-          aria-label={isInBucket ? `${pkg.name} is in bucket` : `Add ${pkg.name} to bucket`}
-        >
-          {isInBucket ? (
-            <><Check className="h-3.5 w-3.5" /> Added</>
-          ) : !isAvailable ? (
-            <><AlertCircle className="h-3.5 w-3.5" /> N/A</>
-          ) : (
-            <><Plus className="h-3.5 w-3.5" /> Add</>
-          )}
-        </button>
-
-        {isAvailable && os && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={handleCopyCommand}
-            title="Copy install command"
-            className="shrink-0 rounded-lg border border-border p-2 transition-all hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Copy install command"
+            onClick={() => onAddToBucket(pkg, selectedVersion)}
+            disabled={isInBucket || !isAvailable}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              isInBucket
+                ? 'cursor-not-allowed bg-primary/15 text-primary'
+                : !isAvailable
+                ? 'cursor-not-allowed bg-muted text-muted-foreground'
+                : 'bg-primary text-primary-foreground hover:brightness-105'
+            }`}
+            aria-label={isInBucket ? `${pkg.name} is in bucket` : `Add ${pkg.name} to bucket`}
           >
-            {copied
-              ? <Check className="h-3.5 w-3.5 text-primary" />
-              : <Copy className="h-3.5 w-3.5 text-muted-foreground" />
-            }
+            {isInBucket ? (
+              <><Check className="h-3.5 w-3.5" /> Added</>
+            ) : !isAvailable ? (
+              <><AlertCircle className="h-3.5 w-3.5" /> N/A</>
+            ) : (
+              <><Plus className="h-3.5 w-3.5" /> Add</>
+            )}
           </button>
-        )}
 
-        {isInBucket && (
-          <VersionNote
-            pkgId={pkg.id}
-            pkgName={pkg.name}
-            version={selectedVersion}
-            note={bucketNote}
-            onSave={onUpdateNote}
-            variant="compact"
-          />
-        )}
+          {isAvailable && os && (
+            <button
+              onClick={handleCopyCommand}
+              title="Copy install command"
+              className="shrink-0 rounded-lg border border-border p-2 transition-all hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Copy install command"
+            >
+              {copied
+                ? <Check className="h-3.5 w-3.5 text-primary" />
+                : <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+              }
+            </button>
+          )}
+
+          {isInBucket && (
+            <VersionNote
+              pkgId={pkg.id}
+              pkgName={pkg.name}
+              version={selectedVersion}
+              note={bucketNote}
+              onSave={onUpdateNote}
+              variant="compact"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

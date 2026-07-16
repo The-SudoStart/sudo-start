@@ -12,7 +12,7 @@ import { useKeyboardShortcuts, getModifierSymbol } from '@/hooks/use-keyboard-sh
 import { copyToClipboard } from '@/lib/utils';
 
 export function Navbar() {
-  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, generatedScript, setOS } = useStore();
+  const { os, bucket, toggleChat, exportBucket, importBucket, setCurrentStep, goBack, generatedScript, setOS } = useStore();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [isBucketOpen, setIsBucketOpen] = useState(false);
@@ -174,8 +174,8 @@ export function Navbar() {
             {/* Logo */}
             <button
               type="button"
-              onClick={() => setCurrentStep('catalog')}
-              className="flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onClick={() => setCurrentStep('boot')}
+              className="flex shrink-0 cursor-pointer items-center gap-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               title="SudoStart home"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-xl app-icon-tile">
@@ -195,7 +195,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setIsOSSwitcherOpen(!isOSSwitcherOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border
+                  className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border
                     hover:border-primary/50 transition-all text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                   title="Switch operating system"
                   aria-label="Switch operating system"
@@ -242,16 +242,13 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="hidden md:flex flex-1 max-w-xl items-center gap-2.5 rounded-xl border border-border bg-muted/60 px-3.5 py-2 text-sm text-muted-foreground transition-all hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="hidden md:flex flex-1 items-center gap-2.5 rounded-xl border border-border bg-muted/60 px-3.5 py-2 text-sm text-muted-foreground transition-all hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-keyshortcuts="Meta+K"
             >
               <Search className="h-4 w-4 shrink-0" />
               <span>Search packages, runtimes, tools…</span>
               <kbd className="ml-auto rounded-md border border-border bg-background px-1.5 py-0.5 text-xs">{modSymbol}K</kbd>
             </button>
-
-            {/* Spacer */}
-            <div className="flex-1" />
 
             {/* Actions */}
             <div className="flex items-center gap-2">

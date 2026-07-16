@@ -2,7 +2,7 @@
 
 import { useStore } from '@/lib/store';
 import { OS } from '@/types';
-import { Apple, Monitor, Terminal, ArrowRight, Check, Sparkles, Package, Zap } from 'lucide-react';
+import { Apple, Monitor, Terminal, Check, Sparkles, Package, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 const highlights = [
@@ -15,22 +15,14 @@ export function BootScreen() {
     const { setOS, setShell, setCurrentStep } = useStore();
     const [selectedOS, setSelectedOS] = useState<OS | null>(null);
 
-    const handleContinue = () => {
-        if (selectedOS) {
-            setOS(selectedOS);
-            setShell('bash'); // Default to bash
-            setCurrentStep('catalog');
-        }
-    };
-
     return (
-        <div className="relative min-h-screen overflow-hidden">
+        <div className="relative min-h-screen overflow-hidden" suppressHydrationWarning>
             {/* Soft hero wash */}
-            <div className="absolute inset-0 hero-wash pointer-events-none" aria-hidden="true" />
+            <div className="absolute inset-0 hero-wash pointer-events-none" aria-hidden="true" suppressHydrationWarning />
 
             {/* Top brand bar */}
-            <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
-                <div className="flex items-center gap-2">
+            <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5" suppressHydrationWarning>
+                <div className="flex items-center gap-2" suppressHydrationWarning>
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl app-icon-tile">
                         <Terminal className="h-5 w-5" />
                     </span>
@@ -78,35 +70,34 @@ export function BootScreen() {
                         Choose your platform to get started
                     </h2>
 
-                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2" suppressHydrationWarning>
                         <OSChoice
                             active={selectedOS === 'macos'}
-                            onClick={() => setSelectedOS('macos')}
+                            onClick={() => {
+                                setSelectedOS('macos');
+                                setOS('macos');
+                                setShell('bash');
+                                setCurrentStep('catalog');
+                            }}
                             icon={<Apple className="h-6 w-6" />}
                             title="macOS"
                             subtitle="Homebrew packages"
                         />
                         <OSChoice
                             active={selectedOS === 'linux'}
-                            onClick={() => setSelectedOS('linux')}
+                            onClick={() => {
+                                setSelectedOS('linux');
+                                setOS('linux');
+                                setShell('bash');
+                                setCurrentStep('catalog');
+                            }}
                             icon={<Monitor className="h-6 w-6" />}
                             title="Linux"
                             subtitle="apt · snap · flatpak"
                         />
                     </div>
 
-                    <button
-                        onClick={handleContinue}
-                        disabled={!selectedOS}
-                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5
-                            text-sm font-semibold text-primary-foreground transition-all
-                            enabled:hover:brightness-105 enabled:hover:shadow-soft-lg
-                            disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {selectedOS ? 'Browse the catalog' : 'Select a platform to continue'}
-                        {selectedOS && <ArrowRight className="h-4 w-4" />}
-                    </button>
-                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                    <p className="mt-5 text-center text-xs text-muted-foreground">
                         You can switch platforms anytime — nothing is installed until you run the script.
                     </p>
                 </section>
@@ -132,7 +123,7 @@ function OSChoice({
         <button
             onClick={onClick}
             aria-pressed={active}
-            className={`group relative flex items-center gap-4 rounded-2xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`group relative flex cursor-pointer items-center gap-4 rounded-2xl border p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 active
                     ? 'border-primary bg-primary/5 shadow-soft'
                     : 'border-border bg-background hover:border-primary/40 hover:bg-accent/40'
