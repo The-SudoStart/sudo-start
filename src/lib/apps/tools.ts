@@ -191,4 +191,68 @@ export const toolApps: Package[] = [
       },
     ],
   },
+  {
+    id: 'lazygit',
+    name: 'LazyGit',
+    description: '🦥 Simple terminal UI for git commands',
+    category: 'tool',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install lazygit',
+        linuxCommand: 'sudo add-apt-repository ppa:lazygit-team/release -y && sudo apt-get update && sudo apt-get install -y lazygit',
+      },
+    ],
+  },
+  {
+    id: 'delta',
+    name: 'Delta',
+    description: '📊 Syntax-highlighting pager for git and diff output',
+    category: 'tool',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install git-delta',
+        linuxCommand: 'wget https://github.com/dandavison/delta/releases/download/0.16.5/git-delta_0.16.5_amd64.deb -O delta.deb && sudo apt install ./delta.deb -y && rm delta.deb',
+      },
+    ],
+  },
+  {
+    id: 'httpie',
+    name: 'HTTPie',
+    description: '🌐 User-friendly HTTP client with JSON support',
+    category: 'tool',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install httpie',
+        linuxCommand: 'sudo apt-get install -y httpie',
+      },
+    ],
+  },
+  {
+    id: 'pandoc',
+    name: 'Pandoc',
+    description: '📄 Universal document converter (Markdown, PDF, DOCX, etc.)',
+    category: 'tool',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew install pandoc',
+        linuxCommand: 'sudo apt-get install -y pandoc',
+      },
+    ],
+  },
 ];

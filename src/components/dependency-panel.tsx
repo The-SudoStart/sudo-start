@@ -4,8 +4,8 @@ import { Package } from '@/types';
 import { dependencyWarnings, pairSuggestions } from '@/lib/suggestions';
 import { appCatalog } from '@/lib/apps';
 import { useStore } from '@/lib/store';
-import { AlertTriangle, Lightbulb, Plus } from 'lucide-react';
-import { useMemo } from 'react';
+import { AlertTriangle, Lightbulb, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 interface DependencyPanelProps {
   bucket: Package[];
@@ -14,7 +14,8 @@ interface DependencyPanelProps {
 
 export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
   const { addToBucket } = useStore();
-  const bucketIds = new Set(bucket.map((p) => p.id));
+  const [isExpanded, setIsExpanded] = useState(false);
+  const bucketIds = useMemo(() => new Set(bucket.map((p) => p.id)), [bucket]);
 
   const warnings = useMemo(() => {
     return dependencyWarnings.filter(
@@ -45,62 +46,84 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
   if (warnings.length === 0 && suggestions.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      {/* Warnings */}
-      {warnings.length > 0 && (
-        <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4 space-y-2">
-          <div className="flex items-center gap-2 text-yellow-400 text-sm font-bold">
-            <AlertTriangle className="w-4 h-4" />
-            Dependency Warnings
-          </div>
-          <ul className="space-y-1">
-            {warnings.map((w, i) => {
-              const needsPkg = appCatalog.find((p) => p.id === w.needs);
-              return (
-                <li key={i} className="flex items-center justify-between text-sm text-yellow-300/80">
-                  <span>{w.message}</span>
-                  {needsPkg && (
-                    <button
-                      onClick={() => addToBucket({ ...needsPkg, selectedVersion: needsPkg.defaultVersion })}
-                      className="ml-3 shrink-0 flex items-center gap-1 px-2 py-1 rounded border border-yellow-500/40
-                        text-yellow-400 hover:bg-yellow-500/10 transition-colors text-xs"
-                    >
-                      <Plus className="w-3 h-3" />
-                      Add {needsPkg.name}
-                    </button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+    <div className="rounded-lg border border-border bg-card/50 overflow-hidden">
+      {/* Compact header - always visible */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-accent/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          {warnings.length > 0 && (
+            <span className="flex items-center gap-1 text-yellow-500">
+              <AlertTriangle className="w-3 h-3" />
+              {warnings.length} warning{warnings.length > 1 ? 's' : ''}
+            </span>
+          )}
+          {suggestions.length > 0 && (
+            <span className="flex items-center gap-1 text-primary">
+              <Lightbulb className="w-3 h-3" />
+              {suggestions.length} suggestion{suggestions.length > 1 ? 's' : ''}
+            </span>
+          )}
         </div>
-      )}
+        <span className="text-muted-foreground flex items-center gap-1">
+          {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        </span>
+      </button>
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && (
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-2">
-          <div className="flex items-center gap-2 terminal-text text-sm font-bold">
-            <Lightbulb className="w-4 h-4" />
-            Pairs Well With
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {suggestions.map(({ triggeredBy, suggestedId }) => {
-              const pkg = appCatalog.find((p) => p.id === suggestedId);
-              if (!pkg) return null;
-              return (
-                <button
-                  key={suggestedId}
-                  onClick={() => addToBucket({ ...pkg, selectedVersion: pkg.defaultVersion })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/30
-                    text-sm hover:bg-primary/10 hover:border-primary/60 transition-all group"
-                >
-                  <Plus className="w-3 h-3 terminal-text" />
-                  <span className="terminal-text">{pkg.name}</span>
-                  <span className="text-muted-foreground text-xs">via {triggeredBy}</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* Expanded content */}
+      {isExpanded && (
+        <div className="px-3 pb-3 space-y-2 border-t border-border/50">
+          {/* Warnings */}
+          {warnings.length > 0 && (
+            <div className="pt-2 space-y-1.5">
+              {warnings.map((w, i) => {
+                const needsPkg = appCatalog.find((p) => p.id === w.needs);
+                return (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <span className="text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      {w.message}
+                    </span>
+                    {needsPkg && (
+                      <button
+                        onClick={() => addToBucket({ ...needsPkg, selectedVersion: needsPkg.defaultVersion })}
+                        className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-yellow-500/10
+                          text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/20 transition-colors"
+                      >
+                        <Plus className="w-2.5 h-2.5" />
+                        Add
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Suggestions */}
+          {suggestions.length > 0 && (
+            <div className={`space-y-1.5 ${warnings.length > 0 ? 'pt-2 border-t border-border/30' : 'pt-2'}`}>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestions.map(({ triggeredBy, suggestedId }) => {
+                  const pkg = appCatalog.find((p) => p.id === suggestedId);
+                  if (!pkg) return null;
+                  return (
+                    <button
+                      key={suggestedId}
+                      onClick={() => addToBucket({ ...pkg, selectedVersion: pkg.defaultVersion })}
+                      className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] bg-primary/10
+                        text-primary hover:bg-primary/20 transition-colors"
+                      title={`Suggested via ${triggeredBy}`}
+                    >
+                      <Plus className="w-2.5 h-2.5" />
+                      {pkg.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

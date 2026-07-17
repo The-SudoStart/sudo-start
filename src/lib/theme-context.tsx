@@ -18,9 +18,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('sudostart-theme') as Theme | null;
-      return stored || 'dark';
+      if (stored === 'light' || stored === 'dark') return stored;
+      // Respect the OS preference, defaulting to the clean light theme.
+      return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {

@@ -4,7 +4,8 @@ export type Category =
   | 'ide' | 'browser' | 'tool' | 'runtime' | 'database' | 'container'
   | 'terminal' | 'framework' | 'devops' | 'data-science' | 'mobile'
   | 'game-dev' | 'desktop-dev' | 'web-server' | 'package-manager'
-  | 'build-tool' | 'cloud' | 'utility' | 'communication' | 'productivity';
+  | 'build-tool' | 'cloud' | 'utility' | 'communication' | 'productivity'
+  | 'security' | 'media' | 'vcs';
 
 export interface AppVersion {
   id: string;
@@ -56,6 +57,7 @@ export interface AppState {
   importBucket: (json: string) => boolean;
   setGeneratedScript: (script: string) => void;
   setCurrentStep: (step: 'boot' | 'catalog' | 'chat' | 'output') => void;
+  goBack: () => void;
   toggleChat: () => void;
   clearBucket: () => void;
 }

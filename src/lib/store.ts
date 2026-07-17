@@ -1,15 +1,18 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { AppState, Package } from '@/types';
 import { getDefaultApps, appCatalog } from './apps';
 
-export const useStore = create<AppState>((set, get) => ({
-  // Initial state
-  os: null,
-  shell: null,
-  bucket: [],
-  generatedScript: '',
-  currentStep: 'boot',
-  isChatOpen: false,
+export const useStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      // Initial state
+      os: null,
+      shell: null,
+      bucket: [],
+      generatedScript: '',
+      currentStep: 'boot',
+      isChatOpen: false,
 
   // Actions
   setOS: (os) => set({ os }),
@@ -104,8 +107,30 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  setGeneratedScript: (script) => set({ generatedScript: script }),
-  setCurrentStep: (step) => set({ currentStep: step }),
-  toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
-  clearBucket: () => set({ bucket: [] }),
-}));
+      setGeneratedScript: (script) => set({ generatedScript: script }),
+      setCurrentStep: (step) => {
+        const prev = get().currentStep;
+        set({ currentStep: step });
+        if (typeof window !== 'undefined' && step !== prev) {
+          window.history.pushState({ step }, '', `#${step}`);
+        }
+      },
+      goBack: () => {
+        if (typeof window !== 'undefined') {
+          window.history.back();
+        }
+      },
+      toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
+      clearBucket: () => set({ bucket: [] }),
+    }),
+    {
+      name: 'sudostart-storage',
+      partialize: (state) => ({
+        os: state.os,
+        shell: state.shell,
+        bucket: state.bucket,
+        currentStep: state.currentStep,
+      }),
+    }
+  )
+);
