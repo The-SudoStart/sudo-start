@@ -116,17 +116,21 @@ export function generateScript(
 
   // Progress bar functions
   lines.push('# ── Progress bar functions ───────────────────────────');
-  lines.push('PROGRESS_WIDTH=30');
+  lines.push('PROGRESS_WIDTH=40');
   lines.push('draw_progress_bar() {');
   lines.push('  local current=$1');
   lines.push('  local total=$2');
   lines.push('  local name="$3"');
+  lines.push('  local pct=$((current * 100 / total))');
   lines.push('  local filled=$((current * PROGRESS_WIDTH / total))');
   lines.push('  local empty=$((PROGRESS_WIDTH - filled))');
   lines.push('  local bar=""');
   lines.push('  for ((i=0; i<filled; i++)); do bar+="█"; done');
   lines.push('  for ((i=0; i<empty; i++)); do bar+="░"; done');
-  lines.push('  printf "\\r${CYAN}[%s]${RESET} %s ${BOLD}%s${RESET} (%d/%d)" "$bar" "Installing:" "$name" "$current" "$total"');
+  lines.push('  echo ""');
+  lines.push('  echo -e "  ${CYAN}[${bar}]${RESET}"');
+  lines.push('  echo -e "  ${BOLD}${name}${RESET}  ${CYAN}${current}/${total}${RESET}  (${pct}%)"');
+  lines.push('  echo ""');
   lines.push('}');
   lines.push('');
   lines.push('clear_line() {');
@@ -143,20 +147,37 @@ export function generateScript(
   lines.push('fi');
   lines.push('');
 
-  // Spinner function for visual feedback
+  // Spinner function for visual feedback during installation
   lines.push('# ── Spinner for visual feedback ────────────────────────');
   lines.push('spinner() {');
   lines.push('  local pid=$1');
+  lines.push('  local msg="${2:-Working...}"');
   lines.push('  local delay=0.1');
   lines.push('  local spinstr="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"');
+  lines.push('  local elapsed=0');
   lines.push('  while ps -p $pid > /dev/null 2>&1; do');
   lines.push('    local temp=${spinstr#?}');
-  lines.push('    printf " ${CYAN}%c${RESET}" "$spinstr"');
+  lines.push('    local mins=$((elapsed / 60))');
+  lines.push('    local secs=$((elapsed % 60))');
+  lines.push('    printf "\\r  ${CYAN}%c${RESET} %s  ${YELLOW}%02d:%02d${RESET}" "$spinstr" "$msg" "$mins" "$secs"');
   lines.push('    local spinstr=$temp${spinstr%"$temp"}');
   lines.push('    sleep $delay');
-  lines.push('    printf "\\b\\b "');
+  lines.push('    elapsed=$((elapsed + 1))');
   lines.push('  done');
-  lines.push('  printf "\\b\\b"');
+  lines.push('  wait $pid');
+  lines.push('  local exit_code=$?');
+  lines.push('  printf "\\r%-80s\\r" ""');
+  lines.push('  return $exit_code');
+  lines.push('}');
+  lines.push('');
+
+  // Step header function
+  lines.push('# ── Step header ──────────────────────────────────────');
+  lines.push('step_header() {');
+  lines.push('  local current=$1');
+  lines.push('  local total=$2');
+  lines.push('  local name="$3"');
+  lines.push('  echo -e "  ${BLUE}━━━${RESET} ${BOLD}[${current}/${total}]${RESET} ${name}"');
   lines.push('}');
   lines.push('');
 
@@ -235,7 +256,8 @@ export function generateScript(
 
       lines.push(`# [${idx + 1}/${packages.length}] ${pkg.name}${versionLabel}`);
       lines.push(`CURRENT_PACKAGE=$((CURRENT_PACKAGE + 1))`);
-      lines.push(`draw_progress_bar $CURRENT_PACKAGE ${packages.length} "${pkg.name}"`);
+      lines.push(`step_header $CURRENT_PACKAGE ${packages.length} "${pkg.name}${versionLabel}"`);
+      lines.push(`draw_progress_bar $CURRENT_PACKAGE ${packages.length} "Overall Progress"`);
       lines.push('');
 
       // Emit pin note as inline comment if present
@@ -251,33 +273,53 @@ export function generateScript(
         const checkCmd = getCheckCommand(pkg.id);
         if (checkCmd) {
           lines.push(`if command -v ${checkCmd} &>/dev/null; then`);
-          lines.push(`  : # Already installed`);
+          lines.push(`  ok "${pkg.name} already installed — skipping"`);
           lines.push('else');
-          // Run install with suppressed output unless verbose
           lines.push('  if [ "$VERBOSE" = true ]; then');
+          lines.push(`    log "Installing ${pkg.name}..."`);
           installCmd.split('\n').forEach((line) => {
             lines.push(`    ${line}`);
           });
+          lines.push(`    ok "${pkg.name} installed"`);
           lines.push('  else');
-          lines.push('    # Suppress output and show only errors');
+          lines.push(`    log "Installing ${pkg.name}..."`);
+          lines.push('    (');
           installCmd.split('\n').forEach((line) => {
             if (line.trim()) {
-              lines.push(`    ${line} > /dev/null 2>&1 || true`);
+              lines.push(`      ${line}`);
             }
           });
+          lines.push('    ) > /dev/null 2>&1 &');
+          lines.push(`    spinner $! "Installing ${pkg.name}..."`);
+          lines.push('    if [ $? -eq 0 ]; then');
+          lines.push(`      ok "${pkg.name} installed"`);
+          lines.push('    else');
+          lines.push(`      err "${pkg.name} installation failed"`);
+          lines.push('    fi');
           lines.push('  fi');
           lines.push('fi');
         } else {
           lines.push('if [ "$VERBOSE" = true ]; then');
+          lines.push(`  log "Installing ${pkg.name}..."`);
           installCmd.split('\n').forEach((line) => {
             lines.push(`  ${line}`);
           });
+          lines.push(`  ok "${pkg.name} installed"`);
           lines.push('else');
+          lines.push(`  log "Installing ${pkg.name}..."`);
+          lines.push('  (');
           installCmd.split('\n').forEach((line) => {
             if (line.trim()) {
-              lines.push(`  ${line} > /dev/null 2>&1 || true`);
+              lines.push(`    ${line}`);
             }
           });
+          lines.push('  ) > /dev/null 2>&1 &');
+          lines.push(`  spinner $! "Installing ${pkg.name}..."`);
+          lines.push('  if [ $? -eq 0 ]; then');
+          lines.push(`    ok "${pkg.name} installed"`);
+          lines.push('  else');
+          lines.push(`    err "${pkg.name} installation failed"`);
+          lines.push('  fi');
           lines.push('fi');
         }
       }
@@ -285,8 +327,9 @@ export function generateScript(
       lines.push('');
     });
 
-    lines.push('clear_line');
-    lines.push('');
+    lines.push('echo ""');
+    lines.push('echo -e "  ${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"');
+    lines.push('echo ""');
   }
 
   lines.push('echo ""');
