@@ -2,6 +2,28 @@ import { Package } from '@/types';
 
 export const ideApps: Package[] = [
   {
+    id: 'kiro',
+    name: 'Kiro',
+    description: '🚀 AWS agentic IDE with spec-driven development and parallel AI agents',
+    category: 'ide',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable (.deb)',
+        macCommand: 'brew install --cask kiro',
+        linuxCommand: 'echo "📥 Downloading Kiro .deb package..." && cd /tmp && curl -fSL "https://prod.download.desktop.kiro.dev/releases/stable/linux-x64/signed/latest/deb/kiro-ide-latest-stable-linux-x64.deb" -o kiro.deb && echo "📦 Installing Kiro..." && sudo apt-get install -y ./kiro.deb && rm -f kiro.deb && echo "✅ Kiro installed successfully!"',
+      },
+      {
+        id: 'tar',
+        label: 'Universal (.tar.gz)',
+        macCommand: 'brew install --cask kiro',
+        linuxCommand: 'echo "📥 Downloading Kiro..." && cd /tmp && curl -fSL "https://prod.download.desktop.kiro.dev/releases/stable/linux-x64/signed/latest/tar/kiro-ide-latest-stable-linux-x64.tar.gz" -o kiro.tar.gz && echo "📦 Extracting..." && sudo mkdir -p /opt/kiro && sudo tar -xzf kiro.tar.gz -C /opt/kiro --strip-components=1 && rm -f kiro.tar.gz && echo "✅ Kiro extracted to /opt/kiro" && echo "📝 To add Kiro to your PATH, add this to your shell config:" && echo "    export PATH=\"/opt/kiro/bin:\$PATH\""',
+      },
+    ],
+  },
+  {
     id: 'windsurf',
     name: 'Windsurf',
     description: '🌊 The first agentic IDE, powered by Codeium AI',
