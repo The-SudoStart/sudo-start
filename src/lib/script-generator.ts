@@ -430,7 +430,7 @@ export function estimateDiskSpace(packages: Package[]): number {
 
 function getCheckCommand(pkgId: string): string | null {
   const map: Record<string, string> = {
-    vscode: 'code', cursor: 'cursor', zed: 'zed', vim: 'vim', intellij: 'idea',
+    vscode: 'code', cursor: 'cursor', zed: 'zed', vim: 'vim', intellij: 'idea', antigravity: 'antigravity',
     nvm: 'nvm', nodejs: 'node', npm: 'npm', python3: 'python3',
     ruby: 'ruby', php: 'php', kotlin: 'kotlinc', rust: 'rustc',
     go: 'go', java: 'java', cpp: 'g++',

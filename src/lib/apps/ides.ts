@@ -40,6 +40,22 @@ export const ideApps: Package[] = [
     ],
   },
   {
+    id: 'antigravity',
+    name: 'Antigravity',
+    description: '🚀 Google\'s agent-first IDE powered by Gemini - autonomous AI agents for complex tasks',
+    category: 'ide',
+    platforms: { macos: true, linux: true },
+    defaultVersion: 'stable',
+    versions: [
+      {
+        id: 'stable',
+        label: 'Stable',
+        macCommand: 'brew tap google/antigravity && brew install --cask antigravity',
+        linuxCommand: 'echo "📥 Downloading Antigravity for Linux..." && cd /tmp && curl -fSL "https://antigravity.google/download/linux/latest" -o antigravity.AppImage && chmod +x antigravity.AppImage && sudo mv antigravity.AppImage /usr/local/bin/antigravity && echo "✅ Antigravity installed! Run with: antigravity"',
+      },
+    ],
+  },
+  {
     id: 'cursor',
     name: 'Cursor',
     description: '✨ The AI-first code editor built for pair programming',

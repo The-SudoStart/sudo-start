@@ -305,7 +305,7 @@ function PackageCard({
     // Mobile
     'flutter',
     // IDEs
-    'vscode', 'zed', 'vim', 'neovim', 'emacs',
+    'vscode', 'zed', 'vim', 'neovim', 'emacs', 'antigravity',
     // Tools
     'terraform', 'ansible', 'github-cli', 'git', 'curl', 'zsh', 'oh-my-zsh', 'jq', 'htop', 'tmux',
     'lazygit', 'delta', 'httpie', 'pandoc',
