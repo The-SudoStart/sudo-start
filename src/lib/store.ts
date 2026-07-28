@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AppState, Package } from '@/types';
-import { getDefaultApps, appCatalog } from './apps';
+import { clientContainer } from '@/infrastructure/config/client-container';
+
+const bucketUseCase = clientContainer.manageBucketUseCase;
 
 export const useStore = create<AppState>()(
   persist(
@@ -20,54 +22,42 @@ export const useStore = create<AppState>()(
 
   addToBucket: (pkg) =>
     set((state) => {
-      const exists = state.bucket.find((p) => p.id === pkg.id);
-      if (exists) return state;
-      return { bucket: [...state.bucket, pkg] };
+      return { bucket: bucketUseCase.addPackageToBucket(state.bucket, pkg) };
     }),
 
   removeFromBucket: (pkgId) =>
     set((state) => ({
-      bucket: state.bucket.filter((p) => p.id !== pkgId),
+      bucket: bucketUseCase.removePackageFromBucket(state.bucket, pkgId),
     })),
 
   updatePackageVersion: (pkgId, version) =>
     set((state) => ({
-      bucket: state.bucket.map((p) =>
-        p.id === pkgId ? { ...p, selectedVersion: version } : p
-      ),
+      bucket: bucketUseCase.updatePackageVersion(state.bucket, pkgId, version),
     })),
 
   updatePackageNote: (pkgId, note) =>
     set((state) => ({
-      bucket: state.bucket.map((p) =>
-        p.id === pkgId ? { ...p, versionNote: note } : p
-      ),
+      bucket: bucketUseCase.updatePackageNote(state.bucket, pkgId, note),
     })),
 
   addDefaultAppsToBucket: () =>
     set((state) => {
-      const defaultApps = getDefaultApps();
-      const newBucket = [...state.bucket];
-      defaultApps.forEach((app) => {
-        if (!newBucket.find((p) => p.id === app.id)) {
-          newBucket.push(app);
-        }
-      });
-      return { bucket: newBucket };
+      return {
+        bucket: bucketUseCase.addPackagesToBucket(
+          state.bucket,
+          bucketUseCase.getDefaultPackages(),
+        ),
+      };
     }),
 
   loadPreset: (packageIds: string[]) =>
     set((state) => {
-      const newPkgs = packageIds
-        .map((id) => appCatalog.find((p) => p.id === id))
-        .filter(Boolean) as Package[];
-      const newBucket = [...state.bucket];
-      newPkgs.forEach((pkg) => {
-        if (!newBucket.find((p) => p.id === pkg.id)) {
-          newBucket.push({ ...pkg, selectedVersion: pkg.defaultVersion });
-        }
-      });
-      return { bucket: newBucket };
+      return {
+        bucket: bucketUseCase.addPackagesToBucket(
+          state.bucket,
+          bucketUseCase.getPackagesByIds(packageIds),
+        ),
+      };
     }),
 
   exportBucket: () => {
@@ -89,18 +79,7 @@ export const useStore = create<AppState>()(
   importBucket: (json: string) => {
     try {
       const data = JSON.parse(json) as { id: string; selectedVersion?: string; versionNote?: string }[];
-      const newBucket: Package[] = [];
-      data.forEach(({ id, selectedVersion, versionNote }) => {
-        const pkg = appCatalog.find((p) => p.id === id);
-        if (pkg) {
-          newBucket.push({
-            ...pkg,
-            selectedVersion: selectedVersion || pkg.defaultVersion,
-            versionNote: versionNote || '',
-          });
-        }
-      });
-      set({ bucket: newBucket });
+      set({ bucket: bucketUseCase.importBucketEntries(data) });
       return true;
     } catch {
       return false;
@@ -121,7 +100,9 @@ export const useStore = create<AppState>()(
         }
       },
       toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
-      clearBucket: () => set({ bucket: [] }),
+      clearBucket: () => set((state) => ({
+        bucket: bucketUseCase.clearBucket(state.bucket),
+      })),
     }),
     {
       name: 'sudostart-storage',
