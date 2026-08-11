@@ -2,10 +2,10 @@
 
 import { Package } from '@/types';
 import { dependencyWarnings, pairSuggestions } from '@/lib/suggestions';
-import { appCatalog } from '@/lib/apps';
 import { useStore } from '@/lib/store';
 import { AlertTriangle, Lightbulb, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useClientUseCases } from '@/presentation/hooks/use-client-use-cases';
 
 interface DependencyPanelProps {
   bucket: Package[];
@@ -14,6 +14,7 @@ interface DependencyPanelProps {
 
 export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
   const { addToBucket } = useStore();
+  const useCases = useClientUseCases();
   const [isExpanded, setIsExpanded] = useState(false);
   const bucketIds = useMemo(() => new Set(bucket.map((p) => p.id)), [bucket]);
 
@@ -31,7 +32,7 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
       const pairs = pairSuggestions[pkg.id] ?? [];
       pairs.forEach((sugId) => {
         if (!bucketIds.has(sugId) && !seen.has(sugId)) {
-          const sugPkg = appCatalog.find((p) => p.id === sugId);
+          const sugPkg = useCases.manageBucketUseCase.getPackagesByIds([sugId])[0];
           if (sugPkg && (!os || sugPkg.platforms[os])) {
             seen.add(sugId);
             result.push({ triggeredBy: pkg.name, suggestedId: sugId });
@@ -41,7 +42,7 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
     });
 
     return result.slice(0, 4);
-  }, [bucket, bucketIds, os]);
+  }, [bucket, bucketIds, os, useCases]);
 
   if (warnings.length === 0 && suggestions.length === 0) return null;
 
@@ -78,7 +79,7 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
           {warnings.length > 0 && (
             <div className="pt-2 space-y-1.5">
               {warnings.map((w, i) => {
-                const needsPkg = appCatalog.find((p) => p.id === w.needs);
+                const needsPkg = useCases.manageBucketUseCase.getPackagesByIds([w.needs])[0];
                 return (
                   <div key={i} className="flex items-center justify-between text-xs">
                     <span className="text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
@@ -106,7 +107,7 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
             <div className={`space-y-1.5 ${warnings.length > 0 ? 'pt-2 border-t border-border/30' : 'pt-2'}`}>
               <div className="flex flex-wrap gap-1.5">
                 {suggestions.map(({ triggeredBy, suggestedId }) => {
-                  const pkg = appCatalog.find((p) => p.id === suggestedId);
+                  const pkg = useCases.manageBucketUseCase.getPackagesByIds([suggestedId])[0];
                   if (!pkg) return null;
                   return (
                     <button

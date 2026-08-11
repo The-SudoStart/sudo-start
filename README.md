@@ -97,6 +97,22 @@ Curated list of 2025's best development tools across 17+ categories:
 - **Bucket Management**: Save, review, and modify your tool selections
 - **Copy & Paste**: One-click script generation and copying
 
+### Architecture
+
+SudoStart uses Hexagonal Architecture for its core workflows:
+
+- `src/domain` contains entities, value objects, repository interfaces, and script-generation domain services.
+- `src/application` contains use cases and ports for script generation, AI chat, version fetching, bucket management, and script sharing.
+- `src/infrastructure` contains adapters for Groq, future AI providers, package registries, storage, file-backed sharing, and dependency injection.
+
+API routes are kept thin: they handle HTTP validation, rate-limit headers, and response formatting, then delegate to use cases.
+
+More detail:
+
+- [Architecture overview](docs/architecture/hexagonal-overview.md)
+- [Developer guide](docs/architecture/developer-guide.md)
+- [ADR 0001](docs/adr/0001-hexagonal-architecture.md)
+
 ---
 
 ## Demo

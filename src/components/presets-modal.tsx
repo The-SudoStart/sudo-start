@@ -2,12 +2,11 @@
 
 import { useStore } from '@/lib/store';
 import { presets } from '@/lib/presets';
-import { appCatalog } from '@/lib/apps';
 import { X, Clock, Layers, Check } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { estimateInstallTime } from '@/lib/script-generator';
 import { Package } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { useClientUseCases } from '@/presentation/hooks/use-client-use-cases';
 
 interface PresetsModalProps {
   onClose: () => void;
@@ -16,6 +15,7 @@ interface PresetsModalProps {
 export function PresetsModal({ onClose }: PresetsModalProps) {
   const { loadPreset, bucket, os } = useStore();
   const { toast } = useToast();
+  const useCases = useClientUseCases();
   const [applied, setApplied] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -71,9 +71,7 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
           <div className="p-5 max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {presets.map((preset) => {
-                const pkgs = preset.packageIds
-                  .map((id) => appCatalog.find((p) => p.id === id))
-                  .filter(Boolean) as Package[];
+                const pkgs = useCases.manageBucketUseCase.getPackagesByIds(preset.packageIds);
 
                 const available = os
                   ? pkgs.filter((p) => p.platforms[os])
@@ -83,7 +81,7 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
                   bucket.some((b) => b.id === p.id)
                 ).length;
 
-                const estTime = estimateInstallTime(available);
+                const { estimatedMinutes: estTime } = useCases.getInstallEstimatesUseCase.execute(available);
                 const isApplied = applied === preset.id;
 
                 return (

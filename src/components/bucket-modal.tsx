@@ -7,8 +7,8 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { EmptyBucketState } from './empty-state';
-import { appCatalog } from '@/lib/apps';
 import { PresetsModal } from './presets-modal';
+import { useClientUseCases } from '@/presentation/hooks/use-client-use-cases';
 
 interface BucketModalProps {
   onClose: () => void;
@@ -17,6 +17,7 @@ interface BucketModalProps {
 export function BucketModal({ onClose }: BucketModalProps) {
   const { bucket, removeFromBucket, clearBucket, setCurrentStep, updatePackageNote, addDefaultAppsToBucket, addToBucket } = useStore();
   const { toast } = useToast();
+  const useCases = useClientUseCases();
   const modalRef = useRef<HTMLDivElement>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -25,11 +26,8 @@ export function BucketModal({ onClose }: BucketModalProps) {
   // Popular packages for quick-add
   const popularPackages = useMemo(() => {
     const popularIds = ['git', 'nodejs', 'docker', 'vscode', 'zsh'];
-    return popularIds
-      .map(id => appCatalog.find(p => p.id === id))
-      .filter((p): p is NonNullable<typeof p> => p !== undefined)
-      .slice(0, 3);
-  }, []);
+    return useCases.manageBucketUseCase.getPackagesByIds(popularIds).slice(0, 3);
+  }, [useCases]);
 
   const handleAddDefaults = useCallback(() => {
     addDefaultAppsToBucket();
