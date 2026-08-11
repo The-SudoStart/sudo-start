@@ -117,30 +117,6 @@ export function generateScript(
   lines.push('err()  { echo -e "${RED}  ✗${RESET} $*" >&2; }');
   lines.push('');
 
-  // Progress bar functions
-  lines.push('# ── Progress bar functions ───────────────────────────');
-  lines.push('PROGRESS_WIDTH=40');
-  lines.push('draw_progress_bar() {');
-  lines.push('  local current=$1');
-  lines.push('  local total=$2');
-  lines.push('  local name="$3"');
-  lines.push('  local pct=$((current * 100 / total))');
-  lines.push('  local filled=$((current * PROGRESS_WIDTH / total))');
-  lines.push('  local empty=$((PROGRESS_WIDTH - filled))');
-  lines.push('  local bar=""');
-  lines.push('  for ((i=0; i<filled; i++)); do bar+="█"; done');
-  lines.push('  for ((i=0; i<empty; i++)); do bar+="░"; done');
-  lines.push('  echo ""');
-  lines.push('  echo -e "  ${CYAN}[${bar}]${RESET}"');
-  lines.push('  echo -e "  ${BOLD}${name}${RESET}  ${CYAN}${current}/${total}${RESET}  (${pct}%)"');
-  lines.push('  echo ""');
-  lines.push('}');
-  lines.push('');
-  lines.push('clear_line() {');
-  lines.push('  printf "\\r%-80s\\r" ""');
-  lines.push('}');
-  lines.push('');
-
   // Check for verbose mode
   lines.push('# ── Check for verbose mode ────────────────────────────');
   lines.push('VERBOSE=false');
@@ -260,7 +236,6 @@ export function generateScript(
       lines.push(`# [${idx + 1}/${packages.length}] ${pkg.name}${versionLabel}`);
       lines.push(`CURRENT_PACKAGE=$((CURRENT_PACKAGE + 1))`);
       lines.push(`step_header $CURRENT_PACKAGE ${packages.length} "${pkg.name}${versionLabel}"`);
-      lines.push(`draw_progress_bar $CURRENT_PACKAGE ${packages.length} "Overall Progress"`);
       lines.push('');
 
       // Emit pin note as inline comment if present
