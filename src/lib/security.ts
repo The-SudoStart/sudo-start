@@ -3,10 +3,6 @@
  * Centralized validation, sanitization, and security helpers
  */
 
-import { appCatalog } from './apps';
-
-// Valid package IDs from the catalog (computed once for performance)
-const VALID_PACKAGE_IDS = new Set(appCatalog.map((p) => p.id));
 
 // Valid version ID patterns (alphanumeric, dots, hyphens, underscores, v prefix)
 const VALID_VERSION_PATTERN = /^[a-zA-Z0-9._-]+$/;
@@ -30,7 +26,7 @@ const PATH_TRAVERSAL_PATTERN = /\.\.[\/\\]|^\/|\\|^\./;
 export function isValidPackageId(id: string): boolean {
   if (!id || typeof id !== 'string') return false;
   if (!VALID_PACKAGE_ID_PATTERN.test(id)) return false;
-  return VALID_PACKAGE_IDS.has(id);
+  return VALID_PACKAGE_ID_PATTERN.test(id);
 }
 
 /**

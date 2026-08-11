@@ -36,6 +36,9 @@ jobs:
       - name: TypeScript type-check
         run: pnpm exec tsc --noEmit
 
+      - name: Unit tests with coverage
+        run: pnpm test:coverage
+
   build:
     name: Build
     runs-on: ubuntu-latest

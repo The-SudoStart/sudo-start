@@ -1,13 +1,13 @@
 'use client';
 
 import { useStore } from '@/lib/store';
-import { appCatalog, getAppsForOS } from '@/lib/apps';
 import { Package } from '@/types';
 import { Search, X, Plus, Check, SearchX, Sparkles, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { getCategoryMeta } from '@/lib/categories';
 import { AppIcon } from './app-icon';
+import { useClientUseCases } from '@/presentation/hooks/use-client-use-cases';
 
 interface SearchBarProps {
   onClose: () => void;
@@ -15,6 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({ onClose }: SearchBarProps) {
   const { os, bucket, addToBucket, removeFromBucket } = useStore();
+  const useCases = useClientUseCases();
   const [query, setQuery] = useState('');
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [externalResults, setExternalResults] = useState<Package[]>([]);
@@ -24,17 +25,9 @@ export function SearchBar({ onClose }: SearchBarProps) {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const availableApps = useMemo(() => {
-    if (!os) return appCatalog;
-    return getAppsForOS(os);
-  }, [os]);
-
   const registriesForOS = useMemo(() => {
-    const regs: string[] = ['npm', 'pypi'];
-    if (os === 'macos') regs.push('homebrew');
-    if (os === 'linux') regs.push('apt');
-    return regs;
-  }, [os]);
+    return useCases.searchPackagesUseCase.getRegistryIdsForPlatform(os);
+  }, [os, useCases]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -43,22 +36,11 @@ export function SearchBar({ onClose }: SearchBarProps) {
   useFocusTrap(containerRef, true);
 
   const localResults = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return availableApps
-      .filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.id.toLowerCase().includes(q)
-      )
-      .slice(0, 12);
-  }, [query, availableApps]);
+    return useCases.searchPackagesUseCase.executeSync({ query, platform: os }).packages;
+  }, [query, os, useCases]);
 
   useEffect(() => {
     if (!query.trim()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExternalResults([]);
       return;
     }
@@ -76,13 +58,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
         );
         const allResults = await Promise.all(promises);
         const merged = allResults.flat();
-        const seen = new Set(localResults.map((p) => p.name.toLowerCase()));
-        const filtered = merged.filter((p: Package) => {
-          const name = p.name.toLowerCase();
-          if (seen.has(name)) return false;
-          seen.add(name);
-          return true;
-        });
+        const filtered = useCases.searchPackagesUseCase.mergeExternalResults(localResults, merged);
         setExternalResults(filtered);
       } catch {
         setExternalResults([]);
@@ -94,13 +70,11 @@ export function SearchBar({ onClose }: SearchBarProps) {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query, registriesForOS, localResults]);
+  }, [query, registriesForOS, localResults, useCases]);
 
   const suggestions = useMemo(() => {
-    if (query.trim()) return [];
-    const popular = ['git', 'vscode', 'nodejs', 'docker', 'python3', 'rust', 'cursor', 'zsh', 'go', 'bun', 'vim', 'firefox'];
-    return availableApps.filter((p) => popular.includes(p.id)).slice(0, 8);
-  }, [query, availableApps]);
+    return useCases.searchPackagesUseCase.executeSync({ query, platform: os }).suggestions;
+  }, [query, os, useCases]);
 
   const isInBucket = useCallback((pkg: Package) => bucket.some((p) => p.id === pkg.id), [bucket]);
 

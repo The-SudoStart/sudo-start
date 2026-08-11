@@ -10,7 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/hooks/use-toast';
 import { Package as PackageType, OS, Shell } from '@/types';
-import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
+import { useClientUseCases } from '@/presentation/hooks/use-client-use-cases';
 
 interface ScriptExplanationProps {
   script: string;
@@ -56,8 +56,8 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
     return null;
   });
 
-  const estTime = estimateInstallTime(packages);
-  const estDisk = estimateDiskSpace(packages);
+  const useCases = useClientUseCases();
+  const { estimatedMinutes: estTime, estimatedDiskMb: estDisk } = useCases.getInstallEstimatesUseCase.execute(packages);
   const diskLabel = estDisk >= 1000 ? `${(estDisk / 1000).toFixed(1)} GB` : `${estDisk} MB`;
 
   const toggleSection = (section: ExplanationSection) => {
