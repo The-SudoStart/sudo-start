@@ -13,7 +13,7 @@ export default defineConfig({
     include: ['src/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text', 'lcov', 'json-summary'],
       include: ['src/domain/**/*.ts', 'src/application/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/application/dto/**', 'src/application/ports/**'],
       thresholds: {
@@ -22,6 +22,8 @@ export default defineConfig({
         lines: 80,
         statements: 80,
       },
+      // Ensure all source files are reported
+      all: true,
     },
   },
 });

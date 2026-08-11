@@ -1,5 +1,57 @@
 # Hexagonal Architecture Overview
 
+
+```mermaid
+
+flowchart TB
+    subgraph "Infrastructure Layer (Adapters)"
+        direction TB
+        UI[("UI Components<br/>React/Next.js")]
+        API[("API Routes<br/>Next.js API")]
+        Groq[("Groq Adapter")]
+        Brew[("Homebrew Adapter")]
+        Apt[("Apt Adapter")]
+        Npm[("NPM Adapter")]
+        File[("File System")]
+    end
+
+    subgraph "Application Layer (Ports)"
+        direction TB
+        UC1[("Generate Script<br/>Use Case")]
+        UC2[("Chat with AI<br/>Use Case")]
+        UC3[("Fetch Versions<br/>Use Case")]
+        UC4[("Manage Bucket<br/>Use Case")]
+    end
+
+    subgraph "Domain Layer (Core)"
+        direction TB
+        Ent1[("Package<br/>Entity")]
+        Ent2[("Script<br/>Entity")]
+        Ent3[("Bucket<br/>Entity")]
+        Svc[("Script Generation<br/>Domain Service")]
+        Repo[("Package Repository<br/>Interface")]
+    end
+
+    UI -->|"drives"| UC1
+    UI -->|"drives"| UC2
+    UI -->|"drives"| UC4
+    API -->|"drives"| UC2
+    API -->|"drives"| UC3
+    
+    UC1 -->|"uses"| Svc
+    UC2 -->|"uses"| Groq
+    UC3 -->|"uses"| Brew
+    UC3 -->|"uses"| Apt
+    UC4 -->|"uses"| Ent3
+    
+    Svc -->|"uses"| Ent1
+    Svc -->|"uses"| Ent2
+    Svc -->|"uses"| Repo
+    
+    Brew -->|"implements"| Repo
+    Apt -->|"implements"| Repo
+    Npm -->|"implements"| Repo
+```
 SudoStart is organized around ports and adapters so core behavior can be tested without React, Next.js, Groq, browser storage, or registry HTTP calls.
 
 ## Layers

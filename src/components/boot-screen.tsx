@@ -4,6 +4,7 @@ import { useStore } from '@/lib/store';
 import { OS } from '@/types';
 import { Apple, Monitor, Terminal, Check, Sparkles, Package, Zap } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 const highlights = [
     { icon: Package, label: '300+ curated tools' },
@@ -17,6 +18,19 @@ export function BootScreen() {
 
     return (
         <div className="relative min-h-screen overflow-hidden" suppressHydrationWarning>
+            {/* Favicon background */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+                <div className="relative w-[80vmin] h-[80vmin] opacity-[0.03]">
+                    <Image
+                        src="/favicon.ico"
+                        alt=""
+                        fill
+                        className="object-contain"
+                        priority={false}
+                    />
+                </div>
+            </div>
+
             {/* Soft hero wash */}
             <div className="absolute inset-0 hero-wash pointer-events-none" aria-hidden="true" suppressHydrationWarning />
 
@@ -41,7 +55,7 @@ export function BootScreen() {
                 </span>
 
                 {/* Headline */}
-                <h1 className="text-balance text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+                <h1 className="text-balance text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
                     Your dev environment,{' '}
                     <span className="terminal-text">ready in one command</span>
                 </h1>
@@ -61,46 +75,33 @@ export function BootScreen() {
                     ))}
                 </ul>
 
-                {/* OS selection card */}
-                <section
-                    aria-label="Choose your platform"
-                    className="mt-10 w-full rounded-3xl border border-border bg-card p-6 text-left shadow-soft-lg sm:p-8"
-                >
-                    <h2 className="text-sm font-semibold text-muted-foreground">
-                        Choose your platform to get started
-                    </h2>
-
-                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2" suppressHydrationWarning>
-                        <OSChoice
-                            active={selectedOS === 'macos'}
-                            onClick={() => {
-                                setSelectedOS('macos');
-                                setOS('macos');
-                                setShell('bash');
-                                setCurrentStep('catalog');
-                            }}
-                            icon={<Apple className="h-6 w-6" />}
-                            title="macOS"
-                            subtitle="Homebrew packages"
-                        />
-                        <OSChoice
-                            active={selectedOS === 'linux'}
-                            onClick={() => {
-                                setSelectedOS('linux');
-                                setOS('linux');
-                                setShell('bash');
-                                setCurrentStep('catalog');
-                            }}
-                            icon={<Monitor className="h-6 w-6" />}
-                            title="Linux"
-                            subtitle="apt · snap · flatpak"
-                        />
-                    </div>
-
-                    <p className="mt-5 text-center text-xs text-muted-foreground">
-                        You can switch platforms anytime — nothing is installed until you run the script.
-                    </p>
-                </section>
+                {/* OS selection buttons */}
+                <div className="mt-10 grid w-full max-w-lg grid-cols-1 gap-6 sm:grid-cols-2" suppressHydrationWarning>
+                    <OSChoice
+                        active={selectedOS === 'macos'}
+                        onClick={() => {
+                            setSelectedOS('macos');
+                            setOS('macos');
+                            setShell('bash');
+                            setCurrentStep('catalog');
+                        }}
+                        icon={<Apple className="h-6 w-6" />}
+                        title="macOS"
+                        subtitle="Homebrew packages"
+                    />
+                    <OSChoice
+                        active={selectedOS === 'linux'}
+                        onClick={() => {
+                            setSelectedOS('linux');
+                            setOS('linux');
+                            setShell('bash');
+                            setCurrentStep('catalog');
+                        }}
+                        icon={<Monitor className="h-6 w-6" />}
+                        title="Linux"
+                        subtitle="apt · snap · flatpak"
+                    />
+                </div>
             </main>
         </div>
     );
