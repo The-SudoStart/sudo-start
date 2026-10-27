@@ -196,6 +196,22 @@
 
 /* Clean, Flathub-inspired surface styles */
 @layer utilities {
+  /* Landing page heading only: Inter is loaded at weight 600 in the root layout. */
+  .hero-headline {
+    max-width: 100%;
+    font-family: var(--font-inter), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.875rem, 8.9vw, 2.25rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  @media (min-width: 640px) {
+    .hero-headline {
+      font-size: clamp(2.25rem, 4.375vw, 3.5rem);
+    }
+  }
+
   /* Accent text — clean, no neon glow */
   .terminal-text {
     color: var(--terminal-green);
