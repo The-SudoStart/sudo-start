@@ -9,10 +9,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 const previewTools = [
-  { id: 'vscode', name: 'VS Code', detail: 'Code editor', Icon: Code2, color: 'text-[#007acc]', surface: 'bg-[#007acc]/10' },
-  { id: 'git', name: 'Git', detail: 'Version control', Icon: GitBranch, color: 'text-[#f05032]', surface: 'bg-[#f05032]/10' },
-  { id: 'docker', name: 'Docker', detail: 'Containers', Icon: Container, color: 'text-[#2496ed]', surface: 'bg-[#2496ed]/10' },
-  { id: 'rust', name: 'Rust', detail: 'Programming language', Icon: Cog, color: 'text-foreground/80', surface: 'bg-foreground/10' },
+  { id: 'vscode', name: 'VS Code', detail: 'Code editor', Icon: Code2, color: 'text-foreground', surface: 'bg-muted' },
+  { id: 'git', name: 'Git', detail: 'Version control', Icon: GitBranch, color: 'text-foreground', surface: 'bg-muted' },
+  { id: 'docker', name: 'Docker', detail: 'Containers', Icon: Container, color: 'text-foreground', surface: 'bg-muted' },
+  { id: 'rust', name: 'Rust', detail: 'Programming language', Icon: Cog, color: 'text-foreground', surface: 'bg-muted' },
 ];
 
 const starterStacks = [
@@ -194,7 +194,7 @@ function PlatformButton({ os, onClick }: { os: 'macos' | 'linux'; onClick: () =>
       className={`flex min-h-12 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
         os === 'macos'
           ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
-          : 'border-primary bg-transparent text-foreground hover:bg-primary/10'
+          : 'border-border bg-transparent text-foreground hover:border-muted-foreground/60 hover:bg-accent'
       }`}
     >
       <Icon className="h-4 w-4" />

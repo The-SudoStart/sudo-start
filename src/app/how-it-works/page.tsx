@@ -37,6 +37,7 @@ export default function HowItWorksPage() {
             <span className="text-base font-bold tracking-tight">SudoStart</span>
           </Link>
           <nav aria-label="Main navigation" className="flex items-center gap-5 text-sm font-medium text-muted-foreground sm:gap-7">
+            <Link href="/how-it-works" aria-current="page" className="rounded-md bg-muted px-3 py-1.5 text-foreground transition-colors hover:bg-accent">How it works</Link>
             <Link href="/" className="transition-colors hover:text-foreground">Build a setup</Link>
             <a href="https://github.com/The-SudoStart/sudo-start" target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">GitHub</a>
           </nav>
@@ -100,7 +101,7 @@ export default function HowItWorksPage() {
               <div className="mt-4 rounded-lg border border-border bg-background p-4">
                 <h3 className="text-sm font-semibold text-foreground">Copy a curl URL</h3>
                 <p className="mt-2">Open the <strong>Curl URL</strong> tab and choose <strong>Generate Curl URL</strong>. Once it is ready, use <strong>Copy One-liner</strong> to copy a command you can paste into a terminal, or <strong>Copy URL only</strong> to copy just the share link. The link serves this script and expires after 24 hours.</p>
-                <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-lg border border-border bg-[#0f1115] px-3 py-2 font-mono text-xs text-green-300 sm:text-sm">bash &lt;(curl -fsSL &quot;your-share-url&quot;)</code>
+                <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-lg border border-border bg-[#0f1115] px-3 py-2 font-mono text-xs text-[#b8b8b8] sm:text-sm">bash &lt;(curl -fsSL &quot;your-share-url&quot;)</code>
               </div>
             </GuideStep>
 
@@ -132,7 +133,7 @@ export default function HowItWorksPage() {
             <GuideStep id="run" number="04" icon={<PackageCheck className="h-5 w-5" />} title="Download and run it locally">
               <p>Download the shell script, open a terminal on the target machine, and run the command below from the folder where the file was saved:</p>
               <div className="mt-4 overflow-x-auto rounded-lg border border-border bg-[#0f1115] px-4 py-3">
-                <code className="whitespace-nowrap font-mono text-sm text-green-300">chmod +x sudo-start-setup.sh &amp;&amp; ./sudo-start-setup.sh</code>
+                <code className="whitespace-nowrap font-mono text-sm text-[#b8b8b8]">chmod +x sudo-start-setup.sh &amp;&amp; ./sudo-start-setup.sh</code>
               </div>
               <p className="mt-3">The script installs the tools using their platform-specific package commands. Add <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">--verbose</code> when running it to see more detailed output.</p>
             </GuideStep>
