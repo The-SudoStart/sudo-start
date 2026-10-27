@@ -31,6 +31,7 @@ export function ScriptOutput() {
   const [curlLoading, setCurlLoading] = useState(false);
   const [curlError, setCurlError] = useState<string | null>(null);
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [runCommandCopied, setRunCommandCopied] = useState(false);
 
   // Memoize script generation to avoid recalculation on every render
   const script = useMemo(() => generateScript(os, shell, bucket), [os, shell, bucket]);
@@ -41,6 +42,7 @@ export function ScriptOutput() {
   const diskLabel = estDisk >= 1000 ? `${(estDisk / 1000).toFixed(1)} GB` : `${estDisk} MB`;
 
   const pinnedPackages = bucket.filter((p) => p.versionNote?.trim());
+  const runCommand = 'chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh';
 
   const handleCopy = async (text: string) => {
     const success = await copyToClipboard(text);
@@ -50,6 +52,17 @@ export function ScriptOutput() {
       setTimeout(() => setCopied(false), 2000);
     } else {
       toast.error('❌ Failed to copy to clipboard');
+    }
+  };
+
+  const handleCopyRunCommand = async () => {
+    const success = await copyToClipboard(runCommand);
+    if (success) {
+      setRunCommandCopied(true);
+      toast.success('Run command copied to clipboard');
+      setTimeout(() => setRunCommandCopied(false), 2000);
+    } else {
+      toast.error('Failed to copy run command');
     }
   };
 
@@ -102,42 +115,43 @@ export function ScriptOutput() {
   ];
 
   return (
-    <div className="relative min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto w-full max-w-5xl space-y-4 sm:space-y-6">
+    <div className="relative min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-7">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between sm:pb-6">
           <div>
-            <h1 className="text-4xl font-bold terminal-text">Setup Script</h1>
-            <p className="text-muted-foreground mt-1">Your custom environment is ready to deploy</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Your install plan</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Review your script</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">Your setup is ready. Check the selected tools and commands before running it on your machine.</p>
           </div>
           <button
             onClick={goBack}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-border hover:border-primary/50 transition-all"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary/50 hover:bg-accent/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ChevronLeft className="w-4 h-4" />
-            Back
+            Back to tools
           </button>
         </div>
 
         {/* Summary */}
         <div className="terminal-card rounded-lg p-4 sm:p-5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-            <div className="text-center p-3 rounded-lg bg-muted/50">
+            <div className="text-center p-3 rounded-lg border border-border bg-background/60">
               <p className="text-2xl font-bold terminal-text">{bucket.length}</p>
               <p className="text-xs text-muted-foreground mt-0.5">Packages</p>
             </div>
-            <div className="text-center p-3 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold terminal-text capitalize">{os}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">OS</p>
+            <div className="text-center p-3 rounded-lg border border-border bg-background/60">
+              <p className="text-2xl font-bold terminal-text">{os === 'macos' ? 'macOS' : os === 'linux' ? 'Linux' : '—'}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Platform</p>
             </div>
-            <div className="text-center p-3 rounded-lg bg-muted/50 flex flex-col items-center">
+            <div className="text-center p-3 rounded-lg border border-border bg-background/60 flex flex-col items-center">
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4 terminal-text" />
                 <p className="text-2xl font-bold terminal-text">~{estTime}m</p>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">Install time</p>
             </div>
-            <div className="text-center p-3 rounded-lg bg-muted/50 flex flex-col items-center">
+            <div className="text-center p-3 rounded-lg border border-border bg-background/60 flex flex-col items-center">
               <div className="flex items-center gap-1">
                 <HardDrive className="w-4 h-4 terminal-text" />
                 <p className="text-2xl font-bold terminal-text">~{diskLabel}</p>
@@ -212,14 +226,16 @@ export function ScriptOutput() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Script formats">
           {tabs.map((tab) => {
             if (tab.macOnly && os !== 'macos') return null;
             return (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all text-sm font-mono ${
+                className={`flex min-w-max items-center gap-2 px-4 py-2 rounded-lg border transition-colors text-sm ${
                   activeTab === tab.id
                     ? 'border-primary terminal-text bg-primary/10'
                     : 'border-border hover:border-primary/50'
@@ -433,6 +449,26 @@ export function ScriptOutput() {
           </div>
         )}
 
+        <section aria-labelledby="run-script-title" className="rounded-xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 id="run-script-title" className="text-base font-semibold text-foreground">Run it on your machine</h2>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Download the script above, review it, then run this command in your terminal.</p>
+              <code className="mt-3 block break-all rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs text-foreground sm:inline-block sm:text-sm">
+                {runCommand}
+              </code>
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyRunCommand}
+              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              {runCommandCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {runCommandCopied ? 'Copied' : 'Copy run command'}
+            </button>
+          </div>
+        </section>
+
         {/* Footer */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <button onClick={() => { clearBucket(); setCurrentStep('boot'); }}
@@ -440,9 +476,6 @@ export function ScriptOutput() {
             Start Over
           </button>
           <div className="text-xs sm:text-sm text-muted-foreground space-y-1 text-left sm:text-right w-full sm:w-auto">
-            <p className="break-all">
-              💡 <code className="px-1.5 sm:px-2 py-0.5 rounded bg-muted terminal-text">chmod +x sudo-start-setup.sh && ./sudo-start-setup.sh</code>
-            </p>
             <p className="text-xs">
               📋 Add <code className="px-1 py-0.5 rounded bg-muted terminal-text">--verbose</code> to see detailed installation logs
             </p>
