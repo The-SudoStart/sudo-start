@@ -4,15 +4,21 @@ import { useStore } from '@/lib/store';
 import { appCatalog } from '@/lib/apps';
 import { presets } from '@/lib/presets';
 import { OS } from '@/types';
-import { Apple, Check, Code2, Container, GitBranch, Monitor, Terminal, Cog } from 'lucide-react';
+import { Apple, Check, Code2, Container, GitBranch, Monitor, Terminal, Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTheme } from '@/lib/theme-context';
+import { AppIcon } from '@/components/app-icon';
+
+const RustBrandIcon = ({ className = '' }: { className?: string; strokeWidth?: number }) => (
+  <AppIcon id="rust" name="Rust" size={28} className={className} />
+);
 
 const previewTools = [
   { id: 'vscode', name: 'VS Code', detail: 'Code editor', Icon: Code2, color: 'text-foreground', surface: 'bg-muted' },
   { id: 'git', name: 'Git', detail: 'Version control', Icon: GitBranch, color: 'text-foreground', surface: 'bg-muted' },
   { id: 'docker', name: 'Docker', detail: 'Containers', Icon: Container, color: 'text-foreground', surface: 'bg-muted' },
-  { id: 'rust', name: 'Rust', detail: 'Programming language', Icon: Cog, color: 'text-foreground', surface: 'bg-muted' },
+  { id: 'rust', name: 'Rust', detail: 'Programming language', Icon: RustBrandIcon, color: 'text-foreground', surface: 'bg-muted' },
 ];
 
 const starterStacks = [
@@ -38,6 +44,7 @@ const starterStacks = [
 
 export function BootScreen() {
   const { setOS, setShell, setCurrentStep, loadPreset } = useStore();
+  const { theme, toggleTheme } = useTheme();
   const [appliedPreset, setAppliedPreset] = useState<string | null>(null);
 
   const choosePlatform = (os: OS) => {
@@ -56,6 +63,15 @@ export function BootScreen() {
         <nav aria-label="Main navigation" className="flex items-center gap-5 text-sm font-medium text-muted-foreground sm:gap-7">
           <Link href="/how-it-works" className="transition-colors hover:text-foreground">How it works</Link>
           <a href="https://github.com/The-SudoStart/sudo-start" target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">GitHub</a>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
         </nav>
       </header>
 
