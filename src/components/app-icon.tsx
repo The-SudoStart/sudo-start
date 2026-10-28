@@ -104,7 +104,7 @@ const brandColors: Record<string, string> = {
   rectangle: '000000',
   redis: 'DC382D',
   ruby: 'CC342D',
-  rust: '000000',
+  rust: 'B8B8B8',
   scala: 'DC322F',
   slack: '4A154B',
   sqlite: '003B57',
