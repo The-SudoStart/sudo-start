@@ -4,7 +4,7 @@ export const packageManagerApps: Package[] = [
   {
     id: 'pnpm',
     name: 'pnpm',
-    description: '⚡ Fast, disk space efficient package manager for Node.js',
+    description: 'Fast, disk space efficient package manager for Node.js',
     category: 'package-manager',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const packageManagerApps: Package[] = [
   {
     id: 'yarn',
     name: 'Yarn',
-    description: '🧶 Fast, reliable, and secure dependency management',
+    description: 'Fast, reliable, and secure dependency management',
     category: 'package-manager',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -42,7 +42,7 @@ export const packageManagerApps: Package[] = [
   {
     id: 'pyenv',
     name: 'pyenv',
-    description: '🐍 Simple Python version management',
+    description: 'Simple Python version management',
     category: 'package-manager',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const packageManagerApps: Package[] = [
   {
     id: 'rbenv',
     name: 'rbenv',
-    description: '💎 Manage your Ruby versions with ease',
+    description: 'Manage your Ruby versions with ease',
     category: 'package-manager',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -74,7 +74,7 @@ export const packageManagerApps: Package[] = [
   {
     id: 'sdkman',
     name: 'SDKMAN!',
-    description: '☕ Manage parallel versions of SDKs (Java, Kotlin, Gradle, Maven…)',
+    description: 'Manage parallel versions of SDKs (Java, Kotlin, Gradle, Maven…)',
     category: 'package-manager',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

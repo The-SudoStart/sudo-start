@@ -14,7 +14,7 @@ import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
 import { useToast } from '@/hooks/use-toast';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { copyToClipboard } from '@/lib/utils';
-import { getCategoryMeta } from '@/lib/categories';
+import { getCategoryMeta, getCategoryFamilyClass } from '@/lib/categories';
 
 export function PackageManager() {
   const { os, bucket, addToBucket, updatePackageVersion, updatePackageNote, addDefaultAppsToBucket, setCurrentStep } = useStore();
@@ -112,7 +112,7 @@ export function PackageManager() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1.5">
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <h1 className="font-display text-3xl font-bold sm:text-[2.5rem] sm:leading-[2.75rem]">
               Explore developer tools
             </h1>
             <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -136,7 +136,7 @@ export function PackageManager() {
             )}
             <button
               onClick={addDefaultAppsToBucket}
-              className="flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary transition-all hover:bg-primary/10"
+              className="press-spring flex items-center gap-2 rounded-lg border border-line-strong bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
             >
               <Wand2 className="h-4 w-4" />
               Add defaults
@@ -162,20 +162,20 @@ export function PackageManager() {
                     setSelectedCategory(cat);
                     setFocusedPackageIndex(-1);
                   }}
-                  className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  className={`${getCategoryFamilyClass(cat)} flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     isSelected
-                      ? 'border-primary bg-primary text-primary-foreground shadow-soft'
-                      : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                      ? 'border-foreground bg-foreground text-background'
+                      : 'border-border bg-card text-foreground hover:border-line-strong'
                   }`}
                   aria-pressed={isSelected}
                   aria-keyshortcuts={shortcutNumber ? shortcutNumber.toString() : undefined}
                   title={`${meta.label}${shortcutNumber ? ` (${shortcutNumber})` : ''}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  {meta.family ? <span className="fam-dot" aria-hidden="true" /> : <Icon className="h-4 w-4" />}
                   <span>{meta.label}</span>
                   <span
-                    className={`ml-0.5 rounded-full px-1.5 text-[11px] tabular-nums ${
-                      isSelected ? 'bg-primary-foreground/20' : 'bg-muted'
+                    className={`ml-0.5 rounded-full px-1.5 font-mono text-[11px] tabular-nums ${
+                      isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {categoryCounts[cat] ?? 0}
@@ -187,15 +187,17 @@ export function PackageManager() {
         </div>
 
         {/* Section label */}
-        <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <div className="label-caps flex items-center gap-2 text-muted-foreground">
           <activeMeta.icon className="h-4 w-4 text-primary" />
           <span className="text-foreground">{activeMeta.label}</span>
-          <span className="text-muted-foreground">· {filteredPackages.length} tools</span>
+          <span className="tabular-nums">· {filteredPackages.length} tools</span>
         </div>
 
         {/* Package Grid */}
         <div
           ref={packageGridRef}
+          // Remount on category change so the cards ripple in again.
+          key={selectedCategory}
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           role="grid"
           aria-label="Package catalog"
@@ -214,6 +216,7 @@ export function PackageManager() {
                 isFocused={focusedPackageIndex === index}
                 onFocus={() => setFocusedPackageIndex(index)}
                 tabIndex={focusedPackageIndex === index ? 0 : -1}
+                staggerIndex={Math.min(index, 12)}
               />
             );
           })}
@@ -230,12 +233,12 @@ export function PackageManager() {
       {bucket.length > 0 && (
         <button
           onClick={handleGenerateScript}
-          className="terminal-glow fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-6 py-3.5 font-semibold text-primary-foreground shadow-soft-lg transition-all hover:brightness-105 sm:left-6 sm:translate-x-0"
+          className="fab-in terminal-glow press-spring fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-6 py-3.5 font-semibold text-primary-foreground hover:brightness-105 sm:left-6 sm:translate-x-0"
           aria-label={`Generate script with ${bucket.length} packages`}
         >
           <Terminal className="h-5 w-5" />
           <span>Generate script</span>
-          <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary-foreground px-1 text-xs font-bold text-primary">
+          <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary-foreground px-1 font-mono text-[11px] font-semibold tabular-nums text-primary">
             {bucket.length}
           </span>
         </button>
@@ -277,6 +280,7 @@ function PackageCard({
   isFocused,
   onFocus,
   tabIndex,
+  staggerIndex = 0,
 }: {
   pkg: Package;
   os: 'macos' | 'linux' | null;
@@ -287,6 +291,8 @@ function PackageCard({
   isFocused?: boolean;
   onFocus?: () => void;
   tabIndex?: number;
+  /** Position in the entrance ripple; capped so long lists don't lag. */
+  staggerIndex?: number;
 }) {
   const { toast } = useToast();
   const [selectedVersion, setSelectedVersion] = useState(pkg.defaultVersion);
@@ -414,7 +420,6 @@ function PackageCard({
   }, [isFocused]);
 
   const meta = getCategoryMeta(pkg.category);
-  const CategoryIcon = meta.icon;
   const hasVersions = versionsToShow.length > 1 || supportsDynamic;
 
   return (
@@ -428,26 +433,27 @@ function PackageCard({
           onAddToBucket(pkg, selectedVersion);
         }
       }}
-      className={`card-lift flex flex-col rounded-2xl border bg-card p-5 shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-        isInBucket ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'
+      style={{ '--i': staggerIndex } as React.CSSProperties}
+      className={`${getCategoryFamilyClass(pkg.category)} card-in spotlight-card flex flex-col rounded-lg border bg-card p-5 shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+        isInBucket ? 'border-primary ring-[3px] ring-bios-soft' : 'border-border'
       } ${isAvailable ? '' : 'opacity-60'} ${isFocused ? 'ring-2 ring-ring' : ''}`}
       role="article"
       aria-label={`${pkg.name} - ${pkg.description}`}
     >
       {/* Header: icon tile + name + category */}
       <div className="flex items-start gap-3.5">
-        <AppIcon id={pkg.id} name={pkg.name} size={48} />
+        <span className="fam-tile flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+          <AppIcon id={pkg.id} name={pkg.name} size={48} className="rounded-lg" />
+        </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-base font-semibold">{pkg.name}</h3>
             {isInBucket && (
-              <span className="flex items-center gap-1 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                <Check className="h-2.5 w-2.5" /> Added
-              </span>
+              <span className="status-tag status-ok">ADDED</span>
             )}
           </div>
-          <span className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <CategoryIcon className="h-3 w-3" />
+          <span className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="fam-dot" aria-hidden="true" />
             {meta.label}
           </span>
         </div>
@@ -458,6 +464,16 @@ function PackageCard({
         {pkg.description}
       </p>
 
+      {/* Install command: shows exactly what will run */}
+      {isAvailable && os && getPreviewCommand() && (
+        <code
+          className="mt-3 block truncate rounded-md bg-muted px-2 py-1 font-mono text-[11.5px] text-muted-foreground"
+          title={getPreviewCommand()}
+        >
+          <span className="text-primary">$ </span>{getPreviewCommand()}
+        </code>
+      )}
+
       {/* Platform support */}
       <div className="mt-3">
         <PlatformBadges pkg={pkg} />
@@ -465,7 +481,7 @@ function PackageCard({
 
       {/* Note badge */}
       {isInBucket && bucketNote && (
-        <div className="mt-3 truncate rounded-lg border border-yellow-500/25 bg-yellow-500/10 px-2 py-1 text-xs text-yellow-700 dark:text-yellow-400">
+        <div className="mt-3 truncate rounded-md border border-warn/30 bg-warn-soft px-2 py-1 text-xs text-warn">
           {bucketNote}
         </div>
       )}
@@ -505,9 +521,9 @@ function PackageCard({
           <button
             onClick={() => onAddToBucket(pkg, selectedVersion)}
             disabled={isInBucket || !isAvailable}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`press-spring flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               isInBucket
-                ? 'cursor-not-allowed bg-primary/15 text-primary'
+                ? 'cursor-not-allowed bg-bios-soft text-primary'
                 : !isAvailable
                 ? 'cursor-not-allowed bg-muted text-muted-foreground'
                 : 'bg-primary text-primary-foreground hover:brightness-105'

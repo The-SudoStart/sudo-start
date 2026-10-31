@@ -4,8 +4,9 @@ import { useState, useRef, useCallback } from 'react';
 import { 
   BookOpen, ChevronDown, ChevronUp, RefreshCw, 
   Clock, HardDrive, Package, Shield, AlertTriangle,
-  Terminal, CheckCircle, XCircle, Loader2, Sparkles
+  Terminal, CheckCircle, XCircle, Sparkles
 } from 'lucide-react';
+import { CubeLoader } from './cube-loader';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/hooks/use-toast';
@@ -102,7 +103,7 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
 
       if (!response.ok) {
         if (response.status === 429) {
-          toast.error('⏳ Rate limit reached. Please try again later.');
+          toast.error('Rate limit reached. Please try again later.');
           throw new Error('Rate limit');
         }
         throw new Error('Failed to generate explanation');
@@ -145,7 +146,7 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
     } catch (error: unknown) {
       if ((error as Error).name === 'AbortError') return;
       console.error('Explanation error:', error);
-      toast.error('❌ Failed to generate explanation. Please try again.');
+      toast.error('Failed to generate explanation. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -288,7 +289,7 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
             hover:bg-primary/10 transition-all text-sm font-mono"
         >
           {isLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+            <><CubeLoader size={14} label="Generating explanation" /> Generating...</>
           ) : (
             <><Sparkles className="w-4 h-4" /> Explain Script</>
           )}
@@ -341,7 +342,7 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
                 
                 {isLoading && !streamingContent && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <CubeLoader size={18} tone="root" label="Root is analyzing your script" />
                     Root is analyzing your script...
                   </div>
                 )}
@@ -482,9 +483,9 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
                   className="w-full flex items-center justify-between p-3 bg-muted/50 hover:bg-muted transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                    <AlertTriangle className="w-4 h-4 text-warn" />
                     <span className="font-medium text-sm">Dependencies & Notes</span>
-                    <span className="text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-yellow-500/10">
+                    <span className="text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-warn-soft">
                       {dependencies.length}
                     </span>
                   </div>
@@ -500,9 +501,9 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
                     {dependencies.map((dep, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2 p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20"
+                        className="flex items-start gap-2 p-2 rounded-lg bg-warn-soft border border-warn/30"
                       >
-                        <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+                        <AlertTriangle className="w-4 h-4 text-warn shrink-0 mt-0.5" />
                         <div className="text-sm">
                           <span className="font-medium">{dep.tool}</span>
                           <span className="text-muted-foreground"> depends on </span>
@@ -565,7 +566,7 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
                 className="w-full flex items-center justify-between p-3 bg-muted/50 hover:bg-muted transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-500" />
+                  <Shield className="w-4 h-4 text-ok" />
                   <span className="font-medium text-sm">Security Notes</span>
                 </div>
                 {expandedSections.security ? (
@@ -578,13 +579,13 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
               {expandedSections.security && (
                 <div className="p-4 space-y-3">
                   <div className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-ok shrink-0 mt-0.5" />
                     <span>All commands use official package managers (Homebrew, apt, etc.)</span>
                   </div>
                   
                   {hasCurlPipe && (
-                    <div className="flex items-start gap-2 p-2 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-                      <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2 p-2 rounded-lg bg-warn-soft border border-warn/30">
+                      <AlertTriangle className="w-4 h-4 text-warn shrink-0 mt-0.5" />
                       <div className="text-sm">
                         <span className="font-medium">Warning: </span>
                         <span>This script contains commands that pipe curl output to bash. Always review scripts before running them.</span>

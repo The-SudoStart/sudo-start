@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { sudoNight, sudoNightLineNumbers } from '@/lib/syntax-theme';
 import { useToast } from '@/hooks/use-toast';
 import { ScriptExplanation } from './script-explanation';
+import { RootAccessBadge } from './root-access-badge';
 import { copyToClipboard } from '@/lib/utils';
 
 type Tab = 'script' | 'brewfile' | 'curl';
@@ -48,10 +49,10 @@ export function ScriptOutput() {
     const success = await copyToClipboard(text);
     if (success) {
       setCopied(true);
-      toast.success('📋 Script copied to clipboard');
+      toast.success('Script copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } else {
-      toast.error('❌ Failed to copy to clipboard');
+      toast.error('Failed to copy to clipboard');
     }
   };
 
@@ -77,7 +78,7 @@ export function ScriptOutput() {
       });
       if (!res.ok) {
         if (res.status === 429) {
-          toast.error('⏳ Rate limit reached, please wait');
+          toast.error('Rate limit reached, please wait');
           throw new Error('Rate limit');
         }
         throw new Error();
@@ -85,11 +86,11 @@ export function ScriptOutput() {
       const { id } = await res.json();
       setCurlUrl(`${window.location.origin}/api/script-share?id=${id}`);
       setActiveTab('curl');
-      toast.success('🔗 Shareable URL created (expires in 24h)');
+      toast.success('Shareable URL created (expires in 24h)');
     } catch (error) {
       if ((error as Error).message !== 'Rate limit') {
         setCurlError('Failed to generate URL. Please try again.');
-        toast.error('🌐 Connection error, please try again');
+        toast.error('Connection error, please try again');
       }
     } finally {
       setCurlLoading(false);
@@ -101,10 +102,10 @@ export function ScriptOutput() {
     const success = await copyToClipboard(`bash <(curl -fsSL "${curlUrl}")`);
     if (success) {
       setCurlCopied(true);
-      toast.success('📋 Curl command copied to clipboard');
+      toast.success('Curl command copied to clipboard');
       setTimeout(() => setCurlCopied(false), 2000);
     } else {
-      toast.error('❌ Failed to copy to clipboard');
+      toast.error('Failed to copy to clipboard');
     }
   };
 
@@ -118,19 +119,24 @@ export function ScriptOutput() {
     <div className="relative min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-7">
         {/* Header */}
-        <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between sm:pb-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Your install plan</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Review your script</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">Your setup is ready. Check the selected tools and commands before running it on your machine.</p>
+        <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between sm:pb-6">
+          <div className="min-w-0">
+            <p className="rise-in label-caps text-primary">Your install plan</p>
+            <h1 className="rise-in mt-2 font-display text-3xl font-bold text-foreground sm:text-[2.5rem] sm:leading-[2.75rem]" style={{ '--i': 1 } as React.CSSProperties}>Review your script</h1>
+            <p className="rise-in mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base" style={{ '--i': 2 } as React.CSSProperties}>Your setup is ready. Check the selected tools and commands before running it on your machine.</p>
+            <button
+              onClick={goBack}
+              className="rise-in mt-5 inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary/50 hover:bg-accent/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              style={{ '--i': 3 } as React.CSSProperties}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to tools
+            </button>
           </div>
-          <button
-            onClick={goBack}
-            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary/50 hover:bg-accent/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back to tools
-          </button>
+          {/* Hangs from the top edge of the page, so it pulls up past the padding */}
+          <div className="-mt-6 hidden shrink-0 sm:-mt-8 lg:block">
+            <RootAccessBadge os={os} shell={shell ?? 'bash'} toolIds={bucket.map((p) => p.id)} />
+          </div>
         </div>
 
         {/* Summary */}
@@ -174,9 +180,9 @@ export function ScriptOutput() {
                       ? 'bg-primary/20 text-primary border border-primary/30'
                       : 'bg-primary/15 text-primary'
                   }`}
-                  title={hasNote ? `📌 ${pkg.versionNote}` : undefined}
+                  title={hasNote ? pkg.versionNote : undefined}
                 >
-                  {hasNote && <StickyNote className="w-2.5 h-2.5 text-yellow-500" />}
+                  {hasNote && <StickyNote className="w-2.5 h-2.5 text-warn" />}
                   {pkg.name}{!isGeneric ? ` ${v.startsWith('v') ? v : 'v' + v}` : ''}
                 </span>
               );
@@ -192,7 +198,7 @@ export function ScriptOutput() {
                 className="flex items-center gap-2 text-xs font-medium w-full text-left"
                 style={{ color: 'var(--note-text)' }}
               >
-                <StickyNote className="w-3.5 h-3.5 text-yellow-500" />
+                <StickyNote className="w-3.5 h-3.5 text-warn" />
                 <span>{pinnedPackages.length} pinned version{pinnedPackages.length > 1 ? 's' : ''} with notes</span>
                 <span className="ml-auto opacity-60">{showAllNotes ? '▲ hide' : '▼ show'}</span>
               </button>
@@ -282,9 +288,10 @@ export function ScriptOutput() {
             <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
               <SyntaxHighlighter
                 language="bash"
-                style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
+                style={sudoNight}
+                customStyle={{ margin: 0, padding: '1.25rem' }}
                 showLineNumbers
+                lineNumberStyle={sudoNightLineNumbers}
               >
                 {script}
               </SyntaxHighlighter>
@@ -318,9 +325,10 @@ export function ScriptOutput() {
             <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
               <SyntaxHighlighter
                 language="ruby"
-                style={vscDarkPlus}
-                customStyle={{ margin: 0, padding: '1.25rem', background: '#0f1115', fontSize: '0.8rem' }}
+                style={sudoNight}
+                customStyle={{ margin: 0, padding: '1.25rem' }}
                 showLineNumbers
+                lineNumberStyle={sudoNightLineNumbers}
               >
                 {brewfile}
               </SyntaxHighlighter>
@@ -344,8 +352,8 @@ export function ScriptOutput() {
                   <div>$ bash &lt;(curl -fsSL <span className="italic">&quot;https://…/api/script-share?id=xxxxxxxx&quot;</span>)</div>
                   <div className="text-xs text-muted-foreground"># Add --verbose for detailed logs</div>
                 </div>
-                <div className="p-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5 text-xs text-yellow-300/80 space-y-1">
-                  <p className="font-bold text-yellow-400">⚠️ Security reminder</p>
+                <div className="p-4 rounded-lg border border-warn/30 bg-warn-soft text-xs text-warn space-y-1">
+                  <p className="flex items-center gap-2 font-bold text-warn"><span className="status-tag status-warn">WARN</span>Security reminder</p>
                   <p>Always review scripts before piping them into bash. The URL serves exactly the script shown in the Script tab.</p>
                 </div>
                 <button
@@ -376,7 +384,7 @@ export function ScriptOutput() {
                     <span className="text-muted-foreground"> &lt;(</span>
                     <span className="terminal-text">curl</span>
                     <span className="text-muted-foreground"> -fsSL </span>
-                    <span className="text-yellow-400">&quot;{curlUrl}&quot;</span>
+                    <span className="text-warn">&quot;{curlUrl}&quot;</span>
                     <span className="text-muted-foreground">)</span>
                   </div>
                 </div>
@@ -389,9 +397,9 @@ export function ScriptOutput() {
                   <button onClick={async () => {
                     const success = await copyToClipboard(curlUrl || '');
                     if (success) {
-                      toast.success('📋 URL copied');
+                      toast.success('URL copied');
                     } else {
-                      toast.error('❌ Failed to copy');
+                      toast.error('Failed to copy');
                     }
                   }}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-all text-sm font-mono">
@@ -413,9 +421,9 @@ export function ScriptOutput() {
                       <button type="button" onClick={async () => {
                         const success = await copyToClipboard(cmd);
                         if (success) {
-                          toast.success('📋 Command copied');
+                          toast.success('Command copied');
                         } else {
-                          toast.error('❌ Failed to copy');
+                          toast.error('Failed to copy');
                         }
                       }} title="Copy command"
                         className="shrink-0 p-1.5 rounded hover:bg-accent transition-colors">
@@ -433,9 +441,9 @@ export function ScriptOutput() {
                       const cmd = `curl -fsSL "${curlUrl}" | bash -s -- --verbose`;
                       const success = await copyToClipboard(cmd);
                       if (success) {
-                        toast.success('📋 Command copied');
+                        toast.success('Command copied');
                       } else {
-                        toast.error('❌ Failed to copy');
+                        toast.error('Failed to copy');
                       }
                     }} title="Copy verbose command"
                       className="shrink-0 p-1.5 rounded hover:bg-accent transition-colors">
@@ -477,7 +485,7 @@ export function ScriptOutput() {
           </button>
           <div className="text-xs sm:text-sm text-muted-foreground space-y-1 text-left sm:text-right w-full sm:w-auto">
             <p className="text-xs">
-              📋 Add <code className="px-1 py-0.5 rounded bg-muted terminal-text">--verbose</code> to see detailed installation logs
+              Add <code className="px-1 py-0.5 rounded bg-muted terminal-text">--verbose</code> to see detailed installation logs
             </p>
           </div>
         </div>

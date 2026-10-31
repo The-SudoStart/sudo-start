@@ -4,7 +4,7 @@ export const devopsApps: Package[] = [
   {
     id: 'jenkins',
     name: 'Jenkins',
-    description: '👷 Open-source automation server',
+    description: 'Open-source automation server',
     category: 'devops',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const devopsApps: Package[] = [
   {
     id: 'prometheus',
     name: 'Prometheus',
-    description: '📊 Monitoring system and time series database',
+    description: 'Monitoring system and time series database',
     category: 'devops',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const devopsApps: Package[] = [
   {
     id: 'docker-compose',
     name: 'Docker Compose',
-    description: '🐙 Define and run multi-container applications',
+    description: 'Define and run multi-container applications',
     category: 'devops',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

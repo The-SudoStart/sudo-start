@@ -4,7 +4,7 @@ export const securityApps: Package[] = [
   {
     id: 'bitwarden-cli',
     name: 'Bitwarden CLI',
-    description: '🔐 Open-source password manager command-line tool',
+    description: 'Open-source password manager command-line tool',
     category: 'security',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const securityApps: Package[] = [
   {
     id: '1password-cli',
     name: '1Password CLI',
-    description: '🔑 Password manager for teams and individuals',
+    description: 'Password manager for teams and individuals',
     category: 'security',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const securityApps: Package[] = [
   {
     id: 'gpg',
     name: 'GPG',
-    description: '🔏 GNU Privacy Guard for encryption and signing',
+    description: 'GNU Privacy Guard for encryption and signing',
     category: 'security',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const securityApps: Package[] = [
   {
     id: 'openssl',
     name: 'OpenSSL',
-    description: '🔒 Toolkit for SSL/TLS protocols and cryptography',
+    description: 'Toolkit for SSL/TLS protocols and cryptography',
     category: 'security',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -68,7 +68,7 @@ export const securityApps: Package[] = [
   {
     id: 'wireguard',
     name: 'WireGuard',
-    description: '🛡️ Modern, fast, and secure VPN protocol',
+    description: 'Modern, fast, and secure VPN protocol',
     category: 'security',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -84,7 +84,7 @@ export const securityApps: Package[] = [
   {
     id: 'fail2ban',
     name: 'Fail2Ban',
-    description: '🚫 Intrusion prevention tool - bans IPs with failed login attempts',
+    description: 'Intrusion prevention tool - bans IPs with failed login attempts',
     category: 'security',
     platforms: { macos: false, linux: true },
     defaultVersion: 'stable',

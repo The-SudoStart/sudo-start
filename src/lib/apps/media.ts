@@ -4,7 +4,7 @@ export const mediaApps: Package[] = [
   {
     id: 'gimp',
     name: 'GIMP',
-    description: '🎨 GNU Image Manipulation Program — free Photoshop alternative',
+    description: 'GNU Image Manipulation Program — free Photoshop alternative',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const mediaApps: Package[] = [
   {
     id: 'inkscape',
     name: 'Inkscape',
-    description: '✏️ Professional vector graphics editor',
+    description: 'Professional vector graphics editor',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const mediaApps: Package[] = [
   {
     id: 'krita',
     name: 'Krita',
-    description: '🖌️ Professional digital painting application',
+    description: 'Professional digital painting application',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const mediaApps: Package[] = [
   {
     id: 'audacity',
     name: 'Audacity',
-    description: '🎙️ Free, open-source audio editor and recorder',
+    description: 'Free, open-source audio editor and recorder',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -68,7 +68,7 @@ export const mediaApps: Package[] = [
   {
     id: 'obs-studio',
     name: 'OBS Studio',
-    description: '🎥 Free software for video recording and live streaming',
+    description: 'Free software for video recording and live streaming',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -84,7 +84,7 @@ export const mediaApps: Package[] = [
   {
     id: 'ffmpeg',
     name: 'FFmpeg',
-    description: '🎬 Complete solution to record, convert and stream audio and video',
+    description: 'Complete solution to record, convert and stream audio and video',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -100,7 +100,7 @@ export const mediaApps: Package[] = [
   {
     id: 'imagemagick',
     name: 'ImageMagick',
-    description: '🖼️ Software suite to create, edit, and compose bitmap images',
+    description: 'Software suite to create, edit, and compose bitmap images',
     category: 'media',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

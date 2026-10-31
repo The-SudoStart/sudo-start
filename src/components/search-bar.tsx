@@ -157,10 +157,10 @@ export function SearchBar({ onClose }: SearchBarProps) {
   }, [onClose]);
 
   const getRegistryBadge = (pkg: Package) => {
-    if (pkg.id.startsWith('brew-')) return { label: 'Homebrew', color: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400' };
-    if (pkg.id.startsWith('npm-')) return { label: 'npm', color: 'bg-red-500/15 text-red-700 dark:text-red-400' };
-    if (pkg.id.startsWith('pypi-')) return { label: 'PyPI', color: 'bg-blue-500/15 text-blue-700 dark:text-blue-400' };
-    if (pkg.id.startsWith('apt-')) return { label: 'APT', color: 'bg-green-500/15 text-green-700 dark:text-green-400' };
+    if (pkg.id.startsWith('brew-')) return { label: 'Homebrew', color: 'bg-warn-soft text-warn' };
+    if (pkg.id.startsWith('npm-')) return { label: 'npm', color: 'bg-fail-soft text-fail' };
+    if (pkg.id.startsWith('pypi-')) return { label: 'PyPI', color: 'bg-bios-soft text-primary' };
+    if (pkg.id.startsWith('apt-')) return { label: 'APT', color: 'bg-ok-soft text-ok' };
     return null;
   };
 

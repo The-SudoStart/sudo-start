@@ -4,7 +4,7 @@ export const containerApps: Package[] = [
   {
     id: 'docker',
     name: 'Docker',
-    description: '📦 Platform for containerized applications',
+    description: 'Platform for containerized applications',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const containerApps: Package[] = [
   {
     id: 'podman',
     name: 'Podman',
-    description: '🦭 Daemonless container engine',
+    description: 'Daemonless container engine',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const containerApps: Package[] = [
   {
     id: 'kubectl',
     name: 'Kubectl',
-    description: '☸️ Kubernetes command-line tool',
+    description: 'Kubernetes command-line tool',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -54,7 +54,7 @@ export const containerApps: Package[] = [
   {
     id: 'minikube',
     name: 'Minikube',
-    description: '🏝️ Local Kubernetes environment',
+    description: 'Local Kubernetes environment',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -72,7 +72,7 @@ export const containerApps: Package[] = [
   {
     id: 'lima',
     name: 'Lima',
-    description: '🍋 Linux virtual machines (macOS-native)',
+    description: 'Linux virtual machines (macOS-native)',
     category: 'container',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -88,7 +88,7 @@ export const containerApps: Package[] = [
   {
     id: 'multipass',
     name: 'Multipass',
-    description: '☁️ Ubuntu VMs on demand',
+    description: 'Ubuntu VMs on demand',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -104,7 +104,7 @@ export const containerApps: Package[] = [
   {
     id: 'vagrant',
     name: 'Vagrant',
-    description: '📦 VM automation and management tool',
+    description: 'VM automation and management tool',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -120,7 +120,7 @@ export const containerApps: Package[] = [
   {
     id: 'packer',
     name: 'Packer',
-    description: '📦 Machine image builder by HashiCorp',
+    description: 'Machine image builder by HashiCorp',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -136,7 +136,7 @@ export const containerApps: Package[] = [
   {
     id: 'buildah',
     name: 'Buildah',
-    description: '🔨 OCI-compliant container image builder',
+    description: 'OCI-compliant container image builder',
     category: 'container',
     platforms: { macos: false, linux: true },
     defaultVersion: 'stable',
@@ -152,7 +152,7 @@ export const containerApps: Package[] = [
   {
     id: 'skopeo',
     name: 'Skopeo',
-    description: '🔍 Work with container images without daemon',
+    description: 'Work with container images without daemon',
     category: 'container',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

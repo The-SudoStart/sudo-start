@@ -4,7 +4,8 @@ import { useStore } from '@/lib/store';
 import { appCatalog } from '@/lib/apps';
 import { isValidPackageId, isValidVersion } from '@/lib/security';
 import { ChatMessage } from '@/types';
-import { Send, X, Minimize2, Maximize2, Bot } from 'lucide-react';
+import { Send, X, Minimize2, Maximize2 } from 'lucide-react';
+import { CubeLoader } from './cube-loader';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -17,7 +18,7 @@ export function ChatWindow() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm Root 🌳 I can see your current bucket and help you set up your development environment. What are you building?",
+      content: "I'm Root. I can see your bucket and help you set up your development environment. What are you building?",
     },
   ]);
   const [input, setInput] = useState('');
@@ -36,7 +37,7 @@ export function ChatWindow() {
   const handleMinimize = () => {
     setIsMinimized(true);
     if (!hasShownMinimizeToast.current) {
-      toast.info('💬 Chat minimized');
+      toast.info('Chat minimized');
       hasShownMinimizeToast.current = true;
     }
   };
@@ -215,7 +216,7 @@ export function ChatWindow() {
   return (
     <div
       ref={chatWindowRef}
-      className={`fixed bottom-6 right-6 w-96 terminal-card rounded-lg overflow-hidden shadow-2xl z-50 transition-all flex flex-col ${
+      className={`fixed bottom-6 right-6 w-96 terminal-card rounded-[20px] overflow-hidden shadow-[var(--shadow-3)] z-50 transition-all flex flex-col ${
         isMinimized ? 'h-14' : 'h-150'
       }`}
       role="dialog"
@@ -225,10 +226,10 @@ export function ChatWindow() {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-primary terminal-glow animate-pulse" />
-          <span className="font-bold terminal-text">Root AI</span>
+          <div className="w-2 h-2 rounded-full bg-root animate-pulse" />
+          <span className="font-display font-bold text-root">Root</span>
           {bucket.length > 0 && (
-            <span className="text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+            <span className="font-mono text-[11px] text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
               {bucket.length} in bucket
             </span>
           )}
@@ -261,15 +262,15 @@ export function ChatWindow() {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 shrink-0 mt-1">
-                    <Bot className="w-3 h-3 terminal-text" />
+                  <div className="w-6 h-6 rounded-full bg-root text-card font-display text-[12px] font-bold flex items-center justify-center mr-2 shrink-0 mt-1">
+                    <span aria-hidden="true">#</span>
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] p-3 rounded-lg text-sm markdown-content ${
                     msg.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
+                      ? 'border border-border bg-card text-foreground rounded-tr-sm'
+                      : 'bg-root-soft text-foreground rounded-tl-sm'
                   }`}
                 >
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -282,29 +283,26 @@ export function ChatWindow() {
             {/* Streaming message */}
             {streamingContent && (
               <div className="flex justify-start">
-                <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 shrink-0 mt-1">
-                  <Bot className="w-3 h-3 terminal-text" />
+                <div className="w-6 h-6 rounded-full bg-root text-card font-display text-[12px] font-bold flex items-center justify-center mr-2 shrink-0 mt-1">
+                  <span aria-hidden="true">#</span>
                 </div>
-                <div className="max-w-[80%] p-3 rounded-lg text-sm bg-muted text-foreground markdown-content">
+                <div className="max-w-[80%] p-3 rounded-lg rounded-tl-sm text-sm bg-root-soft text-foreground markdown-content">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {getDisplayContent(streamingContent)}
                   </ReactMarkdown>
-                  <span className="cursor-blink terminal-text ml-0.5">▊</span>
+                  <span className="cursor-blink text-root ml-0.5">▊</span>
                 </div>
               </div>
             )}
 
             {isLoading && !streamingContent && (
               <div className="flex justify-start">
-                <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mr-2 shrink-0">
-                  <Bot className="w-3 h-3 terminal-text" />
+                <div className="w-6 h-6 rounded-full bg-root text-card font-display text-[12px] font-bold flex items-center justify-center mr-2 shrink-0">
+                  <span aria-hidden="true">#</span>
                 </div>
-                <div className="bg-muted p-3 rounded-lg">
-                  <div className="flex gap-1 items-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-0" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-150" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-300" />
-                  </div>
+                <div className="flex items-center gap-2.5 bg-root-soft px-3 py-2.5 rounded-lg rounded-tl-sm">
+                  <CubeLoader size={16} tone="root" label="Root is thinking" />
+                  <span className="font-mono text-xs text-root">thinking…</span>
                 </div>
               </div>
             )}

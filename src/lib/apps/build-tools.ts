@@ -4,7 +4,7 @@ export const buildToolApps: Package[] = [
   {
     id: 'make',
     name: 'Make',
-    description: '🔨 Universal build automation tool',
+    description: 'Universal build automation tool',
     category: 'build-tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const buildToolApps: Package[] = [
   {
     id: 'cmake',
     name: 'CMake',
-    description: '⚙️ Cross-platform build system generator for C/C++ projects',
+    description: 'Cross-platform build system generator for C/C++ projects',
     category: 'build-tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const buildToolApps: Package[] = [
   {
     id: 'gradle',
     name: 'Gradle',
-    description: '🐘 Powerful build tool for JVM, Android & polyglot projects',
+    description: 'Powerful build tool for JVM, Android & polyglot projects',
     category: 'build-tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const buildToolApps: Package[] = [
   {
     id: 'maven',
     name: 'Apache Maven',
-    description: '📦 Project management and build tool for Java projects',
+    description: 'Project management and build tool for Java projects',
     category: 'build-tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
