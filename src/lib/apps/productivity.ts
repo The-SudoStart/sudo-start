@@ -4,7 +4,7 @@ export const productivityApps: Package[] = [
   {
     id: 'rectangle',
     name: 'Rectangle',
-    description: '🪟 Move and resize windows with keyboard shortcuts. macOS Only',
+    description: 'Move and resize windows with keyboard shortcuts. macOS Only',
     category: 'productivity',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const productivityApps: Package[] = [
   {
     id: 'raycast',
     name: 'Raycast',
-    description: '🚀 Blazingly fast launcher — replaces Spotlight & Alfred. macOS Only',
+    description: 'Blazingly fast launcher — replaces Spotlight & Alfred. macOS Only',
     category: 'productivity',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const productivityApps: Package[] = [
   {
     id: '1password',
     name: '1Password',
-    description: '🔑 The world most trusted password manager',
+    description: 'The world most trusted password manager',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const productivityApps: Package[] = [
   {
     id: 'bitwarden',
     name: 'Bitwarden',
-    description: '🛡️ Free and open-source password manager',
+    description: 'Free and open-source password manager',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -68,7 +68,7 @@ export const productivityApps: Package[] = [
   {
     id: 'docker-desktop',
     name: 'Docker Desktop',
-    description: '🐳 GUI for Docker — container management made visual',
+    description: 'GUI for Docker — container management made visual',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -84,7 +84,7 @@ export const productivityApps: Package[] = [
   {
     id: 'notion',
     name: 'Notion',
-    description: '📝 All-in-one workspace for notes, docs, and wikis',
+    description: 'All-in-one workspace for notes, docs, and wikis',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -100,7 +100,7 @@ export const productivityApps: Package[] = [
   {
     id: 'obsidian',
     name: 'Obsidian',
-    description: '🧠 Knowledge base and note-taking app with graph view',
+    description: 'Knowledge base and note-taking app with graph view',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -116,7 +116,7 @@ export const productivityApps: Package[] = [
   {
     id: 'logseq',
     name: 'Logseq',
-    description: '🌿 Privacy-first, open-source knowledge base',
+    description: 'Privacy-first, open-source knowledge base',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -132,7 +132,7 @@ export const productivityApps: Package[] = [
   {
     id: 'todoist',
     name: 'Todoist',
-    description: '✅ Task management and to-do list app',
+    description: 'Task management and to-do list app',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -148,7 +148,7 @@ export const productivityApps: Package[] = [
   {
     id: 'taskwarrior',
     name: 'Taskwarrior',
-    description: '⚔️ Command-line task manager with powerful features',
+    description: 'Command-line task manager with powerful features',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -164,7 +164,7 @@ export const productivityApps: Package[] = [
   {
     id: 'timewarrior',
     name: 'Timewarrior',
-    description: '⏱️ Command-line time tracking utility',
+    description: 'Command-line time tracking utility',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -180,7 +180,7 @@ export const productivityApps: Package[] = [
   {
     id: 'calcurse',
     name: 'Calcurse',
-    description: '📅 Text-based calendar and scheduling app',
+    description: 'Text-based calendar and scheduling app',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -196,7 +196,7 @@ export const productivityApps: Package[] = [
   {
     id: 'newsboat',
     name: 'Newsboat',
-    description: '📰 RSS/Atom feed reader for the terminal',
+    description: 'RSS/Atom feed reader for the terminal',
     category: 'productivity',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

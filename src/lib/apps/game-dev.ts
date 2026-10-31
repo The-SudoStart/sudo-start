@@ -4,7 +4,7 @@ export const gameDevApps: Package[] = [
   {
     id: 'godot',
     name: 'Godot Engine',
-    description: '🤖 Free and open source 2D and 3D game engine',
+    description: 'Free and open source 2D and 3D game engine',
     category: 'game-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const gameDevApps: Package[] = [
   {
     id: 'unity',
     name: 'Unity Hub',
-    description: '🎮 Real-time 3D development platform',
+    description: 'Real-time 3D development platform',
     category: 'game-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const gameDevApps: Package[] = [
   {
     id: 'unreal-engine',
     name: 'Unreal Engine',
-    description: '⚔️ The world’s most open and advanced real-time 3D creation tool',
+    description: 'The world’s most open and advanced real-time 3D creation tool',
     category: 'game-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const gameDevApps: Package[] = [
   {
     id: 'blender',
     name: 'Blender',
-    description: '🎨 Open source 3D creation suite',
+    description: 'Open source 3D creation suite',
     category: 'game-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

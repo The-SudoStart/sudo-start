@@ -2,8 +2,9 @@
 
 import { useStore } from '@/lib/store';
 import { useTheme } from '@/lib/theme-context';
-import { MessageSquare, ShoppingCart, Terminal, Search, Layers, Upload, Download as DownloadIcon, Sun, Moon, MoreHorizontal, Monitor, Apple, ChevronDown } from 'lucide-react';
+import { MessageSquare, ShoppingCart, Search, Layers, Upload, Download as DownloadIcon, Sun, Moon, MoreHorizontal, Monitor, Apple, ChevronDown } from 'lucide-react';
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { BrandMark } from './brand-mark';
 import { BucketModal } from './bucket-modal';
 import { SearchBar } from './search-bar';
 import { PresetsModal } from './presets-modal';
@@ -33,7 +34,7 @@ export function Navbar() {
       return;
     }
     setOS(newOS);
-    toast.success(`🖥️ Switched to ${newOS === 'macos' ? 'MacOS' : 'Linux'}`);
+    toast.success(`Switched to ${newOS === 'macos' ? 'macOS' : 'Linux'}`);
     setIsOSSwitcherOpen(false);
   };
 
@@ -44,16 +45,16 @@ export function Navbar() {
     reader.onload = (ev) => {
       const success = importBucket(ev.target?.result as string);
       if (success) {
-        toast.success('📂 Configuration imported successfully');
+        toast.success('Configuration imported successfully');
         setImportError(false);
       } else {
         setImportError(true);
-        toast.error('❌ Failed to import configuration');
+        toast.error('Failed to import configuration');
         setTimeout(() => setImportError(false), 3000);
       }
     };
     reader.onerror = () => {
-      toast.error('❌ Failed to read file');
+      toast.error('Failed to read file');
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -61,7 +62,7 @@ export function Navbar() {
 
   const handleExport = () => {
     exportBucket();
-    toast.success('💾 Configuration exported');
+    toast.success('Configuration exported');
   };
 
   // Copy script to clipboard
@@ -72,9 +73,9 @@ export function Navbar() {
     }
     const success = await copyToClipboard(generatedScript);
     if (success) {
-      toast.success('📋 Script copied to clipboard');
+      toast.success('Script copied to clipboard');
     } else {
-      toast.error('❌ Failed to copy script');
+      toast.error('Failed to copy script');
     }
   }, [generatedScript, toast]);
 
@@ -86,7 +87,7 @@ export function Navbar() {
     }
     setIsBucketOpen(false);
     setCurrentStep('output');
-    toast.success('🚀 Script generated');
+    toast.success('Script generated');
   }, [bucket.length, setCurrentStep, toast]);
 
   // Define keyboard shortcuts
@@ -178,9 +179,7 @@ export function Navbar() {
               className="flex shrink-0 cursor-pointer items-center gap-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               title="SudoStart home"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl app-icon-tile">
-                <Terminal className="h-5 w-5" />
-              </span>
+              <BrandMark size={36} wordmark={false} />
               <div className="hidden text-left sm:block">
                 <h1 className="text-base font-bold leading-tight tracking-tight">SudoStart</h1>
                 <p className="text-xs leading-tight text-muted-foreground">
@@ -330,9 +329,9 @@ export function Navbar() {
                 aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
               >
                 {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
+                  <Sun className="w-4 h-4 text-warn" />
                 ) : (
-                  <Moon className="w-4 h-4 terminal-text" />
+                  <Moon className="w-4 h-4 text-primary" />
                 )}
               </button>
 
@@ -349,8 +348,8 @@ export function Navbar() {
                   <ShoppingCart className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm">Bucket</span>
                   {bucket.length > 0 && (
-                    <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary
-                      text-primary-foreground text-xs font-bold flex items-center justify-center terminal-glow">
+                    <span key={bucket.length} className="badge-bump absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary
+                      text-primary-foreground font-mono text-[11px] font-semibold flex items-center justify-center tabular-nums">
                       {bucket.length}
                     </span>
                   )}
@@ -362,12 +361,12 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={toggleChat}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg border-2 border-primary
-                  terminal-text hover:terminal-glow transition-all text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border
+                  hover:border-primary/50 transition-all text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 aria-keyshortcuts="Meta+Shift+A"
                 title={`Root AI (${modSymbol}⇧A)`}
               >
-                <MessageSquare className="w-4 h-4" />
+                <MessageSquare className="w-4 h-4 text-root" />
                 <span className="hidden sm:inline">Root AI</span>
               </button>
             </div>

@@ -4,7 +4,7 @@ export const databaseApps: Package[] = [
   {
     id: 'postgresql',
     name: 'PostgreSQL',
-    description: '💾 Advanced open-source relational database',
+    description: 'Advanced open-source relational database',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const databaseApps: Package[] = [
   {
     id: 'mysql',
     name: 'MySQL',
-    description: '🐬 The world\'s most popular open-source relational database',
+    description: 'The world\'s most popular open-source relational database',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const databaseApps: Package[] = [
   {
     id: 'mariadb',
     name: 'MariaDB',
-    description: '🦭 Community-developed MySQL fork — drop-in replacement',
+    description: 'Community-developed MySQL fork — drop-in replacement',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const databaseApps: Package[] = [
   {
     id: 'sqlite3',
     name: 'SQLite',
-    description: '🗃️ Lightweight, serverless, self-contained SQL database engine',
+    description: 'Lightweight, serverless, self-contained SQL database engine',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -74,7 +74,7 @@ export const databaseApps: Package[] = [
   {
     id: 'redis',
     name: 'Redis',
-    description: '🧠 In-memory data structure store',
+    description: 'In-memory data structure store',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -92,7 +92,7 @@ export const databaseApps: Package[] = [
   {
     id: 'mongodb',
     name: 'MongoDB',
-    description: '🍃 NoSQL document database',
+    description: 'NoSQL document database',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -110,7 +110,7 @@ export const databaseApps: Package[] = [
   {
     id: 'cockroachdb',
     name: 'CockroachDB',
-    description: '🪳 Distributed SQL database with horizontal scalability',
+    description: 'Distributed SQL database with horizontal scalability',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -126,7 +126,7 @@ export const databaseApps: Package[] = [
   {
     id: 'cassandra',
     name: 'Cassandra',
-    description: '🔱 NoSQL distributed database for big data',
+    description: 'NoSQL distributed database for big data',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -142,7 +142,7 @@ export const databaseApps: Package[] = [
   {
     id: 'neo4j',
     name: 'Neo4j',
-    description: '🕸️ Graph database for connected data',
+    description: 'Graph database for connected data',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -158,7 +158,7 @@ export const databaseApps: Package[] = [
   {
     id: 'clickhouse',
     name: 'ClickHouse',
-    description: '⚡ Fast columnar DBMS for OLAP',
+    description: 'Fast columnar DBMS for OLAP',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -174,7 +174,7 @@ export const databaseApps: Package[] = [
   {
     id: 'timescaledb',
     name: 'TimescaleDB',
-    description: '⏱️ Time-series SQL database built on PostgreSQL',
+    description: 'Time-series SQL database built on PostgreSQL',
     category: 'database',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

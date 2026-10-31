@@ -4,7 +4,7 @@ export const dataScienceApps: Package[] = [
   {
     id: 'jupyter',
     name: 'JupyterLab',
-    description: '📓 Web-based interactive development environment for notebooks',
+    description: 'Web-based interactive development environment for notebooks',
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const dataScienceApps: Package[] = [
   {
     id: 'tensorflow',
     name: 'TensorFlow',
-    description: '🧠 End-to-end open source platform for machine learning',
+    description: 'End-to-end open source platform for machine learning',
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const dataScienceApps: Package[] = [
   {
     id: 'pandas',
     name: 'Pandas',
-    description: '🐼 Fast, powerful, flexible data analysis tool',
+    description: 'Fast, powerful, flexible data analysis tool',
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const dataScienceApps: Package[] = [
   {
     id: 'numpy',
     name: 'NumPy',
-    description: '🔢 Fundamental package for scientific computing',
+    description: 'Fundamental package for scientific computing',
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -76,7 +76,7 @@ export const dataScienceApps: Package[] = [
   {
     id: 'matplotlib',
     name: 'Matplotlib',
-    description: '📈 Comprehensive library for creating static, animated, and interactive visualizations',
+    description: 'Comprehensive library for creating static, animated, and interactive visualizations',
     category: 'data-science',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

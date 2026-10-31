@@ -4,7 +4,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'ruby',
     name: 'Ruby',
-    description: '💎 Dynamic, open-source programming language — Rails, Jekyll, CocoaPods',
+    description: 'Dynamic, open-source programming language — Rails, Jekyll, CocoaPods',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'php',
     name: 'PHP',
-    description: '🐘 Server-side scripting language — Laravel, WordPress, Symfony',
+    description: 'Server-side scripting language — Laravel, WordPress, Symfony',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'kotlin',
     name: 'Kotlin',
-    description: '🎯 Modern, concise JVM language — Android, server-side, multiplatform',
+    description: 'Modern, concise JVM language — Android, server-side, multiplatform',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'nvm',
     name: 'NVM',
-    description: '🔀 Node Version Manager — easily switch between Node.js versions',
+    description: 'Node Version Manager — easily switch between Node.js versions',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -76,7 +76,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'nodejs',
     name: 'Node.js',
-    description: '⚙️ JavaScript runtime built on Chrome V8 engine',
+    description: 'JavaScript runtime built on Chrome V8 engine',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'fnm',
@@ -100,7 +100,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'npm',
     name: 'npm',
-    description: '📦 Node Package Manager — the world\'s largest software registry',
+    description: 'Node Package Manager — the world\'s largest software registry',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -122,7 +122,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'cpp',
     name: 'C++',
-    description: '⚡ High-performance system programming (gcc/g++)',
+    description: 'High-performance system programming (gcc/g++)',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -140,7 +140,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'python3',
     name: 'Python 3',
-    description: '🐍 Powerful programming language for everything',
+    description: 'Powerful programming language for everything',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -158,7 +158,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'rust',
     name: 'Rust',
-    description: '🦀 Blazingly fast memory-safe language',
+    description: 'Blazingly fast memory-safe language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -176,7 +176,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'go',
     name: 'Go (Golang)',
-    description: '🐹 Simple, reliable, and efficient language',
+    description: 'Simple, reliable, and efficient language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -194,7 +194,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'java',
     name: 'Java (JDK)',
-    description: '☕ General-purpose programming language',
+    description: 'General-purpose programming language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -210,7 +210,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'bun',
     name: 'Bun',
-    description: '🥯 Fast JavaScript runtime, bundler, and package manager',
+    description: 'Fast JavaScript runtime, bundler, and package manager',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -226,7 +226,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'deno',
     name: 'Deno',
-    description: '🦕 Secure JavaScript/TypeScript runtime with native TS support',
+    description: 'Secure JavaScript/TypeScript runtime with native TS support',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -242,7 +242,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'elixir',
     name: 'Elixir',
-    description: '💧 Dynamic, functional language designed for scalable apps',
+    description: 'Dynamic, functional language designed for scalable apps',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -258,7 +258,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'erlang',
     name: 'Erlang',
-    description: '🔷 Programming language for distributed systems',
+    description: 'Programming language for distributed systems',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -274,7 +274,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'scala',
     name: 'Scala',
-    description: '🔶 JVM language combining OOP and functional programming',
+    description: 'JVM language combining OOP and functional programming',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -290,7 +290,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'clojure',
     name: 'Clojure',
-    description: '🔷 Lisp dialect on the JVM with immutable data structures',
+    description: 'Lisp dialect on the JVM with immutable data structures',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -306,7 +306,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'haskell',
     name: 'Haskell',
-    description: 'λ Purely functional programming language',
+    description: 'Purely functional programming language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -322,7 +322,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'lua',
     name: 'Lua',
-    description: '🌙 Lightweight, embeddable scripting language',
+    description: 'Lightweight, embeddable scripting language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -338,7 +338,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'perl',
     name: 'Perl',
-    description: '🐪 Practical extraction and reporting language',
+    description: 'Practical extraction and reporting language',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -354,7 +354,7 @@ export const runtimeApps: Package[] = [
   {
     id: 'r',
     name: 'R',
-    description: '📊 Language for statistical computing and graphics',
+    description: 'Language for statistical computing and graphics',
     category: 'runtime',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

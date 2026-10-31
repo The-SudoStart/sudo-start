@@ -4,7 +4,7 @@ export const terminalApps: Package[] = [
   {
     id: 'iterm2',
     name: 'iTerm2',
-    description: '🖥️ Terminal emulator for macOS with powerful features',
+    description: 'Terminal emulator for macOS with powerful features',
     category: 'terminal',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const terminalApps: Package[] = [
   {
     id: 'warp',
     name: 'Warp',
-    description: '🚀 The terminal for the 21st century with AI built in',
+    description: 'The terminal for the 21st century with AI built in',
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const terminalApps: Package[] = [
   {
     id: 'alacritty',
     name: 'Alacritty',
-    description: '⚡ GPU-accelerated terminal emulator — fast and minimal',
+    description: 'GPU-accelerated terminal emulator — fast and minimal',
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -54,7 +54,7 @@ export const terminalApps: Package[] = [
   {
     id: 'kitty',
     name: 'Kitty',
-    description: '🐱 Fast, feature-rich GPU-based terminal emulator',
+    description: 'Fast, feature-rich GPU-based terminal emulator',
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -72,7 +72,7 @@ export const terminalApps: Package[] = [
   {
     id: 'hyper',
     name: 'Hyper',
-    description: '💻 Electron-based terminal built on web technologies',
+    description: 'Electron-based terminal built on web technologies',
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -90,7 +90,7 @@ export const terminalApps: Package[] = [
   {
     id: 'ghostty',
     name: 'Ghostty',
-    description: '👻 Fast, native terminal emulator with platform-native UI',
+    description: 'Fast, native terminal emulator with platform-native UI',
     category: 'terminal',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

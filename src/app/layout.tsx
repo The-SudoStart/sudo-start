@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/lib/theme-context";
 import { ToastProvider } from "@/lib/toast-context";
 import { Toaster } from "@/components/toaster";
+import { CardSpotlight } from "@/components/card-spotlight";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,15 +22,30 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const siteDescription = "Discover the best developer tools and generate a one-command setup script for macOS and Linux. AI-assisted, cross-platform, open source.";
+
 export const metadata: Metadata = {
+  // Resolves the generated share images (app/opengraph-image.png) to absolute URLs.
+  metadataBase: new URL("https://sudo-start.vercel.app"),
   title: "SudoStart — The Developer Tool Marketplace",
-  description: "Discover the best developer tools and generate a one-command setup script for macOS and Linux. AI-assisted, cross-platform, open source.",
+  description: siteDescription,
+  openGraph: {
+    title: "SudoStart",
+    description: siteDescription,
+    siteName: "SudoStart",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SudoStart",
+    description: siteDescription,
+  },
 };
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfbfc" },
-    { media: "(prefers-color-scheme: dark)", color: "#22262e" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f6fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0d1a" },
   ],
 };
 
@@ -57,6 +73,7 @@ export default function RootLayout({
               {children}
             </main>
             <Toaster position="bottom-right" />
+            <CardSpotlight />
           </ToastProvider>
         </ThemeProvider>
       </body>

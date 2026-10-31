@@ -54,7 +54,7 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
       >
         <div className="flex items-center gap-3">
           {warnings.length > 0 && (
-            <span className="flex items-center gap-1 text-yellow-500">
+            <span className="flex items-center gap-1 text-warn">
               <AlertTriangle className="w-3 h-3" />
               {warnings.length} warning{warnings.length > 1 ? 's' : ''}
             </span>
@@ -81,15 +81,15 @@ export function DependencyPanel({ bucket, os }: DependencyPanelProps) {
                 const needsPkg = appCatalog.find((p) => p.id === w.needs);
                 return (
                   <div key={i} className="flex items-center justify-between text-xs">
-                    <span className="text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                    <span className="text-warn flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
                       {w.message}
                     </span>
                     {needsPkg && (
                       <button
                         onClick={() => addToBucket({ ...needsPkg, selectedVersion: needsPkg.defaultVersion })}
-                        className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-yellow-500/10
-                          text-yellow-600 dark:text-yellow-400 hover:bg-yellow-500/20 transition-colors"
+                        className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-warn-soft
+                          text-warn hover:bg-warn/15 transition-colors"
                       >
                         <Plus className="w-2.5 h-2.5" />
                         Add

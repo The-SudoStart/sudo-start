@@ -142,7 +142,7 @@ export function VersionNote({ pkgId, pkgName, version, note, onSave, variant = '
         title={hasNote ? `Note: ${note}` : 'Add version pin note'}
         className={`p-1.5 rounded transition-all ${
           hasNote
-            ? 'text-yellow-500 hover:bg-yellow-500/10'
+            ? 'text-warn hover:bg-warn/15'
             : 'text-muted-foreground hover:text-foreground hover:bg-accent'
         }`}
       >

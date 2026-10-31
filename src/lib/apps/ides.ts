@@ -4,7 +4,7 @@ export const ideApps: Package[] = [
   {
     id: 'kiro',
     name: 'Kiro',
-    description: '🚀 AWS agentic IDE with spec-driven development and parallel AI agents',
+    description: 'AWS agentic IDE with spec-driven development and parallel AI agents',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -26,7 +26,7 @@ export const ideApps: Package[] = [
   {
     id: 'windsurf',
     name: 'Windsurf',
-    description: '🌊 The first agentic IDE, powered by Codeium AI',
+    description: 'The first agentic IDE, powered by Codeium AI',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -42,7 +42,7 @@ export const ideApps: Package[] = [
   {
     id: 'antigravity',
     name: 'Antigravity',
-    description: '🚀 Google\'s agent-first IDE powered by Gemini - autonomous AI agents for complex tasks',
+    description: 'Google\'s agent-first IDE powered by Gemini - autonomous AI agents for complex tasks',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const ideApps: Package[] = [
   {
     id: 'cursor',
     name: 'Cursor',
-    description: '✨ The AI-first code editor built for pair programming',
+    description: 'The AI-first code editor built for pair programming',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'deb',
@@ -80,7 +80,7 @@ export const ideApps: Package[] = [
   {
     id: 'zed',
     name: 'Zed',
-    description: '⚡ High-performance multiplayer code editor',
+    description: 'High-performance multiplayer code editor',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -96,7 +96,7 @@ export const ideApps: Package[] = [
   {
     id: 'vscode',
     name: 'Visual Studio Code',
-    description: '📝 Code editing. Redefined. The industry standard',
+    description: 'Code editing. Redefined. The industry standard',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -114,7 +114,7 @@ export const ideApps: Package[] = [
   {
     id: 'intellij',
     name: 'IntelliJ IDEA',
-    description: '🧠 The IDE for professional Java & JVM development by JetBrains',
+    description: 'The IDE for professional Java & JVM development by JetBrains',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'community',
@@ -136,7 +136,7 @@ export const ideApps: Package[] = [
   {
     id: 'vim',
     name: 'Vim',
-    description: '📟 Highly configurable text editor built for efficiency',
+    description: 'Highly configurable text editor built for efficiency',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -154,7 +154,7 @@ export const ideApps: Package[] = [
   {
     id: 'neovim',
     name: 'Neovim',
-    description: '🚀 Hyperextensible Vim-based text editor with Lua scripting',
+    description: 'Hyperextensible Vim-based text editor with Lua scripting',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -170,7 +170,7 @@ export const ideApps: Package[] = [
   {
     id: 'emacs',
     name: 'Emacs',
-    description: '🐂 Extensible, customizable text editor and IDE',
+    description: 'Extensible, customizable text editor and IDE',
     category: 'ide',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
