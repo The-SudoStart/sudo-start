@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Info, X, Copy, Check, Terminal } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { sudoNight } from '@/lib/syntax-theme';
 
 interface CommandPreviewProps {
   command: string;
@@ -78,7 +78,7 @@ export function CommandPreview({ command, packageName, os, version }: CommandPre
         <div
           className="absolute right-0 top-full mt-2 z-50 w-80 sm:w-96 rounded-xl border border-border
             bg-card shadow-2xl overflow-hidden"
-          style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.3)' }}
+          style={{ boxShadow: 'var(--shadow-2)' }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/50">
@@ -110,16 +110,13 @@ export function CommandPreview({ command, packageName, os, version }: CommandPre
 
             {command ? (
               <div className="relative group">
-                <div className="rounded-lg overflow-hidden border border-border">
+                <div className="rounded-lg overflow-hidden border border-term-line">
                   <SyntaxHighlighter
                     language="bash"
-                    style={vscDarkPlus}
+                    style={sudoNight}
                     customStyle={{
                       margin: 0,
                       padding: '12px 16px',
-                      fontSize: '13px',
-                      lineHeight: '1.5',
-                      background: '#1e1e1e',
                       borderRadius: '0.5rem',
                     }}
                     wrapLines={true}
@@ -139,7 +136,7 @@ export function CommandPreview({ command, packageName, os, version }: CommandPre
                     focus:opacity-100"
                 >
                   {copied ? (
-                    <Check className="w-3.5 h-3.5 text-green-500" />
+                    <Check className="w-3.5 h-3.5 text-ok" />
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}

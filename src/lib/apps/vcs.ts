@@ -4,7 +4,7 @@ export const vcsApps: Package[] = [
   {
     id: 'git-lfs',
     name: 'Git LFS',
-    description: '📦 Git Large File Storage — version control for large files',
+    description: 'Git Large File Storage — version control for large files',
     category: 'vcs',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const vcsApps: Package[] = [
   {
     id: 'github-desktop',
     name: 'GitHub Desktop',
-    description: '🐙 GUI for Git and GitHub — simplifies your workflow',
+    description: 'GUI for Git and GitHub — simplifies your workflow',
     category: 'vcs',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const vcsApps: Package[] = [
   {
     id: 'sublime-merge',
     name: 'Sublime Merge',
-    description: '🔀 Git client from the makers of Sublime Text',
+    description: 'Git client from the makers of Sublime Text',
     category: 'vcs',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const vcsApps: Package[] = [
   {
     id: 'fork',
     name: 'Fork',
-    description: '🍴 Fast and friendly Git client',
+    description: 'Fast and friendly Git client',
     category: 'vcs',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -68,7 +68,7 @@ export const vcsApps: Package[] = [
   {
     id: 'tower',
     name: 'Tower',
-    description: '🏰 Powerful Git client for Mac and Windows',
+    description: 'Powerful Git client for Mac and Windows',
     category: 'vcs',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',

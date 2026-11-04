@@ -4,7 +4,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'aws-cli',
     name: 'AWS CLI',
-    description: '☁️ Official command-line interface for Amazon Web Services',
+    description: 'Official command-line interface for Amazon Web Services',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'gcloud',
     name: 'Google Cloud CLI',
-    description: '🌩️ Official command-line tool for Google Cloud Platform',
+    description: 'Official command-line tool for Google Cloud Platform',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -38,7 +38,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'azure-cli',
     name: 'Azure CLI',
-    description: '🔷 Official command-line interface for Microsoft Azure',
+    description: 'Official command-line interface for Microsoft Azure',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -56,7 +56,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'pulumi',
     name: 'Pulumi',
-    description: '🚀 Infrastructure as Code in any programming language',
+    description: 'Infrastructure as Code in any programming language',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -72,7 +72,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'helm',
     name: 'Helm',
-    description: '⛵ Kubernetes package manager',
+    description: 'Kubernetes package manager',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -88,7 +88,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'kustomize',
     name: 'Kustomize',
-    description: '🔧 Kubernetes native configuration management',
+    description: 'Kubernetes native configuration management',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -104,7 +104,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'argocd-cli',
     name: 'ArgoCD CLI',
-    description: '🐙 Declarative GitOps CD for Kubernetes',
+    description: 'Declarative GitOps CD for Kubernetes',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -120,7 +120,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'vercel-cli',
     name: 'Vercel CLI',
-    description: '▲ Deploy web projects with ease',
+    description: 'Deploy web projects with ease',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -136,7 +136,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'netlify-cli',
     name: 'Netlify CLI',
-    description: '🌐 Deploy modern web projects',
+    description: 'Deploy modern web projects',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -152,7 +152,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'supabase-cli',
     name: 'Supabase CLI',
-    description: '🔥 Open-source Firebase alternative CLI',
+    description: 'Open-source Firebase alternative CLI',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -168,7 +168,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'stripe-cli',
     name: 'Stripe CLI',
-    description: '💳 Build, test, and manage Stripe integration',
+    description: 'Build, test, and manage Stripe integration',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -184,7 +184,7 @@ export const cloudCliApps: Package[] = [
   {
     id: 'aws-cdk',
     name: 'AWS CDK',
-    description: '🏗️ AWS Cloud Development Kit for infrastructure as code',
+    description: 'AWS Cloud Development Kit for infrastructure as code',
     category: 'cloud',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

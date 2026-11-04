@@ -29,12 +29,33 @@ export interface EmptyStateProps {
 }
 
 const illustrationConfig: Record<EmptyStateIllustration, { icon: typeof Package; color: string; animation: string }> = {
-  bucket: { icon: Package, color: 'text-primary', animation: 'animate-bounce-slow' },
+  bucket: { icon: Package, color: 'text-primary', animation: '' },
   search: { icon: Search, color: 'text-muted-foreground', animation: 'animate-pulse' },
   terminal: { icon: Terminal, color: 'text-primary', animation: 'animate-cursor-blink' },
   package: { icon: FolderOpen, color: 'text-muted-foreground', animation: '' },
   category: { icon: FolderOpen, color: 'text-muted-foreground', animation: '' },
 };
+
+/**
+ * Empty box with a floating cursor, for the empty bucket. Traced from a
+ * Figma AI concept and redrawn as SVG so it follows the theme tokens.
+ */
+function EmptyBoxArt() {
+  return (
+    <svg viewBox="250 230 520 530" width="132" height="134" aria-hidden="true">
+      <g stroke="var(--foreground)" strokeWidth="7" strokeLinejoin="round">
+        <ellipse cx="512" cy="690" rx="225" ry="50" fill="var(--bios-soft)" stroke="none" />
+        <polygon points="330,525 512,488 512,722 330,650" fill="var(--primary)" />
+        <polygon points="512,488 695,525 695,650 512,722" fill="var(--primary)" />
+        <polygon points="326,418 512,355 512,488" fill="var(--bios-soft)" />
+        <polygon points="512,355 697,418 512,488" fill="var(--bios-soft)" />
+        <polygon points="326,418 270,500 445,565 512,488" fill="var(--bios-soft)" />
+        <polygon points="697,418 757,500 580,565 512,488" fill="var(--bios-soft)" />
+        <rect className="cursor-blink" x="490" y="252" width="44" height="74" rx="4" fill="var(--primary)" />
+      </g>
+    </svg>
+  );
+}
 
 export function EmptyState({
   illustration,
@@ -60,9 +81,13 @@ export function EmptyState({
         className={`relative mb-6 ${config.animation}`}
         aria-hidden="true"
       >
-        <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center terminal-glow">
-          <Icon className={`w-10 h-10 ${config.color}`} />
-        </div>
+        {illustration === 'bucket' ? (
+          <EmptyBoxArt />
+        ) : (
+          <div className="w-20 h-20 rounded-2xl bg-bios-soft flex items-center justify-center">
+            <Icon className={`w-10 h-10 ${config.color}`} />
+          </div>
+        )}
         {illustration === 'terminal' && (
           <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
             <span className="text-xs terminal-text animate-pulse">_</span>
@@ -71,7 +96,7 @@ export function EmptyState({
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-bold terminal-text mb-2">
+      <h3 className="font-display text-lg font-bold text-foreground mb-2">
         {title}
       </h3>
 

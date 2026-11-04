@@ -4,7 +4,7 @@ export const mobileApps: Package[] = [
   {
     id: 'flutter',
     name: 'Flutter',
-    description: '💙 Google’s UI toolkit for building natively compiled applications',
+    description: 'Google’s UI toolkit for building natively compiled applications',
     category: 'mobile',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const mobileApps: Package[] = [
   {
     id: 'react-native',
     name: 'React Native',
-    description: '⚛️ Build native mobile apps using React',
+    description: 'Build native mobile apps using React',
     category: 'mobile',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -38,7 +38,7 @@ export const mobileApps: Package[] = [
   {
     id: 'ionic',
     name: 'Ionic CLI',
-    description: '⚡ Cross-platform mobile app development',
+    description: 'Cross-platform mobile app development',
     category: 'mobile',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -54,7 +54,7 @@ export const mobileApps: Package[] = [
   {
     id: 'cordova',
     name: 'Apache Cordova',
-    description: '📱 Mobile apps with HTML, CSS & JS',
+    description: 'Mobile apps with HTML, CSS & JS',
     category: 'mobile',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -70,7 +70,7 @@ export const mobileApps: Package[] = [
   {
     id: 'xcode',
     name: 'Xcode Select',
-    description: '🛠️ Command line tools for macOS',
+    description: 'Command line tools for macOS',
     category: 'mobile',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',

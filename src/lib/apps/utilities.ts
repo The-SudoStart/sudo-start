@@ -4,7 +4,7 @@ export const utilityApps: Package[] = [
   {
     id: 'jq',
     name: 'jq',
-    description: '🔍 Lightweight and flexible command-line JSON processor',
+    description: 'Lightweight and flexible command-line JSON processor',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const utilityApps: Package[] = [
   {
     id: 'wget',
     name: 'wget',
-    description: '⬇️ Network downloader supporting HTTP, HTTPS and FTP',
+    description: 'Network downloader supporting HTTP, HTTPS and FTP',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -38,7 +38,7 @@ export const utilityApps: Package[] = [
   {
     id: 'htop',
     name: 'htop',
-    description: '📊 Interactive process viewer — a better top',
+    description: 'Interactive process viewer — a better top',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -56,7 +56,7 @@ export const utilityApps: Package[] = [
   {
     id: 'tmux',
     name: 'tmux',
-    description: '🖥️ Terminal multiplexer — split panes, persist sessions over SSH',
+    description: 'Terminal multiplexer — split panes, persist sessions over SSH',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -74,7 +74,7 @@ export const utilityApps: Package[] = [
   {
     id: 'openssh',
     name: 'OpenSSH',
-    description: '🔐 Secure Shell client and server for encrypted remote access',
+    description: 'Secure Shell client and server for encrypted remote access',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -90,7 +90,7 @@ export const utilityApps: Package[] = [
   {
     id: 'ngrok',
     name: 'ngrok',
-    description: '🌐 Expose local servers to the internet — essential for webhook dev',
+    description: 'Expose local servers to the internet — essential for webhook dev',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -106,7 +106,7 @@ export const utilityApps: Package[] = [
   {
     id: 'insomnia',
     name: 'Insomnia',
-    description: '🌙 Open-source API client for REST, GraphQL and gRPC',
+    description: 'Open-source API client for REST, GraphQL and gRPC',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -122,7 +122,7 @@ export const utilityApps: Package[] = [
   {
     id: 'ripgrep',
     name: 'Ripgrep',
-    description: '⚡ Fast grep alternative that respects .gitignore',
+    description: 'Fast grep alternative that respects .gitignore',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -138,7 +138,7 @@ export const utilityApps: Package[] = [
   {
     id: 'fd',
     name: 'fd',
-    description: '🔍 Fast and user-friendly alternative to find',
+    description: 'Fast and user-friendly alternative to find',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -154,7 +154,7 @@ export const utilityApps: Package[] = [
   {
     id: 'fzf',
     name: 'fzf',
-    description: '🎯 Command-line fuzzy finder with preview support',
+    description: 'Command-line fuzzy finder with preview support',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -170,7 +170,7 @@ export const utilityApps: Package[] = [
   {
     id: 'bat',
     name: 'Bat',
-    description: '🦇 Cat clone with syntax highlighting and Git integration',
+    description: 'Cat clone with syntax highlighting and Git integration',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -186,7 +186,7 @@ export const utilityApps: Package[] = [
   {
     id: 'exa',
     name: 'Exa',
-    description: '📁 Modern replacement for ls with icons and colors',
+    description: 'Modern replacement for ls with icons and colors',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -202,7 +202,7 @@ export const utilityApps: Package[] = [
   {
     id: 'dust',
     name: 'Dust',
-    description: '💨 More intuitive version of du for disk usage',
+    description: 'More intuitive version of du for disk usage',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -218,7 +218,7 @@ export const utilityApps: Package[] = [
   {
     id: 'bottom',
     name: 'Bottom',
-    description: '📈 System monitor with customizable widgets',
+    description: 'System monitor with customizable widgets',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -234,7 +234,7 @@ export const utilityApps: Package[] = [
   {
     id: 'glances',
     name: 'Glances',
-    description: '👁️ Cross-platform system monitoring tool',
+    description: 'Cross-platform system monitoring tool',
     category: 'utility',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

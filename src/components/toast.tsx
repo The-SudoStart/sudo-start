@@ -2,7 +2,7 @@
 
 import { Toast as ToastType } from '@/types/toast';
 import { cn } from '@/lib/utils';
-import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ToastProps {
@@ -11,45 +11,18 @@ interface ToastProps {
   index: number;
 }
 
-const icons = {
-  success: CheckCircle,
-  error: XCircle,
-  warning: AlertCircle,
-  info: Info,
-};
-
-const styles = {
-  success: {
-    border: 'border-primary/50',
-    bg: 'bg-primary/10',
-    icon: 'text-primary',
-    glow: 'shadow-[0_0_20px_rgba(0,255,128,0.15)]',
-  },
-  error: {
-    border: 'border-destructive/50',
-    bg: 'bg-destructive/10',
-    icon: 'text-destructive',
-    glow: 'shadow-[0_0_20px_rgba(255,80,80,0.15)]',
-  },
-  warning: {
-    border: 'border-yellow-500/50',
-    bg: 'bg-yellow-500/10',
-    icon: 'text-yellow-500',
-    glow: 'shadow-[0_0_20px_rgba(255,200,0,0.15)]',
-  },
-  info: {
-    border: 'border-blue-500/50',
-    bg: 'bg-blue-500/10',
-    icon: 'text-blue-500',
-    glow: 'shadow-[0_0_20px_rgba(100,150,255,0.15)]',
-  },
+// Bracketed systemd-style status labels: the word carries the meaning, not the color.
+const tags = {
+  success: { label: 'OK', className: 'status-ok', bar: 'var(--ok)' },
+  error: { label: 'FAIL', className: 'status-fail', bar: 'var(--fail)' },
+  warning: { label: 'WARN', className: 'status-warn', bar: 'var(--warn)' },
+  info: { label: 'INFO', className: 'status-info', bar: 'var(--primary)' },
 };
 
 export function Toast({ toast, onDismiss, index }: ToastProps) {
   const [isExiting, setIsExiting] = useState(false);
   const [isEntering, setIsEntering] = useState(true);
-  const Icon = icons[toast.type];
-  const style = styles[toast.type];
+  const tag = tags[toast.type];
 
   useEffect(() => {
     // Trigger enter animation
@@ -78,12 +51,9 @@ export function Toast({ toast, onDismiss, index }: ToastProps) {
       tabIndex={0}
       onKeyDown={handleKeyDown}
       className={cn(
-        'relative w-full max-w-sm rounded-lg border p-4 shadow-lg backdrop-blur-sm',
+        'relative w-full max-w-sm overflow-hidden rounded-lg border border-border bg-card p-4 shadow-[var(--shadow-2)]',
         'transition-all duration-300 ease-out',
         'focus:outline-none focus:ring-2 focus:ring-ring',
-        style.border,
-        style.bg,
-        style.glow,
         isEntering && 'translate-x-full opacity-0',
         isExiting && 'translate-x-full opacity-0',
         !isEntering && !isExiting && 'translate-x-0 opacity-100'
@@ -93,7 +63,7 @@ export function Toast({ toast, onDismiss, index }: ToastProps) {
       }}
     >
       <div className="flex items-start gap-3">
-        <Icon className={cn('w-5 h-5 shrink-0 mt-0.5', style.icon)} aria-hidden="true" />
+        <span className={cn('status-tag mt-px shrink-0', tag.className)}>{tag.label}</span>
         <div className="flex-1 min-w-0">
           {toast.title && (
             <p className="font-semibold text-sm text-foreground mb-0.5">
@@ -132,9 +102,7 @@ export function Toast({ toast, onDismiss, index }: ToastProps) {
         style={{
           width: '100%',
           animation: `shrink ${toast.duration ?? 4000}ms linear forwards`,
-          color: toast.type === 'success' ? 'var(--primary)' : 
-                 toast.type === 'error' ? 'var(--destructive)' :
-                 toast.type === 'warning' ? '#eab308' : '#3b82f6',
+          color: tag.bar,
         }}
       />
 

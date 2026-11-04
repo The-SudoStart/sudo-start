@@ -42,7 +42,7 @@ export function PresetsModal({ onClose }: PresetsModalProps) {
   const handleApply = (presetId: string, packageIds: string[], presetName: string) => {
     loadPreset(packageIds);
     setApplied(presetId);
-    toast.success(`⚡ ${presetName} preset applied`);
+    toast.success(`${presetName} preset applied`);
     setTimeout(() => {
       onClose();
     }, 800);

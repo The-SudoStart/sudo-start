@@ -4,7 +4,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'react',
     name: 'React (via Vite)',
-    description: '⚛️ The most popular frontend library',
+    description: 'The most popular frontend library',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'vue',
     name: 'Vue.js',
-    description: '🖖 The progressive JavaScript framework',
+    description: 'The progressive JavaScript framework',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'angular',
     name: 'Angular',
-    description: '🅰️ Platform for building mobile & desktop web apps',
+    description: 'Platform for building mobile & desktop web apps',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'nextjs',
     name: 'Next.js',
-    description: '▲ The React framework for the web',
+    description: 'The React framework for the web',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -76,7 +76,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'django',
     name: 'Django',
-    description: '🎸 High-level Python web framework',
+    description: 'High-level Python web framework',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -94,7 +94,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'flask',
     name: 'Flask',
-    description: '🧪 Lightweight Python web framework',
+    description: 'Lightweight Python web framework',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -112,7 +112,7 @@ export const frameworkApps: Package[] = [
   {
     id: 'express',
     name: 'Express',
-    description: '🚂 Fast, unopinionated web framework for Node.js',
+    description: 'Fast, unopinionated web framework for Node.js',
     category: 'framework',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

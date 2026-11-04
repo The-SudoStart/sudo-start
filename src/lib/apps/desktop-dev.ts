@@ -4,7 +4,7 @@ export const desktopDevApps: Package[] = [
   {
     id: 'electron',
     name: 'Electron',
-    description: '⚛️ Build cross-platform desktop apps with JavaScript, HTML, and CSS',
+    description: 'Build cross-platform desktop apps with JavaScript, HTML, and CSS',
     category: 'desktop-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const desktopDevApps: Package[] = [
   {
     id: 'tauri',
     name: 'Tauri',
-    description: '🦀 Optimized, secure, and frontend-independent application framework',
+    description: 'Optimized, secure, and frontend-independent application framework',
     category: 'desktop-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const desktopDevApps: Package[] = [
   {
     id: 'qt',
     name: 'Qt',
-    description: '🖼️ Cross-platform application development framework',
+    description: 'Cross-platform application development framework',
     category: 'desktop-dev',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

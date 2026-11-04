@@ -4,7 +4,7 @@ export const toolApps: Package[] = [
   {
     id: 'git',
     name: 'Git',
-    description: '🔀 Distributed version control system',
+    description: 'Distributed version control system',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -22,7 +22,7 @@ export const toolApps: Package[] = [
   {
     id: 'curl',
     name: 'cURL',
-    description: '🌍 Command-line tool for transferring data with URLs',
+    description: 'Command-line tool for transferring data with URLs',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -40,7 +40,7 @@ export const toolApps: Package[] = [
   {
     id: 'zsh',
     name: 'Zsh',
-    description: '🐚 Extended Bourne shell with improved features and scripting',
+    description: 'Extended Bourne shell with improved features and scripting',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -58,7 +58,7 @@ export const toolApps: Package[] = [
   {
     id: 'oh-my-zsh',
     name: 'Oh My Zsh',
-    description: '✨ Delightful community-driven framework for managing Zsh configuration',
+    description: 'Delightful community-driven framework for managing Zsh configuration',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -76,7 +76,7 @@ export const toolApps: Package[] = [
   {
     id: 'terraform',
     name: 'Terraform',
-    description: '🏗️ Infrastructure as Code tool',
+    description: 'Infrastructure as Code tool',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -94,7 +94,7 @@ export const toolApps: Package[] = [
   {
     id: 'ansible',
     name: 'Ansible',
-    description: '🤖 IT automation platform',
+    description: 'IT automation platform',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -112,7 +112,7 @@ export const toolApps: Package[] = [
   {
     id: 'github-cli',
     name: 'GitHub CLI',
-    description: '🐙 GitHub command line tool',
+    description: 'GitHub command line tool',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -130,7 +130,7 @@ export const toolApps: Package[] = [
   {
     id: 'slack',
     name: 'Slack',
-    description: '💬 Team communication platform',
+    description: 'Team communication platform',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -146,7 +146,7 @@ export const toolApps: Package[] = [
   {
     id: 'discord',
     name: 'Discord',
-    description: '🎮 Voice, video and text communication for communities',
+    description: 'Voice, video and text communication for communities',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -162,7 +162,7 @@ export const toolApps: Package[] = [
   {
     id: 'postman',
     name: 'Postman',
-    description: '🚀 API development platform',
+    description: 'API development platform',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -178,7 +178,7 @@ export const toolApps: Package[] = [
   {
     id: 'figma',
     name: 'Figma',
-    description: '🎨 Interface design tool',
+    description: 'Interface design tool',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -194,7 +194,7 @@ export const toolApps: Package[] = [
   {
     id: 'lazygit',
     name: 'LazyGit',
-    description: '🦥 Simple terminal UI for git commands',
+    description: 'Simple terminal UI for git commands',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -210,7 +210,7 @@ export const toolApps: Package[] = [
   {
     id: 'delta',
     name: 'Delta',
-    description: '📊 Syntax-highlighting pager for git and diff output',
+    description: 'Syntax-highlighting pager for git and diff output',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -226,7 +226,7 @@ export const toolApps: Package[] = [
   {
     id: 'httpie',
     name: 'HTTPie',
-    description: '🌐 User-friendly HTTP client with JSON support',
+    description: 'User-friendly HTTP client with JSON support',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -242,7 +242,7 @@ export const toolApps: Package[] = [
   {
     id: 'pandoc',
     name: 'Pandoc',
-    description: '📄 Universal document converter (Markdown, PDF, DOCX, etc.)',
+    description: 'Universal document converter (Markdown, PDF, DOCX, etc.)',
     category: 'tool',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

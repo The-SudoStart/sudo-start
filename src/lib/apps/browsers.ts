@@ -4,7 +4,7 @@ export const browserApps: Package[] = [
   {
     id: 'zen-browser',
     name: 'Zen Browser',
-    description: '🎨 Beautiful Firefox fork with vertical tabs & privacy focus',
+    description: 'Beautiful Firefox fork with vertical tabs & privacy focus',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const browserApps: Package[] = [
   {
     id: 'arc',
     name: 'Arc Browser',
-    description: '🌈 The Chrome replacement. Mac Only',
+    description: 'The Chrome replacement. Mac Only',
     category: 'browser',
     platforms: { macos: true, linux: false },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const browserApps: Package[] = [
   {
     id: 'vivaldi',
     name: 'Vivaldi',
-    description: '🎭 Power user browser with extensive customization',
+    description: 'Power user browser with extensive customization',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -52,7 +52,7 @@ export const browserApps: Package[] = [
   {
     id: 'brave',
     name: 'Brave',
-    description: '🦁 Privacy-focused browser with built-in ad blocking',
+    description: 'Privacy-focused browser with built-in ad blocking',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -70,7 +70,7 @@ export const browserApps: Package[] = [
   {
     id: 'google-chrome',
     name: 'Google Chrome',
-    description: '🌐 Fast, secure web browser by Google',
+    description: 'Fast, secure web browser by Google',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -86,7 +86,7 @@ export const browserApps: Package[] = [
   {
     id: 'microsoft-edge',
     name: 'Microsoft Edge',
-    description: '🔷 Fast and secure browser from Microsoft, built on Chromium',
+    description: 'Fast and secure browser from Microsoft, built on Chromium',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -108,7 +108,7 @@ export const browserApps: Package[] = [
   {
     id: 'firefox',
     name: 'Firefox',
-    description: '🦊 Open-source web browser by Mozilla',
+    description: 'Open-source web browser by Mozilla',
     category: 'browser',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

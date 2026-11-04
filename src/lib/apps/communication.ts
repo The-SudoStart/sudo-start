@@ -4,7 +4,7 @@ export const communicationApps: Package[] = [
   {
     id: 'zoom',
     name: 'Zoom',
-    description: '📹 Video conferencing — the standard for remote dev teams',
+    description: 'Video conferencing — the standard for remote dev teams',
     category: 'communication',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const communicationApps: Package[] = [
   {
     id: 'microsoft-teams',
     name: 'Microsoft Teams',
-    description: '👥 Enterprise collaboration platform by Microsoft',
+    description: 'Enterprise collaboration platform by Microsoft',
     category: 'communication',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -36,7 +36,7 @@ export const communicationApps: Package[] = [
   {
     id: 'telegram',
     name: 'Telegram',
-    description: '✈️ Fast, secure messaging app — popular in open-source communities',
+    description: 'Fast, secure messaging app — popular in open-source communities',
     category: 'communication',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

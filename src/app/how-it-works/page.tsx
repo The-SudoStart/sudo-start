@@ -11,8 +11,10 @@ import {
   PackageCheck,
   ShieldCheck,
   Sparkles,
-  Terminal,
 } from 'lucide-react';
+import { BrandMark } from '@/components/brand-mark';
+import { ProductShot } from '@/components/product-shot';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export const metadata: Metadata = {
   title: 'How SudoStart Works',
@@ -33,13 +35,13 @@ export default function HowItWorksPage() {
       <header className="border-b border-border">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <Link href="/" className="flex items-center gap-2.5 rounded-md text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="SudoStart home">
-            <span className="app-icon-tile flex h-9 w-9 items-center justify-center rounded-lg"><Terminal className="h-5 w-5" /></span>
-            <span className="text-base font-bold tracking-tight">SudoStart</span>
+            <BrandMark size={36} />
           </Link>
-          <nav aria-label="Main navigation" className="flex items-center gap-5 text-sm font-medium text-muted-foreground sm:gap-7">
-            <Link href="/how-it-works" aria-current="page" className="rounded-md bg-muted px-3 py-1.5 text-foreground transition-colors hover:bg-accent">How it works</Link>
+          <nav aria-label="Main navigation" className="flex items-center gap-4 whitespace-nowrap text-sm font-medium text-muted-foreground sm:gap-7">
+            <Link href="/how-it-works" aria-current="page" className="hidden rounded-md bg-muted px-3 py-1.5 text-foreground transition-colors hover:bg-accent sm:inline">How it works</Link>
             <Link href="/" className="transition-colors hover:text-foreground">Build a setup</Link>
-            <a href="https://github.com/The-SudoStart/sudo-start" target="_blank" rel="noreferrer" className="transition-colors hover:text-foreground">GitHub</a>
+            <a href="https://github.com/The-SudoStart/sudo-start" target="_blank" rel="noreferrer" className="hidden transition-colors hover:text-foreground sm:inline">GitHub</a>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -50,16 +52,16 @@ export default function HowItWorksPage() {
         </Link>
 
         <section className="mt-8 max-w-3xl" aria-labelledby="guide-title">
-          <p className="text-sm font-semibold tracking-wide text-primary">SUDOSTART GUIDE</p>
-          <h1 id="guide-title" className="mt-3 text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">How it works</h1>
+          <p className="label-caps text-primary">SudoStart guide</p>
+          <h1 id="guide-title" className="mt-3 font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl">How it works</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-foreground/75 sm:text-lg">
             Build a list of the developer tools you want, choose versions, and create a script for your machine. SudoStart shows you the script before you download or run it.
           </p>
         </section>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
-          <aside className="h-fit rounded-xl border border-border bg-card p-4 lg:sticky lg:top-6" aria-label="Guide contents">
-            <p className="px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">On this page</p>
+          <aside className="h-fit min-w-0 rounded-xl border border-border bg-card p-4 lg:sticky lg:top-6" aria-label="Guide contents">
+            <p className="label-caps px-2 text-muted-foreground">On this page</p>
             <nav className="mt-3 flex gap-2 overflow-x-auto lg:flex-col">
               {contents.map((item) => (
                 <a key={item.href} href={item.href} className="shrink-0 rounded-lg px-2 py-2 text-sm text-foreground/75 transition-colors hover:bg-accent hover:text-foreground">
@@ -84,6 +86,7 @@ export default function HowItWorksPage() {
             <GuideStep id="tools" number="02" icon={<Layers className="h-5 w-5" />} title="Choose your tools and versions">
               <p>Browse or search the catalogue, add tools to your bucket, and choose a version where one is available. You can also start with a preset for web development, Rust, DevOps, or another workflow, then adjust the list.</p>
               <p className="mt-3">Your bucket keeps the selected packages together while you continue browsing. You can add or remove tools before generating the script.</p>
+              <ProductShot name="catalog" alt="The SudoStart catalog with tool cards grouped by category, each showing its install command, and three tools added to the bucket." />
             </GuideStep>
 
             <GuideStep id="review" number="03" icon={<FileCode2 className="h-5 w-5" />} title="Review the generated script">
@@ -97,26 +100,27 @@ export default function HowItWorksPage() {
                   </div>
                 </div>
               </div>
+              <ProductShot name="script" alt="The script review screen showing package count, platform, install time, disk space and the generated bash script." />
               <p className="mt-3">On macOS, you can also view or download a Brewfile.</p>
               <div className="mt-4 rounded-lg border border-border bg-background p-4">
                 <h3 className="text-sm font-semibold text-foreground">Copy a curl URL</h3>
                 <p className="mt-2">Open the <strong>Curl URL</strong> tab and choose <strong>Generate Curl URL</strong>. Once it is ready, use <strong>Copy One-liner</strong> to copy a command you can paste into a terminal, or <strong>Copy URL only</strong> to copy just the share link. The link serves this script and expires after 24 hours.</p>
-                <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-lg border border-border bg-[#0f1115] px-3 py-2 font-mono text-xs text-[#b8b8b8] sm:text-sm">bash &lt;(curl -fsSL &quot;your-share-url&quot;)</code>
+                <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-lg border border-term-line bg-term-bg px-3 py-2 font-mono text-xs text-term-ink sm:text-sm">bash &lt;(curl -fsSL &quot;your-share-url&quot;)</code>
               </div>
             </GuideStep>
 
-            <section id="ai-help" className="scroll-mt-6 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-7" aria-labelledby="ai-help-title">
+            <section id="ai-help" className="reveal scroll-mt-6 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-7" aria-labelledby="ai-help-title">
               <div className="flex items-start gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Sparkles className="h-5 w-5" /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-root-soft text-root"><Sparkles className="h-5 w-5" /></span>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold tracking-wide text-primary">OPTIONAL ASSISTANCE</p>
-                  <h2 id="ai-help-title" className="mt-1 text-xl font-semibold tracking-tight text-card-foreground sm:text-2xl">How Root AI can help</h2>
+                  <p className="label-caps text-root">Optional assistance</p>
+                  <h2 id="ai-help-title" className="mt-1 font-display text-xl font-semibold text-card-foreground sm:text-2xl">How Root AI can help</h2>
                   <p className="mt-3 text-sm leading-7 text-foreground/75 sm:text-base">SudoStart includes two AI features to help you plan your toolset and understand the generated script.</p>
                 </div>
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <article className="rounded-lg border border-border bg-background p-4">
-                  <h3 className="flex items-center gap-2 text-base font-semibold text-foreground"><MessageSquare className="h-4 w-4 text-primary" /> Root AI chat</h3>
+                  <h3 className="flex items-center gap-2 text-base font-semibold text-foreground"><MessageSquare className="h-4 w-4 text-root" /> Root AI chat</h3>
                   <p className="mt-2 text-sm leading-6 text-foreground/75">Open <strong>Root AI</strong> from the catalogue or script screen to ask for tool recommendations or setup advice. Root can see the names of tools already in your bucket, so suggestions can account for what you have selected. Ask explicitly when you want it to add or remove catalogue tools; supported package and version IDs are checked before changes are applied.</p>
                 </article>
                 <article className="rounded-lg border border-border bg-background p-4">
@@ -132,8 +136,8 @@ export default function HowItWorksPage() {
 
             <GuideStep id="run" number="04" icon={<PackageCheck className="h-5 w-5" />} title="Download and run it locally">
               <p>Download the shell script, open a terminal on the target machine, and run the command below from the folder where the file was saved:</p>
-              <div className="mt-4 overflow-x-auto rounded-lg border border-border bg-[#0f1115] px-4 py-3">
-                <code className="whitespace-nowrap font-mono text-sm text-[#b8b8b8]">chmod +x sudo-start-setup.sh &amp;&amp; ./sudo-start-setup.sh</code>
+              <div className="mt-4 overflow-x-auto rounded-lg border border-term-line bg-term-bg px-4 py-3">
+                <code className="whitespace-nowrap font-mono text-sm text-term-ink"><span className="text-[var(--term-string)]">$ </span>chmod +x sudo-start-setup.sh &amp;&amp; ./sudo-start-setup.sh</code>
               </div>
               <p className="mt-3">The script installs the tools using their platform-specific package commands. Add <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">--verbose</code> when running it to see more detailed output.</p>
             </GuideStep>
@@ -156,8 +160,7 @@ export default function HowItWorksPage() {
       <footer className="border-t border-border">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-5 py-5 text-xs text-foreground/65 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <Link href="/" className="flex items-center gap-2 font-semibold text-foreground" aria-label="SudoStart home">
-            <span className="app-icon-tile flex h-7 w-7 items-center justify-center rounded-md"><Terminal className="h-4 w-4" /></span>
-            SudoStart
+            <BrandMark size={26} />
           </Link>
           <a href="https://github.com/The-SudoStart/sudo-start" target="_blank" rel="noreferrer" className="font-medium transition-colors hover:text-foreground">GitHub</a>
           <span>Platform support: macOS and Linux</span>
@@ -181,12 +184,12 @@ function GuideStep({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-6 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-7" aria-labelledby={`${id}-title`}>
+    <section id={id} className="reveal scroll-mt-6 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-7" aria-labelledby={`${id}-title`}>
       <div className="flex items-start gap-4">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</span>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bios-soft text-primary">{icon}</span>
         <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-wide text-primary">STEP {number}</p>
-          <h2 id={`${id}-title`} className="mt-1 text-xl font-semibold tracking-tight text-card-foreground sm:text-2xl">{title}</h2>
+          <p className="label-caps text-primary">Step {number}</p>
+          <h2 id={`${id}-title`} className="mt-1 font-display text-xl font-semibold text-card-foreground sm:text-2xl">{title}</h2>
           <div className="mt-3 text-sm leading-7 text-foreground/75 sm:text-base">{children}</div>
         </div>
       </div>

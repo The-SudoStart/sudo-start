@@ -4,7 +4,7 @@ export const webServerApps: Package[] = [
   {
     id: 'nginx',
     name: 'Nginx',
-    description: '🌐 High-performance HTTP server and reverse proxy',
+    description: 'High-performance HTTP server and reverse proxy',
     category: 'web-server',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',
@@ -20,7 +20,7 @@ export const webServerApps: Package[] = [
   {
     id: 'apache',
     name: 'Apache',
-    description: '📜 The most widely used web server software',
+    description: 'The most widely used web server software',
     category: 'web-server',
     platforms: { macos: true, linux: true },
     defaultVersion: 'stable',

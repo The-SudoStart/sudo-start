@@ -33,7 +33,7 @@ export function BucketModal({ onClose }: BucketModalProps) {
 
   const handleAddDefaults = useCallback(() => {
     addDefaultAppsToBucket();
-    toast.success('⚡ Added recommended tools');
+    toast.success('Added recommended tools');
   }, [addDefaultAppsToBucket, toast]);
 
   const handleBrowseCatalog = useCallback(() => {
@@ -50,12 +50,12 @@ export function BucketModal({ onClose }: BucketModalProps) {
 
   const handleRemoveFromBucket = (pkgId: string, pkgName: string) => {
     removeFromBucket(pkgId);
-    toast.success(`🗑️ Removed ${pkgName}`);
+    toast.success(`Removed ${pkgName}`);
   };
 
   const handleClearBucket = () => {
     clearBucket();
-    toast.info('🧹 Bucket cleared');
+    toast.info('Bucket cleared');
   };
 
   const handleGenerateScript = () => {
@@ -65,7 +65,7 @@ export function BucketModal({ onClose }: BucketModalProps) {
     }
     onClose();
     setCurrentStep('output');
-    toast.success('🚀 Script generated');
+    toast.success('Script generated');
   };
 
   // Navigate bucket items with arrow keys
@@ -92,7 +92,7 @@ export function BucketModal({ onClose }: BucketModalProps) {
     if (focusedIndex >= 0 && focusedIndex < bucket.length) {
       const pkg = bucket[focusedIndex];
       removeFromBucket(pkg.id);
-      toast.success(`🗑️ Removed ${pkg.name}`);
+      toast.success(`Removed ${pkg.name}`);
       // Adjust focus index
       if (focusedIndex >= bucket.length - 1) {
         setFocusedIndex(Math.max(0, bucket.length - 2));
@@ -191,7 +191,7 @@ export function BucketModal({ onClose }: BucketModalProps) {
                 name: pkg.name,
                 onAdd: () => {
                   addToBucket({ ...pkg, selectedVersion: pkg.defaultVersion });
-                  toast.success(`✅ Added ${pkg.name}`);
+                  toast.success(`Added ${pkg.name}`);
                 },
               }))}
             />
