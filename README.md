@@ -101,9 +101,26 @@ Curated list of 2025's best development tools across 17+ categories:
 
 ## Demo
 
-![SudoStart Demo](https://via.placeholder.com/800x400/0a0a0a/00ff00?text=SudoStart+Demo+Screenshot)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/images/screenshots/landing-dark.png">
+  <img src="public/images/screenshots/landing-light.png" alt="SudoStart landing page: Your tools. Your setup. One install script.">
+</picture>
 
-*Terminal-inspired interface with AI chat and tool selection*
+*Pick a platform or start from a stack.*
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/images/screenshots/catalog-dark.png">
+  <img src="public/images/screenshots/catalog-light.png" alt="The tool catalog, color-coded by category, with each tool showing its install command">
+</picture>
+
+*Browse 175+ tools. Every card shows exactly what will run.*
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/images/screenshots/script-dark.png">
+  <img src="public/images/screenshots/script-light.png" alt="The script review screen with the generated bash script">
+</picture>
+
+*Review the generated script, then download it or copy a one-line curl command.*
 
 ---
 

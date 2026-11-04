@@ -941,6 +941,10 @@
 .spotlight-card.is-pointing::after {
   opacity: 1;
 }
+.spotlight-card:hover,
+.spotlight-card:focus-within {
+  z-index: 10;
+}
 .spotlight-card:focus-within {
   --lift: -3px;
 }
