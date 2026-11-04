@@ -58,7 +58,7 @@ export function SearchBar({ onClose }: SearchBarProps) {
 
   useEffect(() => {
     if (!query.trim()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setExternalResults([]);
       return;
     }

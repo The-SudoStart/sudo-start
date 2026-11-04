@@ -34,12 +34,6 @@ export function PackageManager() {
       : availableApps.filter((p) => p.category === selectedCategory);
   }, [selectedCategory, availableApps]);
 
-  // Trigger animation replay without remounting when category changes
-  const [animationKey, setAnimationKey] = useState(0);
-  useEffect(() => {
-    setAnimationKey((k) => k + 1);
-  }, [selectedCategory]);
-
   const isInBucket = useCallback((pkg: Package) => bucket.some((p) => p.id === pkg.id), [bucket]);
   const getBucketPkg = useCallback((pkg: Package) => bucket.find((p) => p.id === pkg.id), [bucket]);
 
@@ -222,7 +216,7 @@ export function PackageManager() {
                 onFocus={() => setFocusedPackageIndex(index)}
                 tabIndex={focusedPackageIndex === index ? 0 : -1}
                 staggerIndex={Math.min(index, 12)}
-                animationKey={animationKey}
+                categoryKey={selectedCategory}
               />
             );
           })}
@@ -288,7 +282,7 @@ function PackageCard({
   onFocus,
   tabIndex,
   staggerIndex = 0,
-  animationKey = 0,
+  categoryKey = 'all',
 }: {
   pkg: Package;
   os: 'macos' | 'linux' | null;
@@ -302,8 +296,8 @@ function PackageCard({
   tabIndex?: number;
   /** Position in the entrance ripple; capped so long lists don't lag. */
   staggerIndex?: number;
-  /** Incremented to replay entrance animation without remounting. */
-  animationKey?: number;
+  /** Category key to replay entrance animation without remounting. */
+  categoryKey?: string;
 }) {
   const { toast } = useToast();
   // Initialize from bucket if present, otherwise use default
@@ -453,7 +447,7 @@ function PackageCard({
         }
       }}
       style={{ '--i': staggerIndex } as React.CSSProperties}
-      key={`${pkg.id}-${animationKey}`}
+      key={`${pkg.id}-${categoryKey}`}
       className={`${getCategoryFamilyClass(pkg.category)} card-in spotlight-card flex flex-col rounded-lg border bg-card p-5 shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
         isInBucket ? 'border-primary ring-[3px] ring-bios-soft' : 'border-border'
       } ${isAvailable ? '' : 'opacity-60'} ${isFocused ? 'ring-2 ring-ring' : ''}`}
