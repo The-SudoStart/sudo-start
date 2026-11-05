@@ -100,13 +100,33 @@ Provide a brief, helpful summary of what this script does and what the user will
     };
 
     const client = getGroqClient();
-    const stream = await client.chat.completions.create({
-      messages: [systemPrompt, userPrompt],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.7,
-      max_tokens: 1024,
-      stream: true,
-    });
+    const primaryModel = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+    const fallbackModel = 'llama-3.1-8b-instant';
+
+    let stream;
+    try {
+      stream = await client.chat.completions.create({
+        messages: [systemPrompt, userPrompt],
+        model: primaryModel,
+        temperature: 0.7,
+        max_tokens: 1024,
+        stream: true,
+      });
+    } catch (err: unknown) {
+      const is404 = typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 404;
+      if (is404 && primaryModel !== fallbackModel) {
+        console.warn(`[Groq] Primary model ${primaryModel} not available, falling back to ${fallbackModel}`);
+        stream = await client.chat.completions.create({
+          messages: [systemPrompt, userPrompt],
+          model: fallbackModel,
+          temperature: 0.7,
+          max_tokens: 1024,
+          stream: true,
+        });
+      } else {
+        throw err;
+      }
+    }
 
     // Stream the response as Server-Sent Events
     const encoder = new TextEncoder();
