@@ -1,27 +1,23 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
-import { checkRateLimit, isValidGroqApiKey } from '@/lib/security';
-
-let groq: Groq | null = null;
+import { checkRateLimit, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
 
 // Rate limit: 10 requests per minute per IP
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
 function getGroqClient() {
-  if (!groq) {
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      throw new Error('GROQ_API_KEY is not defined');
-    }
-    // SECURITY: Validate API key format to catch misconfigurations early
-    if (!isValidGroqApiKey(apiKey)) {
-      console.error('[Security] Invalid GROQ_API_KEY format detected');
-      throw new Error('Invalid GROQ_API_KEY format');
-    }
-    groq = new Groq({ apiKey });
+  const rawKey = process.env.GROQ_API_KEY;
+  if (!rawKey) {
+    throw new Error('GROQ_API_KEY is not configured on the server. Please check your environment variables.');
   }
-  return groq;
+  const apiKey = sanitizeApiKey(rawKey);
+  // SECURITY: Validate API key format to catch misconfigurations early
+  if (!isValidGroqApiKey(apiKey)) {
+    console.error('[Security] Invalid GROQ_API_KEY format detected');
+    throw new Error('Invalid GROQ_API_KEY format. Key must start with gsk_.');
+  }
+  return new Groq({ apiKey });
 }
 
 function getClientIP(request: NextRequest): string {
@@ -104,13 +100,42 @@ Provide a brief, helpful summary of what this script does and what the user will
     };
 
     const client = getGroqClient();
-    const stream = await client.chat.completions.create({
-      messages: [systemPrompt, userPrompt],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.7,
-      max_tokens: 1024,
-      stream: true,
-    });
+    const candidateModels = [
+      process.env.GROQ_MODEL,
+      'openai/gpt-oss-20b',
+      'qwen/qwen3.8-27b',
+      'openai/gpt-oss-120b',
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-versatile',
+    ].filter((m): m is string => Boolean(m && typeof m === 'string'));
+
+    let stream = null;
+    let lastError: unknown = null;
+
+    for (const model of candidateModels) {
+      try {
+        stream = await client.chat.completions.create({
+          messages: [systemPrompt, userPrompt],
+          model,
+          temperature: 0.7,
+          max_tokens: 1024,
+          stream: true,
+        });
+        break;
+      } catch (err: unknown) {
+        lastError = err;
+        const is404 = typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 404;
+        if (is404) {
+          console.warn(`[Groq] Model ${model} not accessible (404), trying next candidate...`);
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    if (!stream) {
+      throw lastError || new Error('No accessible chat model found for this API key.');
+    }
 
     // Stream the response as Server-Sent Events
     const encoder = new TextEncoder();

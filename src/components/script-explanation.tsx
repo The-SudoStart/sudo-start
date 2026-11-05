@@ -102,11 +102,17 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
       });
 
       if (!response.ok) {
+        let serverError = '';
+        try {
+          const errData = await response.json();
+          if (errData?.error && typeof errData.error === 'string') serverError = errData.error;
+        } catch {}
         if (response.status === 429) {
-          toast.error('Rate limit reached. Please try again later.');
+          toast.error(serverError || 'Rate limit reached. Please try again later.');
           throw new Error('Rate limit');
         }
-        throw new Error('Failed to generate explanation');
+        toast.error(serverError || 'Failed to generate explanation. Please try again.');
+        throw new Error(serverError || 'Failed to generate explanation');
       }
 
       if (!response.body) throw new Error('No response body');
