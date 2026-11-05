@@ -135,7 +135,21 @@ export function ChatWindow() {
         signal: abortRef.current.signal,
       });
 
-      if (!response.ok) throw new Error('Request failed');
+      if (!response.ok) {
+        let serverErrorMessage = '';
+        try {
+          const errData = await response.json();
+          if (errData?.error && typeof errData.error === 'string') {
+            serverErrorMessage = errData.error;
+          }
+        } catch {
+          // ignore non-json error responses
+        }
+        if (response.status === 429) {
+          throw new Error(serverErrorMessage || 'Rate limit exceeded. Please wait a moment before trying again.');
+        }
+        throw new Error(serverErrorMessage || 'Request failed');
+      }
       if (!response.body) throw new Error('No response body');
 
       const reader = response.body.getReader();
@@ -170,11 +184,17 @@ export function ChatWindow() {
     } catch (error: unknown) {
       if ((error as Error).name === 'AbortError') return;
       console.error('Chat error:', error);
+      const customMessage = error instanceof Error && error.message && error.message !== 'Request failed'
+        ? error.message
+        : null;
+
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Check that your GROQ_API_KEY is configured in `.env.local`.',
+          content: customMessage
+            ? `Sorry, I encountered an error: ${customMessage}`
+            : 'Sorry, I encountered an error. If running locally or on Vercel, ensure your `GROQ_API_KEY` is configured and deployed.',
         },
       ]);
     } finally {

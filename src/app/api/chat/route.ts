@@ -1,27 +1,19 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
-import { checkRateLimit, isValidGroqApiKey } from '@/lib/security';
-
-let groq: Groq | null = null;
-
-// Rate limit: 10 requests per minute per IP
-const RATE_LIMIT_MAX = 10;
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+import { checkRateLimit, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
 
 function getGroqClient() {
-  if (!groq) {
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      throw new Error('GROQ_API_KEY is not defined');
-    }
-    // SECURITY: Validate API key format to catch misconfigurations early
-    if (!isValidGroqApiKey(apiKey)) {
-      console.error('[Security] Invalid GROQ_API_KEY format detected');
-      throw new Error('Invalid GROQ_API_KEY format');
-    }
-    groq = new Groq({ apiKey });
+  const rawKey = process.env.GROQ_API_KEY;
+  if (!rawKey) {
+    throw new Error('GROQ_API_KEY is not configured on the server. Please check your environment variables.');
   }
-  return groq;
+  const apiKey = sanitizeApiKey(rawKey);
+  // SECURITY: Validate API key format to catch misconfigurations early
+  if (!isValidGroqApiKey(apiKey)) {
+    console.error('[Security] Invalid GROQ_API_KEY format detected');
+    throw new Error('Invalid GROQ_API_KEY format. Key must start with gsk_.');
+  }
+  return new Groq({ apiKey });
 }
 
 function getClientIP(request: NextRequest): string {
@@ -30,6 +22,10 @@ function getClientIP(request: NextRequest): string {
   const realIP = request.headers.get('x-real-ip');
   return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
 }
+
+// Rate limit: 10 requests per minute per IP
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
 export async function POST(request: NextRequest) {
   try {

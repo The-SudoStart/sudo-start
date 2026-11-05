@@ -104,13 +104,23 @@ export function escapeShellArg(arg: string): string {
 }
 
 /**
+ * Sanitizes and normalizes an API key string by trimming whitespace
+ * and stripping surrounding single or double quotes.
+ */
+export function sanitizeApiKey(key: string | undefined): string {
+  if (!key || typeof key !== 'string') return '';
+  return key.trim().replace(/^["']|["']$/g, '');
+}
+
+/**
  * Validates GROQ API key format
- * Groq keys start with "gsk_" and are alphanumeric with underscores
+ * Groq keys start with "gsk_" and are alphanumeric with underscores and hyphens
  */
 export function isValidGroqApiKey(key: string): boolean {
   if (!key || typeof key !== 'string') return false;
-  // Groq API keys start with 'gsk_' followed by alphanumeric and underscores
-  return /^gsk_[a-zA-Z0-9]{32,}$/.test(key);
+  const cleanKey = sanitizeApiKey(key);
+  // Groq API keys start with 'gsk_' followed by alphanumeric characters, underscores, and hyphens
+  return /^gsk_[a-zA-Z0-9_-]{20,}$/.test(cleanKey);
 }
 
 /**
