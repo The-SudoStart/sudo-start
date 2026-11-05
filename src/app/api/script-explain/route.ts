@@ -100,32 +100,41 @@ Provide a brief, helpful summary of what this script does and what the user will
     };
 
     const client = getGroqClient();
-    const primaryModel = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
-    const fallbackModel = 'llama-3.1-8b-instant';
+    const candidateModels = [
+      process.env.GROQ_MODEL,
+      'openai/gpt-oss-20b',
+      'qwen/qwen3.8-27b',
+      'openai/gpt-oss-120b',
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-versatile',
+    ].filter((m): m is string => Boolean(m && typeof m === 'string'));
 
-    let stream;
-    try {
-      stream = await client.chat.completions.create({
-        messages: [systemPrompt, userPrompt],
-        model: primaryModel,
-        temperature: 0.7,
-        max_tokens: 1024,
-        stream: true,
-      });
-    } catch (err: unknown) {
-      const is404 = typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 404;
-      if (is404 && primaryModel !== fallbackModel) {
-        console.warn(`[Groq] Primary model ${primaryModel} not available, falling back to ${fallbackModel}`);
+    let stream = null;
+    let lastError: unknown = null;
+
+    for (const model of candidateModels) {
+      try {
         stream = await client.chat.completions.create({
           messages: [systemPrompt, userPrompt],
-          model: fallbackModel,
+          model,
           temperature: 0.7,
           max_tokens: 1024,
           stream: true,
         });
-      } else {
+        break;
+      } catch (err: unknown) {
+        lastError = err;
+        const is404 = typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 404;
+        if (is404) {
+          console.warn(`[Groq] Model ${model} not accessible (404), trying next candidate...`);
+          continue;
+        }
         throw err;
       }
+    }
+
+    if (!stream) {
+      throw lastError || new Error('No accessible chat model found for this API key.');
     }
 
     // Stream the response as Server-Sent Events
