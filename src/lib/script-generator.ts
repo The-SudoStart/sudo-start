@@ -266,9 +266,12 @@ export function generateScript(
       }
 
       const installCmd = resolveCommand(pkg, os);
+      const isPlatformSupported = pkg.platforms[os];
 
-      if (!installCmd || installCmd.trim().startsWith('#')) {
-        lines.push(`warn "${pkg.name} is not available on ${os.toUpperCase()} — skipping"`);
+      if (!isPlatformSupported) {
+        lines.push(`warn "${pkg.name} is not supported on ${os.toUpperCase()} — skipping"`);
+      } else if (!installCmd || installCmd.trim().startsWith('#')) {
+        lines.push(`warn "No ${os.toUpperCase()} install command is configured for ${pkg.name} — skipping"`);
       } else {
         const checkCmd = getCheckCommand(pkg.id);
         if (checkCmd) {
