@@ -37,8 +37,18 @@ test('version templates resolve minor placeholders', () => {
 test('unsupported incomplete versions are skipped instead of emitting placeholders', () => {
   const pkg = appCatalog.find((item) => item.id === 'ruby')!;
   const script = generateScript('linux', 'bash', [{ ...pkg, selectedVersion: '8' }]);
-  expect(script).toContain('Ruby is not available on LINUX');
+  expect(script).toContain('No LINUX install command is configured for Ruby');
   expect(script).not.toContain('${VERSION_MINOR}');
+});
+
+test('unsupported platforms skip configured install commands', () => {
+  const script = generateScript('linux', 'bash', [{
+    ...fixture,
+    platforms: { linux: false, macos: true },
+    versions: [{ id: 'stable', label: 'Stable', macCommand: 'true', linuxCommand: 'exit 99' }],
+  }]);
+  expect(script).toContain('Fixture is not supported on LINUX');
+  expect(script).not.toContain('exit 99');
 });
 
 test('generated installer exits on failure and reports success only after success', () => {
