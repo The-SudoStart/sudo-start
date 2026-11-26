@@ -204,13 +204,17 @@ export async function enforceRateLimit(
 }
 
 export function getClientIP(request: Request): string {
-  // Vercel overwrites this header at its edge. Elsewhere, trust it only if the
-  // deployment explicitly opts in to a trusted reverse proxy.
-  const trusted = process.env.VERCEL || process.env.SUDOSTART_TRUST_PROXY === 'true';
-  if (!trusted) return 'unidentified-client';
-  return request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim()
-    || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || 'unidentified-client';
+  if (process.env.VERCEL) {
+    return request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || 'unidentified-client';
+  }
+  // A custom proxy must overwrite X-Forwarded-For before this is enabled.
+  if (process.env.SUDOSTART_TRUST_PROXY === 'true') {
+    return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || 'unidentified-client';
+  }
+  return 'unidentified-client';
 }
 
 /**

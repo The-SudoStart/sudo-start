@@ -300,14 +300,9 @@ function PackageCard({
   categoryKey?: string;
 }) {
   const { toast } = useToast();
-  // Initialize from bucket if present, otherwise use default
-  const [selection, setSelection] = useState({
-    version: bucketVersion || pkg.defaultVersion,
-    bucketVersion,
-  });
-  const selectedVersion = selection.bucketVersion === bucketVersion
-    ? selection.version : bucketVersion || pkg.defaultVersion;
-  const setSelectedVersion = (version: string) => setSelection({ version, bucketVersion });
+  const [localVersion, setLocalVersion] = useState(bucketVersion || pkg.defaultVersion);
+  // The bucket is authoritative once a package has been added. Chat can update it.
+  const selectedVersion = isInBucket ? bucketVersion || pkg.defaultVersion : localVersion;
   const [dynamicVersions, setDynamicVersions] = useState<string[]>([]);
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
@@ -496,7 +491,7 @@ function PackageCard({
               onFocus={handleVersionDropdownOpen}
               onChange={(e) => {
                 const v = e.target.value;
-                setSelectedVersion(v);
+                setLocalVersion(v);
                 if (isInBucket) onAddToBucket(pkg, v);
               }}
               className="w-full cursor-pointer appearance-none rounded-lg border border-border bg-input py-2 pl-3 pr-7 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"

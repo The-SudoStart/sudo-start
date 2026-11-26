@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { registryAdapters, RegistryType } from '@/lib/registries';
-import { enforceRateLimit, getClientIP, isValidVersion } from '@/lib/security';
+import { enforceRateLimit, getClientIP } from '@/lib/security';
+import { isSafeRegistryResult } from '@/lib/registries/validation';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -32,9 +33,7 @@ export async function GET(request: NextRequest) {
     }
     const results = await adapter.search(query, limit);
     const packages = results
-      .filter((r) => r.name.length <= 120 &&
-        /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._+~-]*$/i.test(r.name) &&
-        isValidVersion(r.version))
+      .filter((r) => isSafeRegistryResult(registry, r))
       .map((r) => adapter.toPackage(r));
     return NextResponse.json({ packages, count: packages.length });
   } catch (error) {

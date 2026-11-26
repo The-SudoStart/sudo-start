@@ -3,6 +3,10 @@ import { NextRequest } from 'next/server';
 import { POST as shareScript, GET as readScript } from '../src/app/api/script-share/route';
 import { POST as chat } from '../src/app/api/chat/route';
 import { GET as searchRegistry } from '../src/app/api/registry/route';
+import { getClientIP } from '../src/lib/security';
+import { isSafeRegistryResult } from '../src/lib/registries/validation';
+import { registryAdapters } from '../src/lib/registries';
+import { buildChatRequest, MAX_CHAT_BODY_BYTES } from '../src/lib/chat-request';
 
 test('shared-script POST and GET use the same expiring Redis key', async () => {
   const oldFetch = globalThis.fetch;
@@ -59,4 +63,55 @@ test('registry rejects unbounded result limits before upstream lookup', async ()
     'http://localhost/api/registry?registry=npm&q=react&limit=1000000'
   ));
   expect(response.status).toBe(400);
+});
+
+test('custom proxies cannot let clients override the rate-limit identity with a Vercel header', () => {
+  const oldVercel = process.env.VERCEL;
+  const oldProxy = process.env.SUDOSTART_TRUST_PROXY;
+  delete process.env.VERCEL;
+  process.env.SUDOSTART_TRUST_PROXY = 'true';
+  try {
+    const request = new Request('http://localhost/api/chat', {
+      headers: { 'x-forwarded-for': '203.0.113.10', 'x-vercel-forwarded-for': '198.51.100.1' },
+    });
+    expect(getClientIP(request)).toBe('203.0.113.10');
+  } finally {
+    if (oldVercel === undefined) delete process.env.VERCEL;
+    else process.env.VERCEL = oldVercel;
+    if (oldProxy === undefined) delete process.env.SUDOSTART_TRUST_PROXY;
+    else process.env.SUDOSTART_TRUST_PROXY = oldProxy;
+  }
+});
+
+test('long chat histories fit the API limits while keeping the latest user message', () => {
+  const history = Array.from({ length: 60 }, (_, index) => ({
+    role: index % 2 ? 'user' as const : 'assistant' as const,
+    content: '😀'.repeat(4000),
+  }));
+  const body = buildChatRequest(history, { role: 'user', content: 'latest question' }, []);
+  expect(body.messages.at(-1)).toEqual({ role: 'user', content: 'latest question' });
+  expect(body.messages.length).toBeLessThanOrEqual(30);
+  expect(body.messages.every((message) => message.content.length <= 4000)).toBe(true);
+  expect(new TextEncoder().encode(JSON.stringify(body)).byteLength).toBeLessThanOrEqual(MAX_CHAT_BODY_BYTES);
+});
+
+test('registry validation retains safe Homebrew and APT results and rejects shell characters', async () => {
+  const originalSearch = registryAdapters.homebrew.search;
+  registryAdapters.homebrew.search = async () => [
+    { name: 'ruby@3.3', version: '3.3.1', description: 'Ruby formula' },
+    { name: 'bad;touch', version: '1.0', description: 'Unsafe formula' },
+  ];
+  try {
+    const response = await searchRegistry(new NextRequest(
+      'http://localhost/api/registry?registry=homebrew&q=ruby'
+    ));
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.packages.map((pkg: { name: string }) => pkg.name)).toEqual(['ruby@3.3']);
+  } finally {
+    registryAdapters.homebrew.search = originalSearch;
+  }
+  expect(isSafeRegistryResult('apt', {
+    name: 'libfoo', version: '1:2.0-3+deb11u1', description: 'APT package',
+  })).toBe(true);
 });

@@ -155,11 +155,9 @@ Curated list of 2025's best development tools across 17+ categories:
    cp .env.example .env.local
    ```
    
-   Add your Groq API Key:
+   Add your Groq API key. Configure Redis only when deploying to production:
    ```env
    GROQ_API_KEY=gsk_your_api_key_here
-   UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
-   UPSTASH_REDIS_REST_TOKEN=your_redis_token
    ```
    
    > Get your API key at [console.groq.com](https://console.groq.com)

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
 import { enforceRateLimit, getClientIP, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
 import { isBoundedString, isRecord, readJsonBody, RequestValidationError } from '@/lib/request-validation';
+import { MAX_CHAT_BODY_BYTES, MAX_CHAT_MESSAGES, MAX_CHAT_MESSAGE_LENGTH } from '@/lib/chat-request';
 
 function getGroqClient() {
   const rawKey = process.env.GROQ_API_KEY;
@@ -44,13 +45,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await readJsonBody(request, 128 * 1024);
+    const body = await readJsonBody(request, MAX_CHAT_BODY_BYTES);
     if (!isRecord(body)) throw new RequestValidationError('Invalid request body');
     const { messages, bucketContext } = body;
-    if (!Array.isArray(messages) || messages.length < 1 || messages.length > 30 ||
+    if (!Array.isArray(messages) || messages.length < 1 || messages.length > MAX_CHAT_MESSAGES ||
         !messages.every((message) => isRecord(message) &&
           (message.role === 'user' || message.role === 'assistant') &&
-          isBoundedString(message.content, 4000))) {
+          isBoundedString(message.content, MAX_CHAT_MESSAGE_LENGTH))) {
       return new Response(JSON.stringify({ error: 'Invalid messages' }), { status: 400 });
     }
     if (bucketContext !== undefined && (!Array.isArray(bucketContext) ||

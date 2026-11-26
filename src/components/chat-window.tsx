@@ -12,6 +12,7 @@ import remarkGfm from 'remark-gfm';
 import { useToast } from '@/hooks/use-toast';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { consumeJsonSse } from '@/lib/sse';
+import { buildChatRequest, MAX_CHAT_MESSAGE_LENGTH } from '@/lib/chat-request';
 
 export function ChatWindow() {
   const { isChatOpen, toggleChat, addToBucket, removeFromBucket, bucket, updatePackageVersion } = useStore();
@@ -116,6 +117,10 @@ export function ChatWindow() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+    if (input.length > MAX_CHAT_MESSAGE_LENGTH) {
+      toast.error(`Messages must be ${MAX_CHAT_MESSAGE_LENGTH} characters or fewer.`);
+      return;
+    }
 
     const userMessage: ChatMessage = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -132,7 +137,7 @@ export function ChatWindow() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMessage], bucketContext }),
+        body: JSON.stringify(buildChatRequest(messages, userMessage, bucketContext)),
         signal: abortRef.current.signal,
       });
 
@@ -321,6 +326,7 @@ export function ChatWindow() {
               <textarea
                 ref={textareaRef}
                 value={input}
+                maxLength={MAX_CHAT_MESSAGE_LENGTH}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
