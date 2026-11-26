@@ -7,7 +7,9 @@ export class PyPIAdapter implements RegistryAdapter {
 
   async search(query: string, limit = 20): Promise<RegistrySearchResult[]> {
     try {
-      const res = await fetch(`${this.baseUrl}/search/?q=${encodeURIComponent(query)}&o=`);
+      const res = await fetch(`${this.baseUrl}/search/?q=${encodeURIComponent(query)}&o=`, {
+        signal: AbortSignal.timeout(8000),
+      });
       if (!res.ok) throw new Error('Failed to search PyPI');
 
       const data = await res.json();

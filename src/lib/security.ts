@@ -4,6 +4,7 @@
  */
 
 import { appCatalog } from './apps';
+import { hasSharedRedis, redisCommand } from './redis-rest';
 
 // Valid package IDs from the catalog (computed once for performance)
 const VALID_PACKAGE_IDS = new Set(appCatalog.map((p) => p.id));
@@ -175,6 +176,41 @@ export function checkRateLimit(
 
   entry.count++;
   return { allowed: true, remaining: maxRequests - entry.count, resetTime: entry.resetTime };
+}
+
+const RATE_LIMIT_LUA = `
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then redis.call('PEXPIRE', KEYS[1], ARGV[1]) end
+return {count, redis.call('PTTL', KEYS[1])}
+`;
+
+export async function enforceRateLimit(
+  identifier: string,
+  maxRequests: number,
+  windowMs: number
+): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  if (!hasSharedRedis()) {
+    if (process.env.NODE_ENV === 'production') throw new Error('Shared Redis is required for production rate limiting');
+    return checkRateLimit(identifier, maxRequests, windowMs);
+  }
+  const [count, ttl] = await redisCommand<[number, number]>(
+    'EVAL', RATE_LIMIT_LUA, 1, `sudostart:rate:${identifier}`, windowMs
+  );
+  return {
+    allowed: count <= maxRequests,
+    remaining: Math.max(0, maxRequests - count),
+    resetTime: Date.now() + Math.max(0, ttl),
+  };
+}
+
+export function getClientIP(request: Request): string {
+  // Vercel overwrites this header at its edge. Elsewhere, trust it only if the
+  // deployment explicitly opts in to a trusted reverse proxy.
+  const trusted = process.env.VERCEL || process.env.SUDOSTART_TRUST_PROXY === 'true';
+  if (!trusted) return 'unidentified-client';
+  return request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || 'unidentified-client';
 }
 
 /**

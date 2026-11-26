@@ -12,6 +12,7 @@ import remarkGfm from 'remark-gfm';
 import { useToast } from '@/hooks/use-toast';
 import { Package as PackageType, OS, Shell } from '@/types';
 import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
+import { consumeJsonSse } from '@/lib/sse';
 
 interface ScriptExplanationProps {
   script: string;
@@ -117,38 +118,28 @@ export function ScriptExplanation({ script, packages, os, shell }: ScriptExplana
 
       if (!response.body) throw new Error('No response body');
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
       let accumulated = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const json = JSON.parse(line.slice(6));
-            if (json.done) {
-              setExplanation(json.full || accumulated);
-              setStreamingContent('');
-              // Cache the explanation
-              if (typeof window !== 'undefined') {
-                localStorage.setItem(cacheKey, json.full || accumulated);
-                setCachedExplanation(json.full || accumulated);
-              }
-            } else {
-              accumulated += json.delta;
-              setStreamingContent(accumulated);
+      let completed = false;
+      await consumeJsonSse<{ delta: string; done: boolean; full?: string }>(response.body, (json) => {
+        if (json.done) {
+          const full = json.full || accumulated;
+          setExplanation(full);
+          setStreamingContent('');
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(cacheKey, full);
+              setCachedExplanation(full);
+            } catch {
+              // A full storage quota should not discard a successful explanation.
             }
-          } catch {
-            // Skip malformed SSE lines
           }
+          completed = true;
+        } else {
+          accumulated += json.delta;
+          setStreamingContent(accumulated);
         }
-      }
+      });
+      if (!completed) throw new Error('Explanation response ended before completion');
     } catch (error: unknown) {
       if ((error as Error).name === 'AbortError') return;
       console.error('Explanation error:', error);

@@ -58,8 +58,6 @@ export function SearchBar({ onClose }: SearchBarProps) {
 
   useEffect(() => {
     if (!query.trim()) {
-       
-      setExternalResults([]);
       return;
     }
 
@@ -83,9 +81,9 @@ export function SearchBar({ onClose }: SearchBarProps) {
           seen.add(name);
           return true;
         });
-        setExternalResults(filtered);
+        if (inputRef.current?.value === query) setExternalResults(filtered);
       } catch {
-        setExternalResults([]);
+        if (inputRef.current?.value === query) setExternalResults([]);
       } finally {
         setIsSearchingExternal(false);
       }
@@ -185,13 +183,13 @@ export function SearchBar({ onClose }: SearchBarProps) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => { setQuery(e.target.value); setFocusedIndex(-1); }}
+            onChange={(e) => { setQuery(e.target.value); setExternalResults([]); setFocusedIndex(-1); }}
             placeholder="Search all packages..."
             className="flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           {query && (
             <button
-              onClick={() => setQuery('')}
+              onClick={() => { setQuery(''); setExternalResults([]); }}
               className="p-1 hover:bg-accent rounded-md transition-colors"
               aria-label="Clear search"
             >

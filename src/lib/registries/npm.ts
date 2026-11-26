@@ -7,7 +7,9 @@ export class NpmAdapter implements RegistryAdapter {
 
   async search(query: string, limit = 20): Promise<RegistrySearchResult[]> {
     try {
-      const res = await fetch(`${this.baseUrl}/-/v1/search?text=${encodeURIComponent(query)}&size=${limit}`);
+      const res = await fetch(`${this.baseUrl}/-/v1/search?text=${encodeURIComponent(query)}&size=${limit}`, {
+        signal: AbortSignal.timeout(8000),
+      });
       if (!res.ok) throw new Error('Failed to search npm registry');
 
       const data = await res.json();

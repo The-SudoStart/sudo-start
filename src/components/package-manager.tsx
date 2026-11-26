@@ -10,7 +10,7 @@ import { Navbar } from './navbar';
 import { DependencyPanel } from './dependency-panel';
 import { VersionNote } from './version-note';
 import { CommandPreview } from './command-preview';
-import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
+import { estimateInstallTime, estimateDiskSpace, resolveCommand } from '@/lib/script-generator';
 import { useToast } from '@/hooks/use-toast';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { copyToClipboard } from '@/lib/utils';
@@ -301,14 +301,13 @@ function PackageCard({
 }) {
   const { toast } = useToast();
   // Initialize from bucket if present, otherwise use default
-  const [selectedVersion, setSelectedVersion] = useState(bucketVersion || pkg.defaultVersion);
-
-  // Sync selectedVersion with bucket when bucketVersion changes
-  useEffect(() => {
-    if (bucketVersion) {
-      setSelectedVersion(bucketVersion);
-    }
-  }, [bucketVersion]);
+  const [selection, setSelection] = useState({
+    version: bucketVersion || pkg.defaultVersion,
+    bucketVersion,
+  });
+  const selectedVersion = selection.bucketVersion === bucketVersion
+    ? selection.version : bucketVersion || pkg.defaultVersion;
+  const setSelectedVersion = (version: string) => setSelection({ version, bucketVersion });
   const [dynamicVersions, setDynamicVersions] = useState<string[]>([]);
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
@@ -392,22 +391,7 @@ function PackageCard({
 
   const getPreviewCommand = () => {
     if (!os) return '';
-    const versionEntry = pkg.versions.find((v) => v.id === selectedVersion);
-    const template = os === 'macos' ? pkg.macosCommandTemplate : pkg.linuxCommandTemplate;
-    const isGeneric = ['stable', 'latest'].includes(selectedVersion);
-
-    if (template && !isGeneric) {
-      const v = selectedVersion.startsWith('v') ? selectedVersion : `v${selectedVersion}`;
-      const v_no_v = selectedVersion.startsWith('v') ? selectedVersion.slice(1) : selectedVersion;
-      const v_major = v_no_v.split('.')[0];
-      return template
-        .replaceAll('${VERSION}', v)
-        .replaceAll('${VERSION_NO_V}', v_no_v)
-        .replaceAll('${VERSION_MAJOR}', v_major);
-    }
-    return versionEntry
-      ? (os === 'macos' ? versionEntry.macCommand : versionEntry.linuxCommand)
-      : '';
+    return resolveCommand({ ...pkg, selectedVersion }, os);
   };
 
   const handleCopyCommand = async () => {

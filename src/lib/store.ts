@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AppState, Package } from '@/types';
 import { getDefaultApps, appCatalog } from './apps';
+import { isValidVersion } from './security';
 
 export const useStore = create<AppState>()(
   persist(
@@ -88,18 +89,26 @@ export const useStore = create<AppState>()(
 
   importBucket: (json: string) => {
     try {
-      const data = JSON.parse(json) as { id: string; selectedVersion?: string; versionNote?: string }[];
+      const data: unknown = JSON.parse(json);
+      if (!Array.isArray(data) || data.length > 100) return false;
       const newBucket: Package[] = [];
-      data.forEach(({ id, selectedVersion, versionNote }) => {
+      for (const item of data) {
+        if (!item || typeof item !== 'object' || typeof item.id !== 'string' ||
+            (item.selectedVersion !== undefined && !isValidVersion(item.selectedVersion)) ||
+            (item.versionNote !== undefined &&
+              (typeof item.versionNote !== 'string' || item.versionNote.length > 1000))) return false;
+        const { id, selectedVersion, versionNote } = item as {
+          id: string; selectedVersion?: string; versionNote?: string;
+        };
         const pkg = appCatalog.find((p) => p.id === id);
-        if (pkg) {
+        if (pkg && !newBucket.some((p) => p.id === id)) {
           newBucket.push({
             ...pkg,
             selectedVersion: selectedVersion || pkg.defaultVersion,
             versionNote: versionNote || '',
           });
         }
-      });
+      }
       set({ bucket: newBucket });
       return true;
     } catch {

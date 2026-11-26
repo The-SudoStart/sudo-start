@@ -128,7 +128,7 @@ Curated list of 2025's best development tools across 17+ categories:
 
 ### Prerequisites
 
-- **Node.js** 18.x or higher
+- **Node.js** 20.9 or higher
 - **npm** 9.x or higher (or **pnpm** 9.x)
 - **Git**
 - **Groq API Key** (for AI chat functionality)
@@ -158,9 +158,13 @@ Curated list of 2025's best development tools across 17+ categories:
    Add your Groq API Key:
    ```env
    GROQ_API_KEY=gsk_your_api_key_here
+   UPSTASH_REDIS_REST_URL=https://your-database.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=your_redis_token
    ```
    
    > Get your API key at [console.groq.com](https://console.groq.com)
+
+   In production, configure a shared [Upstash Redis REST database](https://upstash.com/docs/redis/features/restapi) for 24-hour script links and rate limits across instances. The app returns 503 for these features when Redis is unavailable or unconfigured. Local development can run without Redis using a temporary script store and in-memory rate limits. On non-Vercel hosts, set `SUDOSTART_TRUST_PROXY=true` only when a trusted reverse proxy overwrites `X-Forwarded-For`; otherwise requests share one conservative rate-limit identity.
 
 4. **Run the development server**
    ```bash
@@ -214,7 +218,7 @@ Once you've selected your tools:
 |----------|-----------------|--------|
 | **macOS** | Homebrew | ✅ Fully Supported |
 | **Ubuntu/Debian** | apt | ✅ Fully Supported |
-| **Linux (Generic)** | snap/flatpak | ✅ Fully Supported |
+| **Other Linux distributions** | - | 🚧 Not yet supported; generated Linux scripts require apt-get |
 | **Windows** | - | 🚧 Planned |
 
 ---

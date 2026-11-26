@@ -44,7 +44,7 @@ This project and everyone participating in it is governed by our commitment to:
 
 #### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 20.9 or higher
 - pnpm 9.x (preferred) or npm 9.x
 - Git
 - A code editor (VS Code recommended)

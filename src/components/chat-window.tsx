@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/hooks/use-toast';
 import { useFocusTrap, useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { consumeJsonSse } from '@/lib/sse';
 
 export function ChatWindow() {
   const { isChatOpen, toggleChat, addToBucket, removeFromBucket, bucket, updatePackageVersion } = useStore();
@@ -152,35 +153,20 @@ export function ChatWindow() {
       }
       if (!response.body) throw new Error('No response body');
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
       let accumulated = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const json = JSON.parse(line.slice(6));
-            if (json.done) {
-              // Final parse and action execution
-              const { text } = parseAndExecuteAction(json.full ?? accumulated);
-              setMessages((prev) => [...prev, { role: 'assistant', content: text }]);
-              setStreamingContent('');
-            } else {
-              accumulated += json.delta;
-              setStreamingContent(accumulated);
-            }
-          } catch {
-            // Skip malformed SSE lines
-          }
+      let completed = false;
+      await consumeJsonSse<{ delta: string; done: boolean; full?: string }>(response.body, (json) => {
+        if (json.done) {
+          const { text } = parseAndExecuteAction(json.full ?? accumulated);
+          setMessages((prev) => [...prev, { role: 'assistant', content: text }]);
+          setStreamingContent('');
+          completed = true;
+        } else {
+          accumulated += json.delta;
+          setStreamingContent(accumulated);
         }
-      }
+      });
+      if (!completed) throw new Error('Chat response ended before completion');
     } catch (error: unknown) {
       if ((error as Error).name === 'AbortError') return;
       console.error('Chat error:', error);
