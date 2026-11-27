@@ -1,26 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
+import { writeFile, readFile, mkdir, readdir, stat, unlink, chmod } from 'fs/promises';
+import { randomInt } from 'crypto';
 import path from 'path';
 import os from 'os';
-import { checkRateLimit, isValidScriptId, sanitizeScriptId } from '@/lib/security';
+import { enforceRateLimit, getClientIP, isValidScriptId } from '@/lib/security';
+import { hasSharedRedis, redisCommand } from '@/lib/redis-rest';
+import { isBoundedString, isRecord, readJsonBody, RequestValidationError } from '@/lib/request-validation';
 
-// SECURITY: Use a more secure directory (not world-readable /tmp)
-// In production, use a dedicated directory with proper permissions
 const STORE_DIR = process.env.SUDOSTART_STORE_DIR
   || path.join(os.tmpdir(), 'sudostart-scripts');
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+let lastCleanup = 0;
 
 // Rate limit: 20 requests per minute per IP for POST, 60 for GET
 const RATE_LIMIT_POST_MAX = 20;
 const RATE_LIMIT_GET_MAX = 60;
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
-}
 
 interface ScriptEntry {
   script: string;
@@ -29,66 +24,90 @@ interface ScriptEntry {
 }
 
 async function ensureDir() {
-  if (!existsSync(STORE_DIR)) {
-    await mkdir(STORE_DIR, { recursive: true });
-  }
+  await mkdir(STORE_DIR, { recursive: true, mode: 0o700 });
+  await chmod(STORE_DIR, 0o700);
 }
 
 function generateId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let id = '';
   for (let i = 0; i < 10; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
+    id += chars[randomInt(chars.length)];
   }
   return id;
 }
 
 async function readEntry(id: string): Promise<ScriptEntry | null> {
-  try {
-    // SECURITY: Validate ID format before using in file path
-    if (!isValidScriptId(id)) {
-      console.warn(`[Security] Invalid script ID attempted: ${sanitizeScriptId(id)}`);
-      return null;
+  if (!isValidScriptId(id)) return null;
+  let raw: string | null;
+  if (hasSharedRedis()) {
+    raw = await redisCommand<string | null>('GET', `sudostart:script:${id}`);
+  } else {
+    if (process.env.NODE_ENV === 'production') throw new Error('Shared Redis is required for script sharing');
+    try {
+      raw = await readFile(path.join(STORE_DIR, `${id}.json`), 'utf-8');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+      throw error;
     }
-    
-    // SECURITY: Use sanitized ID for file path
-    const sanitizedId = sanitizeScriptId(id);
-    const file = path.join(STORE_DIR, `${sanitizedId}.json`);
-    
-    // SECURITY: Verify the resolved path is within STORE_DIR (path traversal check)
-    const resolvedPath = path.resolve(file);
-    const resolvedStoreDir = path.resolve(STORE_DIR);
-    if (!resolvedPath.startsWith(resolvedStoreDir)) {
-      console.warn(`[Security] Path traversal attempt detected: ${id}`);
-      return null;
-    }
-    
-    const raw = await readFile(file, 'utf-8');
-    const entry: ScriptEntry = JSON.parse(raw);
-    if (Date.now() - entry.createdAt > TTL_MS) return null;
-    return entry;
-  } catch {
+  }
+  if (!raw) return null;
+  const entry: ScriptEntry = JSON.parse(raw);
+  if (Date.now() - entry.createdAt > TTL_MS) {
+    if (!hasSharedRedis()) await unlink(path.join(STORE_DIR, `${id}.json`)).catch(() => {});
     return null;
+  }
+  return entry;
+}
+
+async function cleanupLocalStore() {
+  if (Date.now() - lastCleanup < 10 * 60 * 1000) return;
+  lastCleanup = Date.now();
+  for (const file of await readdir(/* turbopackIgnore: true */ STORE_DIR)) {
+    if (!/^[a-z0-9]{10}\.json$/.test(file)) continue;
+    const filename = path.join(STORE_DIR, file);
+    try {
+      const info = await stat(filename);
+      if (Date.now() - info.mtimeMs > TTL_MS) await unlink(filename);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
   }
 }
 
-async function writeEntry(id: string, entry: ScriptEntry) {
-  // SECURITY: Validate ID format
-  if (!isValidScriptId(id)) {
-    throw new Error('Invalid script ID format');
+async function writeEntry(entry: ScriptEntry): Promise<string> {
+  if (hasSharedRedis()) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const id = generateId();
+      const result = await redisCommand<string | null>(
+        'SET', `sudostart:script:${id}`, JSON.stringify(entry), 'EX', 86400, 'NX'
+      );
+      if (result === 'OK') return id;
+    }
+    throw new Error('Could not allocate script ID');
   }
-  
+  if (process.env.NODE_ENV === 'production') throw new Error('Shared Redis is required for script sharing');
   await ensureDir();
-  const sanitizedId = sanitizeScriptId(id);
-  const file = path.join(STORE_DIR, `${sanitizedId}.json`);
-  await writeFile(file, JSON.stringify(entry), 'utf-8');
+  await cleanupLocalStore();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const id = generateId();
+    try {
+      await writeFile(path.join(STORE_DIR, `${id}.json`), JSON.stringify(entry), {
+        encoding: 'utf-8', mode: 0o600, flag: 'wx',
+      });
+      return id;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    }
+  }
+  throw new Error('Could not allocate script ID');
 }
 
 export async function POST(request: NextRequest) {
   try {
     // SECURITY: Rate limiting check
     const clientIP = getClientIP(request);
-    const rateLimit = checkRateLimit(`script-share:post:${clientIP}`, RATE_LIMIT_POST_MAX, RATE_LIMIT_WINDOW_MS);
+    const rateLimit = await enforceRateLimit(`script-share:post:${clientIP}`, RATE_LIMIT_POST_MAX, RATE_LIMIT_WINDOW_MS);
     
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -107,28 +126,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { script, os: osName, packages } = await request.json();
+    const body = await readJsonBody(request, 1100 * 1024);
+    if (!isRecord(body)) throw new RequestValidationError('Invalid request body');
+    const { script, os: osName, packages } = body;
     
     // SECURITY: Validate script is a string and has reasonable length
-    if (!script || typeof script !== 'string') {
+    if (!isBoundedString(script, 1024 * 1024) || !script) {
       return NextResponse.json({ error: 'Invalid script' }, { status: 400 });
     }
     
     // SECURITY: Limit script size (max 1MB)
-    if (script.length > 1024 * 1024) {
-      return NextResponse.json({ error: 'Script too large (max 1MB)' }, { status: 400 });
-    }
-    
-    // SECURITY: Validate packages is an array of strings
-    if (packages !== undefined && (!Array.isArray(packages) || !packages.every(p => typeof p === 'string'))) {
+    if (packages !== undefined && (!Array.isArray(packages) || packages.length > 100 ||
+        !packages.every(p => isBoundedString(p, 100)))) {
       return NextResponse.json({ error: 'Invalid packages format' }, { status: 400 });
     }
+    if (osName !== undefined && !['macos', 'linux'].includes(String(osName))) {
+      throw new RequestValidationError('Invalid OS');
+    }
 
-    const id = generateId();
-    await writeEntry(id, {
+    const id = await writeEntry({
       script,
       createdAt: Date.now(),
-      meta: { os: osName ?? 'unknown', packages: packages ?? [] },
+      meta: { os: typeof osName === 'string' ? osName : 'unknown', packages: packages ?? [] },
     });
 
     return NextResponse.json({ id }, {
@@ -139,15 +158,25 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (err) {
+    if (err instanceof RequestValidationError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
     console.error('script-share POST error:', err);
-    return NextResponse.json({ error: 'Failed to store script' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to store script' }, {
+      status: err instanceof Error && err.message.includes('Shared Redis') ? 503 : 500,
+    });
   }
 }
 
 export async function GET(request: NextRequest) {
   // SECURITY: Rate limiting check
   const clientIP = getClientIP(request);
-  const rateLimit = checkRateLimit(`script-share:get:${clientIP}`, RATE_LIMIT_GET_MAX, RATE_LIMIT_WINDOW_MS);
+  let rateLimit;
+  try {
+    rateLimit = await enforceRateLimit(`script-share:get:${clientIP}`, RATE_LIMIT_GET_MAX, RATE_LIMIT_WINDOW_MS);
+  } catch {
+    return NextResponse.json({ error: 'Rate limiting unavailable' }, { status: 503 });
+  }
   
   if (!rateLimit.allowed) {
     return NextResponse.json(
@@ -178,7 +207,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid id format' }, { status: 400 });
   }
 
-  const entry = await readEntry(id);
+  let entry;
+  try {
+    entry = await readEntry(id);
+  } catch {
+    return NextResponse.json({ error: 'Script storage unavailable' }, { status: 503 });
+  }
   if (!entry) {
     const ua = request.headers.get('user-agent') ?? '';
     const isCli = ua.toLowerCase().includes('curl') || ua.toLowerCase().includes('wget');

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
-import { checkRateLimit, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
+import { enforceRateLimit, getClientIP, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
+import { isBoundedString, isRecord, readJsonBody, RequestValidationError } from '@/lib/request-validation';
 
 // Rate limit: 10 requests per minute per IP
 const RATE_LIMIT_MAX = 10;
@@ -17,21 +18,14 @@ function getGroqClient() {
     console.error('[Security] Invalid GROQ_API_KEY format detected');
     throw new Error('Invalid GROQ_API_KEY format. Key must start with gsk_.');
   }
-  return new Groq({ apiKey });
-}
-
-function getClientIP(request: NextRequest): string {
-  // Get IP from various headers, fallback to 'unknown'
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
+  return new Groq({ apiKey, timeout: 20_000, maxRetries: 1 });
 }
 
 export async function POST(request: NextRequest) {
   try {
     // SECURITY: Rate limiting check
     const clientIP = getClientIP(request);
-    const rateLimit = checkRateLimit(`script-explain:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+    const rateLimit = await enforceRateLimit(`script-explain:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
     
     if (!rateLimit.allowed) {
       return new Response(
@@ -50,14 +44,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { script, packages, os, shell } = await request.json();
+    const body = await readJsonBody(request, 160 * 1024);
+    if (!isRecord(body)) throw new RequestValidationError('Invalid request body');
+    const { script, packages, os, shell } = body;
 
-    if (!script || typeof script !== 'string') {
+    if (!isBoundedString(script, 128 * 1024) || !script) {
       return new Response(JSON.stringify({ error: 'Invalid script' }), { status: 400 });
     }
 
-    if (!packages || !Array.isArray(packages)) {
+    if (!Array.isArray(packages) || packages.length > 100 || !packages.every((pkg) =>
+      isRecord(pkg) && isBoundedString(pkg.name, 100) &&
+      isBoundedString(pkg.description, 500) && isBoundedString(pkg.category, 50) &&
+      isBoundedString(pkg.version, 50))) {
       return new Response(JSON.stringify({ error: 'Invalid packages' }), { status: 400 });
+    }
+    if (!['macos', 'linux'].includes(String(os)) || !['bash', 'zsh', 'fish'].includes(String(shell))) {
+      throw new RequestValidationError('Invalid platform');
     }
 
     // Build the AI prompt
@@ -177,6 +179,9 @@ Provide a brief, helpful summary of what this script does and what the user will
       },
     });
   } catch (error) {
+    if (error instanceof RequestValidationError) {
+      return Response.json({ error: error.message }, { status: error.status });
+    }
     // SECURITY: Never leak the API key in error messages
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const safeErrorMessage = errorMessage.includes('gsk_')
@@ -192,7 +197,7 @@ Provide a brief, helpful summary of what this script does and what the user will
     
     return new Response(
       JSON.stringify({ error: safeErrorMessage }),
-      { status: 500 }
+      { status: error instanceof Error && error.message.includes('Shared Redis') ? 503 : 500 }
     );
   }
 }

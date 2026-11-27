@@ -1,6 +1,10 @@
 import { OS, Shell, Package } from '@/types';
 import { requiresFlatpak } from './apps';
-import { sanitizeVersion, isValidVersion } from './security';
+import { sanitizeVersion, isValidVersion, escapeShellArg } from './security';
+
+function addComment(lines: string[], text: string): void {
+  for (const line of text.split(/\r\n|\r|\n/)) lines.push(`# ${line}`);
+}
 
 /**
  * SECURITY: Validates and sanitizes version strings to prevent command injection.
@@ -21,7 +25,7 @@ function sanitizeVersionString(versionId: string): string {
 /**
  * Resolves the exact install command for a package+version combo.
  */
-function resolveCommand(pkg: Package, os: 'macos' | 'linux'): string {
+export function resolveCommand(pkg: Package, os: 'macos' | 'linux'): string {
   const rawVersionId = pkg.selectedVersion || pkg.defaultVersion;
   
   // SECURITY: Sanitize version string before any shell interpolation
@@ -44,10 +48,14 @@ function resolveCommand(pkg: Package, os: 'macos' | 'linux'): string {
     const v = versionId.startsWith('v') ? versionId : `v${versionId}`;
     const v_no_v = versionId.startsWith('v') ? versionId.slice(1) : versionId;
     const v_major = v_no_v.split('.')[0];
-    return template
+    const v_minor = v_no_v.split('.')[1];
+    if (template.includes('${VERSION_MINOR}') && !v_minor) return '';
+    const command = template
       .replaceAll('${VERSION}', v)
       .replaceAll('${VERSION_NO_V}', v_no_v)
-      .replaceAll('${VERSION_MAJOR}', v_major);
+      .replaceAll('${VERSION_MAJOR}', v_major)
+      .replaceAll('${VERSION_MINOR}', v_minor ?? '');
+    return /\$\{VERSION(?:_[A-Z]+)?\}/.test(command) ? '' : command;
   }
 
   if (exactEntry) {
@@ -89,13 +97,14 @@ export function generateScript(
       const v = pkg.selectedVersion || pkg.defaultVersion;
       const isGeneric = ['stable', 'latest'].includes(v);
       const vLabel = isGeneric ? 'stable' : v.startsWith('v') ? v : `v${v}`;
-      lines.push(`# ${pkg.name} @ ${vLabel}: ${pkg.versionNote}`);
+      addComment(lines, `${pkg.name} @ ${vLabel}: ${pkg.versionNote}`);
     });
     lines.push('');
   }
 
   lines.push('set -e  # Exit immediately on error');
   lines.push('set -u  # Treat unset variables as errors');
+  lines.push('set -o pipefail  # Preserve failures inside pipelines');
   lines.push('');
 
   // Colour helpers
@@ -164,10 +173,36 @@ export function generateScript(
   lines.push('    sleep $delay');
   lines.push('    elapsed=$((elapsed + 1))');
   lines.push('  done');
-  lines.push('  wait $pid');
-  lines.push('  local exit_code=$?');
+  lines.push('  local exit_code=0');
+  lines.push('  wait "$pid" || exit_code=$?');
   lines.push('  printf "\\r%-80s\\r" ""');
   lines.push('  return $exit_code');
+  lines.push('}');
+  lines.push('');
+
+  lines.push('run_install() {');
+  lines.push('  local name="$1" command="$2" log_file');
+  lines.push('  log "Installing ${name}..."');
+  lines.push('  if [ "$VERBOSE" = true ]; then');
+  lines.push('    if bash -e -o pipefail -c "$command"; then');
+  lines.push('      ok "${name} installed"');
+  lines.push('    else');
+  lines.push('      err "${name} installation failed"');
+  lines.push('      return 1');
+  lines.push('    fi');
+  lines.push('  else');
+  lines.push('    log_file=$(mktemp)');
+  lines.push('    bash -e -o pipefail -c "$command" > "$log_file" 2>&1 &');
+  lines.push('    if spinner "$!" "Installing ${name}..."; then');
+  lines.push('      rm -f "$log_file"');
+  lines.push('      ok "${name} installed"');
+  lines.push('    else');
+  lines.push('      err "${name} installation failed; last output:"');
+  lines.push('      tail -20 "$log_file" >&2');
+  lines.push('      rm -f "$log_file"');
+  lines.push('      return 1');
+  lines.push('    fi');
+  lines.push('  fi');
   lines.push('}');
   lines.push('');
 
@@ -212,6 +247,10 @@ export function generateScript(
     lines.push('');
   } else {
     lines.push('# ── Bootstrap: apt ────────────────────────────────────');
+    lines.push('if ! command -v apt-get &>/dev/null; then');
+    lines.push('  err "This script requires a Debian or Ubuntu system with apt-get"');
+    lines.push('  exit 1');
+    lines.push('fi');
     lines.push('log "Updating package lists..."');
     lines.push('if [ "$VERBOSE" = true ]; then');
     lines.push('  sudo apt-get update');
@@ -254,76 +293,34 @@ export function generateScript(
       const isGeneric = ['stable', 'latest'].includes(versionId);
       const versionLabel = isGeneric ? '' : ` @ ${versionId}`;
 
-      lines.push(`# [${idx + 1}/${packages.length}] ${pkg.name}${versionLabel}`);
+      addComment(lines, `[${idx + 1}/${packages.length}] ${pkg.name}${versionLabel}`);
       lines.push(`CURRENT_PACKAGE=$((CURRENT_PACKAGE + 1))`);
-      lines.push(`step_header $CURRENT_PACKAGE ${packages.length} "${pkg.name}${versionLabel}"`);
+      lines.push(`step_header $CURRENT_PACKAGE ${packages.length} ${escapeShellArg(pkg.name + versionLabel)}`);
       lines.push(`draw_progress_bar $CURRENT_PACKAGE ${packages.length} "Overall Progress"`);
       lines.push('');
 
       // Emit pin note as inline comment if present
       if (pkg.versionNote?.trim()) {
-        lines.push(`# 📌 Pin note: ${pkg.versionNote.trim()}`);
+        addComment(lines, `📌 Pin note: ${pkg.versionNote.trim()}`);
       }
 
       const installCmd = resolveCommand(pkg, os);
       const isPlatformSupported = pkg.platforms[os];
 
       if (!isPlatformSupported) {
-        lines.push(`warn "${pkg.name} is not supported on ${os.toUpperCase()} — skipping"`);
+        lines.push(`warn ${escapeShellArg(`${pkg.name} is not supported on ${os.toUpperCase()} — skipping`)}`);
       } else if (!installCmd || installCmd.trim().startsWith('#')) {
-        lines.push(`warn "No ${os.toUpperCase()} install command is configured for ${pkg.name} — skipping"`);
+        lines.push(`warn ${escapeShellArg(`No ${os.toUpperCase()} install command is configured for ${pkg.name} — skipping`)}`);
       } else {
         const checkCmd = getCheckCommand(pkg.id);
         if (checkCmd) {
           lines.push(`if command -v ${checkCmd} &>/dev/null; then`);
-          lines.push(`  ok "${pkg.name} already installed — skipping"`);
+          lines.push(`  ok ${escapeShellArg(`${pkg.name} already installed — skipping`)}`);
           lines.push('else');
-          lines.push('  if [ "$VERBOSE" = true ]; then');
-          lines.push(`    log "Installing ${pkg.name}..."`);
-          installCmd.split('\n').forEach((line) => {
-            lines.push(`    ${line}`);
-          });
-          lines.push(`    ok "${pkg.name} installed"`);
-          lines.push('  else');
-          lines.push(`    log "Installing ${pkg.name}..."`);
-          lines.push('    (');
-          installCmd.split('\n').forEach((line) => {
-            if (line.trim()) {
-              lines.push(`      ${line}`);
-            }
-          });
-          lines.push('    ) > /dev/null 2>&1 &');
-          lines.push(`    spinner $! "Installing ${pkg.name}..."`);
-          lines.push('    if [ $? -eq 0 ]; then');
-          lines.push(`      ok "${pkg.name} installed"`);
-          lines.push('    else');
-          lines.push(`      err "${pkg.name} installation failed"`);
-          lines.push('    fi');
-          lines.push('  fi');
+          lines.push(`  run_install ${escapeShellArg(pkg.name)} ${escapeShellArg(installCmd)}`);
           lines.push('fi');
         } else {
-          lines.push('if [ "$VERBOSE" = true ]; then');
-          lines.push(`  log "Installing ${pkg.name}..."`);
-          installCmd.split('\n').forEach((line) => {
-            lines.push(`  ${line}`);
-          });
-          lines.push(`  ok "${pkg.name} installed"`);
-          lines.push('else');
-          lines.push(`  log "Installing ${pkg.name}..."`);
-          lines.push('  (');
-          installCmd.split('\n').forEach((line) => {
-            if (line.trim()) {
-              lines.push(`    ${line}`);
-            }
-          });
-          lines.push('  ) > /dev/null 2>&1 &');
-          lines.push(`  spinner $! "Installing ${pkg.name}..."`);
-          lines.push('  if [ $? -eq 0 ]; then');
-          lines.push(`    ok "${pkg.name} installed"`);
-          lines.push('  else');
-          lines.push(`    err "${pkg.name} installation failed"`);
-          lines.push('  fi');
-          lines.push('fi');
+          lines.push(`run_install ${escapeShellArg(pkg.name)} ${escapeShellArg(installCmd)}`);
         }
       }
 
@@ -342,7 +339,7 @@ export function generateScript(
   lines.push('echo ""');
   lines.push(`echo "  OS       : ${os.toUpperCase()}"`);
   lines.push(`echo "  Shell    : ${shell}"`);
-  lines.push(`echo "  Packages : ${packages.length} installed"`);
+  lines.push(`echo "  Packages : ${packages.length} selected"`);
   lines.push('echo ""');
   lines.push('if [ "$VERBOSE" = false ]; then');
   lines.push('  echo -e "${CYAN}Tip:${RESET} Run with ${BOLD}--verbose${RESET} flag to see detailed output"');
@@ -372,7 +369,7 @@ export function generateBrewfile(packages: Package[]): string {
     if (cmd.includes('brew install --cask')) {
       const name = cmd.replace(/brew install --cask\s+/, '').trim();
       if (pkg.versionNote?.trim()) {
-        casks.push(`# 📌 ${pkg.versionNote}`);
+        addComment(casks, `📌 ${pkg.versionNote}`);
       }
       casks.push(`cask "${name}"`);
     } else if (cmd.includes('brew tap')) {
@@ -381,7 +378,7 @@ export function generateBrewfile(packages: Package[]): string {
     } else if (cmd.includes('brew install')) {
       const name = cmd.replace(/brew install\s+/, '').trim();
       if (pkg.versionNote?.trim()) {
-        brews.push(`# 📌 ${pkg.versionNote}`);
+        addComment(brews, `📌 ${pkg.versionNote}`);
       }
       brews.push(`brew "${name}"`);
     }

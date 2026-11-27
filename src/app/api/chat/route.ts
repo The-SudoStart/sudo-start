@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
-import { checkRateLimit, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
+import { enforceRateLimit, getClientIP, isValidGroqApiKey, sanitizeApiKey } from '@/lib/security';
+import { isBoundedString, isRecord, readJsonBody, RequestValidationError } from '@/lib/request-validation';
+import { MAX_CHAT_BODY_BYTES, MAX_CHAT_MESSAGES, MAX_CHAT_MESSAGE_LENGTH } from '@/lib/chat-request';
 
 function getGroqClient() {
   const rawKey = process.env.GROQ_API_KEY;
@@ -13,14 +15,7 @@ function getGroqClient() {
     console.error('[Security] Invalid GROQ_API_KEY format detected');
     throw new Error('Invalid GROQ_API_KEY format. Key must start with gsk_.');
   }
-  return new Groq({ apiKey });
-}
-
-function getClientIP(request: NextRequest): string {
-  // Get IP from various headers, fallback to 'unknown'
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
+  return new Groq({ apiKey, timeout: 20_000, maxRetries: 1 });
 }
 
 // Rate limit: 10 requests per minute per IP
@@ -31,7 +26,7 @@ export async function POST(request: NextRequest) {
   try {
     // SECURITY: Rate limiting check
     const clientIP = getClientIP(request);
-    const rateLimit = checkRateLimit(`chat:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+    const rateLimit = await enforceRateLimit(`chat:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
     
     if (!rateLimit.allowed) {
       return new Response(
@@ -50,13 +45,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { messages, bucketContext } = await request.json();
-
-    if (!messages || !Array.isArray(messages)) {
+    const body = await readJsonBody(request, MAX_CHAT_BODY_BYTES);
+    if (!isRecord(body)) throw new RequestValidationError('Invalid request body');
+    const { messages, bucketContext } = body;
+    if (!Array.isArray(messages) || messages.length < 1 || messages.length > MAX_CHAT_MESSAGES ||
+        !messages.every((message) => isRecord(message) &&
+          (message.role === 'user' || message.role === 'assistant') &&
+          isBoundedString(message.content, MAX_CHAT_MESSAGE_LENGTH))) {
       return new Response(JSON.stringify({ error: 'Invalid messages' }), { status: 400 });
     }
+    if (bucketContext !== undefined && (!Array.isArray(bucketContext) ||
+        bucketContext.length > 100 ||
+        !bucketContext.every((item) => isBoundedString(item, 100)))) {
+      throw new RequestValidationError('Invalid bucket context');
+    }
 
-    const bucketSection = bucketContext && bucketContext.length > 0
+    const bucketSection = Array.isArray(bucketContext) && bucketContext.length > 0
       ? `\n\nCurrent bucket (already selected by the user): ${bucketContext.join(', ')}.`
       : '\n\nCurrent bucket: empty.';
 
@@ -177,6 +181,9 @@ Keep responses short and terminal-like. Be opinionated and helpful. Always be aw
       },
     });
   } catch (error) {
+    if (error instanceof RequestValidationError) {
+      return Response.json({ error: error.message }, { status: error.status });
+    }
     // SECURITY: Never leak the API key in error messages
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const safeErrorMessage = errorMessage.includes('gsk_')
@@ -192,7 +199,7 @@ Keep responses short and terminal-like. Be opinionated and helpful. Always be aw
     
     return new Response(
       JSON.stringify({ error: safeErrorMessage }),
-      { status: 500 }
+      { status: error instanceof Error && error.message.includes('Shared Redis') ? 503 : 500 }
     );
   }
 }

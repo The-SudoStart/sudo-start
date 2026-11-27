@@ -36,6 +36,9 @@ jobs:
       - name: TypeScript type-check
         run: pnpm exec tsc --noEmit
 
+      - name: Run regression tests
+        run: pnpm test
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -71,8 +74,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
@@ -84,4 +85,3 @@ jobs:
 
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
-        continue-on-error: true

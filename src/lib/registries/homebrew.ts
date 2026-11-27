@@ -7,7 +7,10 @@ export class HomebrewAdapter implements RegistryAdapter {
 
   async search(query: string, limit = 20): Promise<RegistrySearchResult[]> {
     try {
-      const res = await fetch(`${this.baseUrl}/formula.json`);
+      const res = await fetch(`${this.baseUrl}/formula.json`, {
+        signal: AbortSignal.timeout(8000),
+        next: { revalidate: 600 },
+      });
       if (!res.ok) throw new Error('Failed to fetch Homebrew formulae');
 
       const formulae = await res.json();

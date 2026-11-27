@@ -6,7 +6,9 @@ export class AptAdapter implements RegistryAdapter {
 
   async search(query: string, limit = 20): Promise<RegistrySearchResult[]> {
     try {
-      const res = await fetch(`https://api.ubuntu.com/v1/search?q=${encodeURIComponent(query)}&section=all&field=name,summary,version,description`);
+      const res = await fetch(`https://api.ubuntu.com/v1/search?q=${encodeURIComponent(query)}&section=all&field=name,summary,version,description`, {
+        signal: AbortSignal.timeout(8000),
+      });
       if (!res.ok) throw new Error('Failed to search APT packages');
 
       const data = await res.json();

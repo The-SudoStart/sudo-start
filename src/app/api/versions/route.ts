@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkRateLimit } from '@/lib/security';
+import { enforceRateLimit, getClientIP } from '@/lib/security';
 
 // Cache for version data (5 minute TTL)
 const versionCache: Record<string, { data: string[]; timestamp: number }> = {};
@@ -8,12 +8,6 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 // Rate limit: 30 requests per minute per IP
 const RATE_LIMIT_MAX = 30;
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
-}
 
 // Helper for GitHub releases
 const githubReleases = (repo: string, filter: (tag: string) => boolean = () => true) => ({
@@ -208,7 +202,12 @@ const VERSION_SOURCES: Record<string, {
 export async function GET(request: NextRequest) {
     // SECURITY: Rate limiting check
     const clientIP = getClientIP(request);
-    const rateLimit = checkRateLimit(`versions:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+    let rateLimit;
+    try {
+      rateLimit = await enforceRateLimit(`versions:${clientIP}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS);
+    } catch {
+      return NextResponse.json({ error: 'Rate limiting unavailable' }, { status: 503 });
+    }
     
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -257,6 +256,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const response = await fetch(source.url, {
+            signal: AbortSignal.timeout(8000),
             headers: {
                 'Accept': 'application/json',
                 'User-Agent': 'SudoStart-App',

@@ -10,7 +10,7 @@ import { Navbar } from './navbar';
 import { DependencyPanel } from './dependency-panel';
 import { VersionNote } from './version-note';
 import { CommandPreview } from './command-preview';
-import { estimateInstallTime, estimateDiskSpace } from '@/lib/script-generator';
+import { estimateInstallTime, estimateDiskSpace, resolveCommand } from '@/lib/script-generator';
 import { useToast } from '@/hooks/use-toast';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { copyToClipboard } from '@/lib/utils';
@@ -300,15 +300,9 @@ function PackageCard({
   categoryKey?: string;
 }) {
   const { toast } = useToast();
-  // Initialize from bucket if present, otherwise use default
-  const [selectedVersion, setSelectedVersion] = useState(bucketVersion || pkg.defaultVersion);
-
-  // Sync selectedVersion with bucket when bucketVersion changes
-  useEffect(() => {
-    if (bucketVersion) {
-      setSelectedVersion(bucketVersion);
-    }
-  }, [bucketVersion]);
+  const [localVersion, setLocalVersion] = useState(bucketVersion || pkg.defaultVersion);
+  // The bucket is authoritative once a package has been added. Chat can update it.
+  const selectedVersion = isInBucket ? bucketVersion || pkg.defaultVersion : localVersion;
   const [dynamicVersions, setDynamicVersions] = useState<string[]>([]);
   const [isLoadingVersions, setIsLoadingVersions] = useState(false);
   const [hasFetchedVersions, setHasFetchedVersions] = useState(false);
@@ -392,22 +386,7 @@ function PackageCard({
 
   const getPreviewCommand = () => {
     if (!os) return '';
-    const versionEntry = pkg.versions.find((v) => v.id === selectedVersion);
-    const template = os === 'macos' ? pkg.macosCommandTemplate : pkg.linuxCommandTemplate;
-    const isGeneric = ['stable', 'latest'].includes(selectedVersion);
-
-    if (template && !isGeneric) {
-      const v = selectedVersion.startsWith('v') ? selectedVersion : `v${selectedVersion}`;
-      const v_no_v = selectedVersion.startsWith('v') ? selectedVersion.slice(1) : selectedVersion;
-      const v_major = v_no_v.split('.')[0];
-      return template
-        .replaceAll('${VERSION}', v)
-        .replaceAll('${VERSION_NO_V}', v_no_v)
-        .replaceAll('${VERSION_MAJOR}', v_major);
-    }
-    return versionEntry
-      ? (os === 'macos' ? versionEntry.macCommand : versionEntry.linuxCommand)
-      : '';
+    return resolveCommand({ ...pkg, selectedVersion }, os);
   };
 
   const handleCopyCommand = async () => {
@@ -512,7 +491,7 @@ function PackageCard({
               onFocus={handleVersionDropdownOpen}
               onChange={(e) => {
                 const v = e.target.value;
-                setSelectedVersion(v);
+                setLocalVersion(v);
                 if (isInBucket) onAddToBucket(pkg, v);
               }}
               className="w-full cursor-pointer appearance-none rounded-lg border border-border bg-input py-2 pl-3 pr-7 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"

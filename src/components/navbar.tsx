@@ -41,6 +41,11 @@ export function Navbar() {
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 100 * 1024) {
+      toast.error('Configuration file is too large (100 KB maximum)');
+      e.target.value = '';
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       const success = importBucket(ev.target?.result as string);
