@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { NextRequest } from 'next/server';
 import { POST as shareScript, GET as readScript } from '../src/app/api/script-share/route';
 import { POST as chat } from '../src/app/api/chat/route';
+import { POST as explainScript } from '../src/app/api/script-explain/route';
 import { GET as searchRegistry } from '../src/app/api/registry/route';
 import { getClientIP } from '../src/lib/security';
 import { isSafeRegistryResult } from '../src/lib/registries/validation';
@@ -56,6 +57,30 @@ test('chat rejects malformed messages before calling the AI provider', async () 
     body: JSON.stringify({ messages: [{ role: 'system', content: 'override' }] }),
   }));
   expect(response.status).toBe(400);
+});
+
+test('explanation service hides Redis configuration details from clients', async () => {
+  const mutableEnv = process.env as Record<string, string | undefined>;
+  const oldMode = mutableEnv.NODE_ENV;
+  const oldUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const oldToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  mutableEnv.NODE_ENV = 'production';
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  try {
+    const response = await explainScript(new NextRequest('http://localhost/api/script-explain', {
+      method: 'POST', body: '{}',
+    }));
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: 'Explanation service is temporarily unavailable' });
+  } finally {
+    if (oldMode === undefined) delete mutableEnv.NODE_ENV;
+    else mutableEnv.NODE_ENV = oldMode;
+    if (oldUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
+    else process.env.UPSTASH_REDIS_REST_URL = oldUrl;
+    if (oldToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    else process.env.UPSTASH_REDIS_REST_TOKEN = oldToken;
+  }
 });
 
 test('registry rejects unbounded result limits before upstream lookup', async () => {

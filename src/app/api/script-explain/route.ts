@@ -182,11 +182,8 @@ Provide a brief, helpful summary of what this script does and what the user will
     if (error instanceof RequestValidationError) {
       return Response.json({ error: error.message }, { status: error.status });
     }
-    // SECURITY: Never leak the API key in error messages
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const safeErrorMessage = errorMessage.includes('gsk_')
-      ? 'Internal server error'
-      : errorMessage;
+    const serviceUnavailable = errorMessage.includes('Shared Redis');
     
     // Log with masked key if present
     if (errorMessage.includes('gsk_')) {
@@ -196,8 +193,8 @@ Provide a brief, helpful summary of what this script does and what the user will
     }
     
     return new Response(
-      JSON.stringify({ error: safeErrorMessage }),
-      { status: error instanceof Error && error.message.includes('Shared Redis') ? 503 : 500 }
+      JSON.stringify({ error: serviceUnavailable ? 'Explanation service is temporarily unavailable' : 'Failed to generate explanation' }),
+      { status: serviceUnavailable ? 503 : 500 }
     );
   }
 }
